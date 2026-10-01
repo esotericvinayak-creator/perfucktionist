@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>perfucktionist — perfection is a scam</title>
+    <meta
+      name="description"
+      content="Stop chasing perfect. Learn self-defence, breathe like a yogi, vibe to any song on earth, read Sanskrit shlokas, save trees, spot fake babas and be brave."
+    />
+    <meta name="theme-color" content="#0d0c12" />
+    <meta property="og:title" content="perfucktionist — perfection is a scam" />
+    <meta property="og:description" content="Your toolkit to be brave, stay safe, breathe, vibe & give zero f*cks about being perfect." />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&family=Tiro+Devanagari+Sanskrit&family=Amiri:wght@400;700&family=Noto+Serif+Gurmukhi:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Set the theme before first paint so there is no flash.
+      ;(function () {
+        var t
+        try { t = localStorage.getItem('pf:theme') } catch (e) {}
+        if (t) t = JSON.parse(t)
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+        document.documentElement.dataset.theme = t
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

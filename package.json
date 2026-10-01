@@ -1,0 +1,27 @@
+{
+  "name": "perfucktionist",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Perfection is a scam. A Gen Z toolkit to be brave, stay safe, breathe, vibe and give zero f*cks about being perfect.",
+  "type": "module",
+  "scripts": {
+    "library": "node scripts/build-library.mjs --force",
+    "predev": "node scripts/build-library.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/build-library.mjs",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2"
+  }
+}
