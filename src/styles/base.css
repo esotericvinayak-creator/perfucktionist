@@ -35,6 +35,11 @@
   --font-arabic: 'Amiri', 'Noto Naskh Arabic', 'Geeza Pro', serif;
   --font-gurmukhi: 'Noto Serif Gurmukhi', 'Mukta Mahee', 'Gurmukhi MN', serif;
 
+  /* chart series — validated (dataviz validator) against --surface in each theme */
+  --chart-1: #8b6cf0;
+  --chart-2: #4fa313;
+  --grid: color-mix(in srgb, var(--ink) 14%, transparent);
+
   --a: var(--lime);
   color-scheme: dark;
 }
@@ -60,6 +65,8 @@
   --glow-1: rgba(157, 125, 255, 0.2);
   --glow-2: rgba(255, 106, 178, 0.16);
   --glow-3: rgba(184, 242, 44, 0.16);
+  --chart-1: #6b4fd8;
+  --chart-2: #4c8a00;
   color-scheme: light;
 }
 

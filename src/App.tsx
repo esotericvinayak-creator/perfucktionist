@@ -3,6 +3,7 @@ import { Footer } from './components/Footer'
 import { MiniPlayer } from './components/MiniPlayer'
 import { Nav } from './components/Nav'
 import { ShareHost, Toaster } from './components/Overlays'
+import { TabBar } from './components/TabBar'
 import { PlayerProvider } from './context/Player'
 import { zoneByPath } from './data/zones'
 import { applyStreakFreeze } from './lib/progress'
@@ -14,6 +15,7 @@ import Faith from './pages/Faith'
 import Fam from './pages/Fam'
 import Green from './pages/Green'
 import Happy from './pages/Happy'
+import Explore from './pages/Explore'
 import Home from './pages/Home'
 import Journeys from './pages/Journeys'
 import Library from './pages/Library'
@@ -22,10 +24,14 @@ import Music from './pages/Music'
 import NotFound from './pages/NotFound'
 import Plus from './pages/Plus'
 import Shield from './pages/Shield'
+import Today from './pages/Today'
+import Tools from './pages/Tools'
 import Unperfect from './pages/Unperfect'
 
 const pages: Record<string, ComponentType> = {
-  '/': Home,
+  '/': Today,
+  '/about': Home,
+  '/explore': Explore,
   '/unperfect': Unperfect,
   '/shield': Shield,
   '/bro': Bro,
@@ -41,6 +47,7 @@ const pages: Record<string, ComponentType> = {
   '/me': Me,
   '/journeys': Journeys,
   '/plus': Plus,
+  '/tools': Tools,
 }
 
 export default function App() {
@@ -67,6 +74,7 @@ export default function App() {
       </main>
       <Footer />
       <MiniPlayer />
+      <TabBar route={route} />
       <Toaster />
       <ShareHost />
     </PlayerProvider>

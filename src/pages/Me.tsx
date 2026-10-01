@@ -4,6 +4,45 @@ import { Section } from '../components/ui'
 import { BADGES, RITUAL, SKINS, dayKey, levelOf, monthStats, ritualToday, showedUp, streakOf, update, useProgress, type Progress } from '../lib/progress'
 import { usePlus } from '../lib/plus'
 import { pick, todayKey } from '../lib/storage'
+import { useTheme } from '../lib/theme'
+import { GOALS } from '../data/app'
+
+function Settings() {
+  const p = useProgress()
+  const [theme, setTheme] = useTheme()
+  const toggle = (id: string) => update((x) => ({ goals: x.goals.includes(id) ? x.goals.filter((g) => g !== id) : x.goals.length < 3 ? [...x.goals, id] : x.goals }))
+  return (
+    <div className="settings">
+      <div className="set-row">
+        <span>theme</span>
+        <div className="row gap-sm">
+          <button type="button" className={`chip${theme === 'dark' ? ' on' : ''}`} onClick={() => setTheme('dark')}>
+            ☾ dark
+          </button>
+          <button type="button" className={`chip${theme === 'light' ? ' on' : ''}`} onClick={() => setTheme('light')}>
+            ☀︎ light
+          </button>
+        </div>
+      </div>
+      <div className="set-row col">
+        <span>I want help with (up to 3)</span>
+        <div className="row gap-sm wrap">
+          {GOALS.map((g) => (
+            <button key={g.id} type="button" className={`chip${p.goals.includes(g.id) ? ' on' : ''}`} onClick={() => toggle(g.id)}>
+              {g.emoji} {g.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="set-row">
+        <span>about the app</span>
+        <a className="btn btn-sm" href="#/about">
+          what is perfucktionist?
+        </a>
+      </div>
+    </div>
+  )
+}
 
 const PET_LINES = {
   happy: ['we showed up today. proud of us. 🫶', 'look at me growing. that’s YOU doing that.', 'not perfect. just consistent. iconic.', 'one more breath and I sprout a new leaf 🌿'],
@@ -110,7 +149,18 @@ export default function Me() {
         </div>
       </header>
 
-      <Section kicker="today’s ritual · ~5 minutes" title={<>any <span className="serif">one</span> keeps your streak.</>} intro="All four = a “full send” day. One = still a win. We are not perfectionists here.">
+      <Section kicker="today’s ritual · ~5 minutes" title={<>any <span className="serif">one</span> keeps your streak.</>} intro="All four = a “full send” day. One = still a win.">
+        <div className="row gap-sm wrap me-quick">
+          <a className="btn btn-sm btn-primary a-violet" href="#/tools/checkin">
+            🌡️ 3-tap check-in
+          </a>
+          <a className="btn btn-sm" href="#/tools/mood-insights">
+            📈 mood insights
+          </a>
+          <a className="btn btn-sm" href="#/tools/habits">
+            📅 my habits
+          </a>
+        </div>
         <div className="ritual-grid">
           {RITUAL.map((r) => {
             const done = doneToday.includes(r.kind)
@@ -243,6 +293,10 @@ export default function Me() {
             )
           })}
         </div>
+      </Section>
+
+      <Section kicker="settings" title={<>your way</>}>
+        <Settings />
       </Section>
 
       <p className="muted me-fine">

@@ -1,6 +1,6 @@
 import { ShlokaCard } from '../components/ShlokaCard'
 import { Voices } from '../components/Voices'
-import { CallCard, Checklist, PageHero, Section } from '../components/ui'
+import { CallCard, Checklist, PageHero, Section, TipGrid } from '../components/ui'
 import { helplines } from '../data/helplines'
 import { shlokaById } from '../data/shlokas'
 import { confetti } from '../lib/confetti'
@@ -57,17 +57,7 @@ export default function Bro() {
       />
 
       <Section kicker="the code" title={<>9 rules. <span className="serif">no loopholes.</span></>}>
-        <div className="grid">
-          {code.map((c, i) => (
-            <article key={c.title} className="card rule a-cyan">
-              <span className="rule-n">
-                {c.icon} {String(i + 1).padStart(2, '0')}
-              </span>
-              <h3>{c.title}</h3>
-              <p>{c.body}</p>
-            </article>
-          ))}
-        </div>
+        <TipGrid accent="cyan" tips={code} />
       </Section>
 
       <Section kicker="resets every midnight" title={<>today’s <span className="serif">main character</span> checklist</>} intro="Small wins, every day. That’s the whole secret.">

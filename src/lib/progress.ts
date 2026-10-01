@@ -6,7 +6,7 @@ import { toast } from './toast'
 
 // The glow-up engine: streaks, XP, levels, badges. Everything lives on this device.
 
-export type Activity = 'breath' | 'verse' | 'dare' | 'gratitude' | 'pop' | 'yeet' | 'music' | 'tree' | 'journey' | 'checklist'
+export type Activity = 'breath' | 'verse' | 'dare' | 'gratitude' | 'pop' | 'yeet' | 'music' | 'tree' | 'journey' | 'checklist' | 'focus' | 'move' | 'journal' | 'habit' | 'tool'
 
 /** The daily 4. Any one keeps your streak alive — we're not perfectionists here. */
 export const RITUAL: { kind: Activity; emoji: string; label: string; how: string; path: string }[] = [
@@ -27,6 +27,11 @@ const XP: Record<Activity, { xp: number; dailyCap: number; label: string }> = {
   tree: { xp: 2, dailyCap: 10, label: 'watering' },
   journey: { xp: 40, dailyCap: 40, label: 'your journey' },
   checklist: { xp: 5, dailyCap: 40, label: 'your checklist' },
+  focus: { xp: 25, dailyCap: 100, label: 'deep focus' },
+  move: { xp: 25, dailyCap: 50, label: 'moving your body' },
+  journal: { xp: 10, dailyCap: 30, label: 'journaling' },
+  habit: { xp: 5, dailyCap: 30, label: 'your habits' },
+  tool: { xp: 5, dailyCap: 40, label: 'taking care of you' },
 }
 
 export const LEVELS = [
@@ -66,10 +71,12 @@ export type Progress = {
   badges: Record<string, string>
   freezes: string[]
   journeys: Record<string, { startedAt: string; done: Record<number, string> }>
+  goals: string[]
+  onboarded: boolean
 }
 
 const KEY = 'pf:progress'
-const empty: Progress = { name: '', pet: 'Bodhi', skin: 'classic', xp: 0, days: {}, dayXp: {}, totals: {}, books: [], badges: {}, freezes: [], journeys: {} }
+const empty: Progress = { name: '', pet: 'Bodhi', skin: 'classic', xp: 0, days: {}, dayXp: {}, totals: {}, books: [], badges: {}, freezes: [], journeys: {}, goals: [], onboarded: false }
 const listeners = new Set<() => void>()
 let state: Progress = load()
 
@@ -145,6 +152,14 @@ export function levelOf(xp: number) {
   return { index: i, level: i + 1, ...cur, next, progress: next ? (xp - cur.xp) / (next.xp - cur.xp) : 1 }
 }
 
+/** Your buddy: a seed that grows into a tree (or a Plus skin) as you level up. */
+export function buddyEmoji(p: Progress) {
+  const level = levelOf(p.xp).level
+  const stages = ['🌰', '🌱', '🌿', '🪴']
+  if (level <= stages.length) return stages[level - 1]
+  return SKINS.find((s) => s.id === p.skin)?.emoji ?? '🌳'
+}
+
 export const ritualToday = (p: Progress) => RITUAL.filter((r) => (p.days[todayKey()]?.[r.kind] ?? 0) > 0).map((r) => r.kind)
 
 // ─── badges ───────────────────────────────────────────────────
@@ -197,8 +212,8 @@ export function log(kind: Activity, opts: LogOptions = {}) {
 
   const lvlBefore = levelOf(before.xp)
   const lvlAfter = levelOf(next.xp)
-  if (!opts.silent && gain >= 5) toast({ icon: '✶', title: `+${gain} XP`, sub: XP[kind].label, tone: 'xp' })
-  if (!wasShowedUp && showedUp(next, day)) toast({ icon: '🔥', title: `${streakOf(next)}-day streak`, sub: 'you showed up. that’s the whole thing.', tone: 'streak' })
+  if (!opts.silent && gain >= 10) toast({ icon: '✶', title: `+${gain} XP`, sub: XP[kind].label, tone: 'xp' })
+  if (!opts.silent && !wasShowedUp && showedUp(next, day)) toast({ icon: '🔥', title: `${streakOf(next)}-day streak`, sub: 'you showed up. that’s the whole thing.', tone: 'streak' })
   if (lvlAfter.level > lvlBefore.level) toast({ icon: lvlAfter.emoji, title: `Level ${lvlAfter.level}: ${lvlAfter.name}`, sub: 'your companion grew!', tone: 'badge' })
 
   next = awardBadges(next)

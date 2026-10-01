@@ -25,6 +25,7 @@ export const zones: Zone[] = [
 
 /** The paid-ish glow-up layer: progress, guided journeys, membership. */
 export const glowUp: Zone[] = [
+  { path: '/tools', emoji: '🧰', title: 'Toolkit', blurb: '60 tools for real life', accent: 'lime' },
   { path: '/me', emoji: '🔥', title: 'My Glow-up', blurb: 'streaks, XP, badges & your companion', accent: 'lime' },
   { path: '/journeys', emoji: '🧭', title: 'Journeys', blurb: '5-minute daily guided programs', accent: 'violet' },
   { path: '/plus', emoji: '✦', title: 'Plus', blurb: 'less perfect. more you.', accent: 'pink' },

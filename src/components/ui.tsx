@@ -76,18 +76,28 @@ export function CallCard({ line, accent = 'pink', big = false }: { line: Helplin
   )
 }
 
+/** Tiles show just an icon + headline; tap to reveal the detail. Keeps pages light to scan. */
 export function TipGrid({ tips, accent }: { tips: { icon: string; title: string; body: ReactNode }[]; accent?: Accent }) {
+  const [open, setOpen] = useState<Record<string, boolean>>({})
   return (
-    <div className="grid">
-      {tips.map((t) => (
-        <article key={t.title} className={`card tip${accent ? ` a-${accent}` : ''}`}>
-          <span className="tip-icon" aria-hidden="true">
-            {t.icon}
-          </span>
-          <h3>{t.title}</h3>
-          <p>{t.body}</p>
-        </article>
-      ))}
+    <div className="tip-grid">
+      {tips.map((t) => {
+        const on = !!open[t.title]
+        return (
+          <button key={t.title} type="button" className={`card tip reveal${on ? ' open' : ''}${accent ? ` a-${accent}` : ''}`} aria-expanded={on} onClick={() => setOpen((o) => ({ ...o, [t.title]: !o[t.title] }))}>
+            <span className="tip-top">
+              <span className="tip-icon" aria-hidden="true">
+                {t.icon}
+              </span>
+              <span className="tip-plus" aria-hidden="true">
+                {on ? '−' : '+'}
+              </span>
+            </span>
+            <h3>{t.title}</h3>
+            {on && <p>{t.body}</p>}
+          </button>
+        )
+      })}
     </div>
   )
 }

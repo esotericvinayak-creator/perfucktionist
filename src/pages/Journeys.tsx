@@ -107,7 +107,8 @@ function JourneyView({ j, onBack }: { j: Journey; onBack: () => void }) {
 
 export default function Journeys() {
   const progress = useProgress()
-  const [open, setOpen] = useState<string | null>(null)
+  // #/journeys/<id> opens straight into a journey (used by the Today screen).
+  const [open, setOpen] = useState<string | null>(() => window.location.hash.split('/')[2] || null)
   const current = journeys.find((j) => j.id === open)
 
   return (

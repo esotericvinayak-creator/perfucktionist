@@ -65,7 +65,7 @@ function ShareModal({ content, onClose }: { content: CardContent; onClose: () =>
     setFile(null)
     const el = canvas.current
     if (!el) return
-    void renderCard(el, content, tpl, mark || !plus.active).then(async () => {
+    void renderCard(el, content, tpl, !content.clean && (mark || !plus.active)).then(async () => {
       // Prepare the file up front so the Share tap can hand it over instantly (keeps the user gesture).
       const f = await cardFile(el)
       if (alive) setFile(f)

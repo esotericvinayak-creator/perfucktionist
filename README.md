@@ -2,7 +2,18 @@
 
 > Perfection is a scam.
 
-A Gen Z toolkit for living, not polishing. Eleven zones, a 1.2-lakh-verse library of every major faith, and a glow-up layer people can pay for.
+A Gen Z toolkit for living, not polishing.
+
+## How the app flows
+
+Four tabs, nothing else: **Today · Explore · Library · Me**.
+
+1. **First visit** → 30-second onboarding: name → pick up to 3 goals → name your buddy → straight into day 1.
+2. **Today** (`#/`) → one big "▶ start" for *your 5 minutes*: mood (1 tap) → one small thing picked from your mood + goals (breathe, gratitude, a brave or kind dare, today's one task, or log spending) → today's line from any scripture → done 🔥. Below it: today's one task, your plan (journey), tools for your goals, and SOS shortcuts.
+3. **Explore** (`#/explore`) → search, "I'm feeling…" chips, and 8 areas (Calm, Focus & study, Body, Money, Safety, Love & family, Grow, Faith). Each area lists its guides (the long pages) and tools.
+4. **Me** (`#/me`) → buddy, streak, badges, insights, settings (theme, goals). The old landing page lives at `#/about`.
+
+Original intro: Eleven zones, a 1.2-lakh-verse library of every major faith, and a glow-up layer people can pay for.
 
 | Zone | What's in it |
 | --- | --- |
@@ -20,11 +31,30 @@ A Gen Z toolkit for living, not polishing. Eleven zones, a 1.2-lakh-verse librar
 
 Every zone also has an **"every faith agrees"** row — the same idea (courage, parents, respecting women, protecting the earth, no religious middlemen…) from Hindu, Sikh, Muslim, Christian, Jewish, Buddhist, Jain, Taoist, Confucian, Stoic, Zoroastrian and Baháʼí sources.
 
+## Toolkit — 60 tools (`#/tools`)
+
+An app-style hub: search, "what do you need?" chips (anxious, low, can't focus, exams, can't sleep, broke, heartbroken, unsafe, stuck, bored), a dock of pinned + recent tools, and a phone tab bar. Every tool is one focused screen, mostly step-by-step, and hands off to the next useful tool ("up next"). Deep links: `#/tools/focus`, `#/tools/for/anxious`.
+
+| | Tools |
+| --- | --- |
+| 🧠 Mind | daily check-in · mood insights ✦ · panic SOS · safety plan · thought flipper (CBT) · worry box · journal (prompt packs, PIN) · one line a day · hype file · bad-day kit · affirmations · urge surfer |
+| 🎯 Focus | focus timer · focus stats ✦ · ambient sound mixer · brain dump → priority sort · done list · 5-minute starter · countdowns · flashcards (spaced repetition) · study timetable ✦ · 20-20-20 eyes · phone-down mode |
+| 💪 Body | 7-minute workout · desk stretches · water · sleep-cycle calculator · wind-down + sleep log · cycle tracker · caffeine cutoff |
+| 💸 Money | expense tracker · 50/30/20 · split the bill (UPI links) · subscriptions · savings goal · SIP calculator · CTC → in-hand · "is it worth it?" · EMI & credit-card truth · scam detector |
+| 🛡️ Safety | safe-walk timer · emergency lock-screen card · password breach check · privacy checkup · relationship check |
+| 💗 People | boundary scripts · breakup recovery · friend check-ins · kindness dares · conversation starters |
+| 🌱 Grow | habit tracker · quit tracker · time capsule · bucket list · wallpaper maker · dopamine menu · career compass (RIASEC) · interview prep (STAR) · decision maker · speaking coach ✦ |
+
+✦ = Plus. Free limits elsewhere: 3 habits, 1 flashcard deck, 2 layered sounds, 2 journal packs. Code lives in `src/tools/` (one file per category, each lazy-loaded); metadata in `src/tools/registry.ts`.
+
+Notes: the password check sends only the first 5 characters of the SHA-1 hash to Have I Been Pwned (k-anonymity). CTC → in-hand uses FY 2025-26 new-regime slabs — update `newRegimeTax()` when budgets change. Timers/alarms (safe-walk, 20-20-20) only run while the page is open.
+
 ## Glow-up mode & perfucktionist+
 
 | | Free | Plus (₹49/mo · ₹399/yr) |
 | --- | --- | --- |
 | `#/me` daily ritual (breathe · read · dare · gratitude — any one keeps the streak), XP, 10 levels, 13 badges, 16-week heatmap, a companion tree that grows | ✓ | ✓ |
+| `#/tools` 60-tool toolkit | 56 tools | all 60 |
 | `#/journeys` 5 guided programs (21 days unperfect, 7 days calm, 14 days brave, 18 days of the Gita, every faith in 12 days), one step unlocks per day | first 3 days each | all days |
 | Streak freezes | — | 2 a month, automatic |
 | Story cards (1080×1920 PNG for IG/WhatsApp/Snap) from any verse, streak or month | 2 styles + watermark | 5 styles, no watermark |

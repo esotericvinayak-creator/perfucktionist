@@ -8,6 +8,9 @@ import { motives, zones } from '../data/zones'
 import { RITUAL, levelOf, ritualToday, streakOf, useProgress } from '../lib/progress'
 import { usePlus } from '../lib/plus'
 import { formatIndian, totalVerses } from '../lib/scripture'
+import { NEEDS, TOOLS, toolById } from '../tools/registry'
+
+const FEATURED = ['panic', 'focus', 'expenses', 'safe-walk', 'sleep-calc', 'period', 'scam-check', 'habits']
 import { dayOfYear } from '../lib/storage'
 
 function GlowUp() {
@@ -78,7 +81,7 @@ export default function Home() {
           <span className="sticker a-sun s3">made in india 🇮🇳</span>
           <span className="sticker a-violet s4">chaos approved</span>
         </div>
-        <p className="kicker">a website for humans, not robots</p>
+        <p className="kicker">about perfucktionist</p>
         <h1 className="mega">
           <span className="strike">
             Perfection
@@ -93,8 +96,8 @@ export default function Home() {
           Stop polishing. Start living. Your toolkit to stay safe, be brave, breathe deep, vibe to any song on earth — and give <b>zero f*cks</b> about being perfect.
         </p>
         <div className="row gap wrap">
-          <a className="btn btn-primary a-lime" href="#/unperfect">
-            unlearn perfect →
+          <a className="btn btn-primary a-lime" href="#/">
+            open my today →
           </a>
           <a className="btn" href="#/music">
             🎧 play music
@@ -146,6 +149,34 @@ export default function Home() {
 
         <Section kicker="glow-up mode" title={<>show up. <span className="serif">not perfect — just daily.</span></>}>
           <GlowUp />
+        </Section>
+
+        <Section kicker={`toolkit · ${TOOLS.length} tools`} title={<>tools for <span className="serif">real</span> life</>}>
+          <div className="need-row home-needs">
+            {NEEDS.map((n) => (
+              <a key={n.id} className="need" href={`#/tools/for/${n.id}`}>
+                <span>{n.emoji}</span>
+                {n.label}
+              </a>
+            ))}
+          </div>
+          <div className="tile-grid">
+            {FEATURED.map((id) => {
+              const t = toolById(id)!
+              return (
+                <a key={id} href={`#/tools/${id}`} className={`tile cat-${t.cat}`}>
+                  <span className="tile-emoji">{t.emoji}</span>
+                  <b>{t.name}</b>
+                  <small>{t.hook}</small>
+                </a>
+              )
+            })}
+          </div>
+          <div className="center-row">
+            <a className="btn btn-primary a-lime" href="#/tools">
+              🧰 open all {TOOLS.length} tools →
+            </a>
+          </div>
         </Section>
 
         <Section kicker="check-in" title={<>how u feeling <span className="serif">rn?</span></>} intro="Tap one. No wrong answers, no tracking, no judgement.">

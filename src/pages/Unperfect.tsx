@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ShlokaCard } from '../components/ShlokaCard'
 import { Voices } from '../components/Voices'
-import { Checklist, PageHero, Section } from '../components/ui'
+import { Checklist, PageHero, Section, TipGrid } from '../components/ui'
 import { shlokaById } from '../data/shlokas'
 import { log } from '../lib/progress'
 import { pick } from '../lib/storage'
@@ -98,15 +98,7 @@ export default function Unperfect() {
       </Section>
 
       <Section kicker="the rules" title={<>8 rules to <span className="serif">unlearn</span> perfect</>}>
-        <div className="grid">
-          {rules.map((r) => (
-            <article key={r.n} className="card rule a-lime">
-              <span className="rule-n">{r.n}</span>
-              <h3>{r.title}</h3>
-              <p>{r.body}</p>
-            </article>
-          ))}
-        </div>
+        <TipGrid accent="lime" tips={rules.map((r) => ({ icon: r.n, title: r.title, body: r.body }))} />
       </Section>
 
       <Section kicker="tap to flip" title={<>mute the inner <span className="serif">critic</span></>} intro="Tap a mean thought to hear what your bestie would say instead.">

@@ -5,6 +5,8 @@ import './styles/base.css'
 import './styles/components.css'
 import './styles/pages.css'
 import './styles/glow.css'
+import './styles/tools.css'
+import './styles/today.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

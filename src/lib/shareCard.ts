@@ -9,6 +9,8 @@ export type CardContent = {
   rtl?: boolean
   text: string
   footer?: string
+  /** Utility cards (emergency info) never get a watermark. */
+  clean?: boolean
 }
 
 export type Template = { id: string; name: string; plus: boolean; bg: (g: CanvasRenderingContext2D) => void; ink: string; dim: string; sticker: string; stickerInk: string; serifText?: boolean }
