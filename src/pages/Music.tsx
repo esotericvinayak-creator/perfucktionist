@@ -1,10 +1,50 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Callout, PageHero, Section } from '../components/ui'
 import { fullSongLinks, usePlayer, type Track } from '../context/Player'
-import { moods, playlists, radios, searchSongs, stores } from '../lib/music'
+import { moods, playlists, radios, searchFull, searchSongs, stores } from '../lib/music'
 import { pick, useLocalState } from '../lib/storage'
 
 type Status = { kind: 'idle' } | { kind: 'loading' } | { kind: 'error'; msg: string } | { kind: 'done' }
+
+function TrackCard({ t, list }: { t: Track; list: Track[] }) {
+  const player = usePlayer()
+  const isCurrent = player.track?.id === t.id
+  return (
+    <li className={`track${isCurrent ? ' current' : ''}`}>
+      <button type="button" className="track-play" onClick={() => (isCurrent ? player.toggle() : player.play(t, list))} aria-label={`${isCurrent && player.playing ? 'Pause' : 'Play'} ${t.title} by ${t.artist}${t.kind === 'full' ? ', full song' : ', 30 second preview'}`}>
+        {t.art ? <img src={t.art} alt="" loading="lazy" width={300} height={300} /> : <span className="track-noart">🎵</span>}
+        <span className={`len-badge on-art ${t.kind}`}>{t.kind === 'full' ? 'FULL' : '30s'}</span>
+        <span className="track-btn" aria-hidden="true">
+          {isCurrent && player.playing ? '❚❚' : '▶'}
+        </span>
+        {isCurrent && player.playing && (
+          <span className="eq" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+        )}
+      </button>
+      <div className="track-meta">
+        <strong title={t.title}>{t.title}</strong>
+        <span title={t.artist}>{t.artist}</span>
+      </div>
+      <div className="track-links">
+        {t.kind === 'full' ? (
+          <a href={t.link} target="_blank" rel="noreferrer">
+            on Audius ↗
+          </a>
+        ) : (
+          fullSongLinks(t.title, t.artist, t.link).map((l) => (
+            <a key={l.label} href={l.href} target="_blank" rel="noreferrer">
+              {l.label}
+            </a>
+          ))
+        )}
+      </div>
+    </li>
+  )
+}
 
 export default function Music() {
   const player = usePlayer()
@@ -12,38 +52,37 @@ export default function Music() {
   const [label, setLabel] = useState('')
   const [store, setStore] = useLocalState('music-store', 'IN')
   const [tracks, setTracks] = useState<Track[]>([])
+  const [fulls, setFulls] = useState<Track[]>([])
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
   const [playlist, setPlaylist] = useState(playlists[0].id)
   const [radio, setRadio] = useState<string | null>(null)
   const latest = useRef(0)
 
+  // Both catalogues are searched together: Apple = every song (30s), Audius = full songs by independent artists.
   const run = useCallback(
-    async (term: string, heading: string) => {
+    async (term: string, heading: string, fullTerm = term) => {
       const id = ++latest.current
       setLabel(heading)
       setStatus({ kind: 'loading' })
-      try {
-        const found = await searchSongs(term, store)
-        if (id !== latest.current) return
-        setTracks(found)
-        setStatus({ kind: 'done' })
-      } catch {
-        if (id !== latest.current) return
-        setStatus({ kind: 'error', msg: 'Couldn’t reach the music catalogue. Check your internet and try again.' })
-      }
+      const [previews, full] = await Promise.allSettled([searchSongs(term, store), searchFull(fullTerm)])
+      if (id !== latest.current) return
+      setTracks(previews.status === 'fulfilled' ? previews.value : [])
+      setFulls(full.status === 'fulfilled' ? full.value : [])
+      if (previews.status === 'rejected' && full.status === 'rejected') setStatus({ kind: 'error', msg: 'Couldn’t reach the music catalogues. Check your internet and try again.' })
+      else setStatus({ kind: 'done' })
     },
     [store],
   )
 
   useEffect(() => {
     const seed = pick(moods[0].terms)
-    void run(seed, `🎬 Bollywood · ${seed}`)
+    void run(seed, `🎬 Bollywood · ${seed}`, moods[0].full)
     // Only on first visit — afterwards the user drives.
   }, [])
 
   const searchMood = (i: number) => {
     const seed = pick(moods[i].terms)
-    void run(seed, `${moods[i].label} · ${seed}`)
+    void run(seed, `${moods[i].label} · ${seed}`, moods[i].full)
   }
 
   return (
@@ -90,15 +129,6 @@ export default function Music() {
           ))}
         </div>
 
-        <div className="results-head">
-          <p className="kicker">{label || 'results'}</p>
-          {status.kind === 'done' && tracks.length > 0 && (
-            <button type="button" className="btn btn-sm a-orange btn-primary" onClick={() => player.play(tracks[0], tracks)}>
-              ▶ play all
-            </button>
-          )}
-        </div>
-
         {status.kind === 'loading' && (
           <div className="track-grid" aria-busy="true">
             {Array.from({ length: 8 }, (_, i) => (
@@ -107,44 +137,50 @@ export default function Music() {
           </div>
         )}
         {status.kind === 'error' && <p className="error-text">{status.msg}</p>}
-        {status.kind === 'done' && tracks.length === 0 && <p className="muted">Nothing found. Try a different spelling, or switch the region.</p>}
-        {status.kind === 'done' && tracks.length > 0 && (
-          <ul className="track-grid">
-            {tracks.map((t) => {
-              const isCurrent = player.track?.id === t.id
-              return (
-                <li key={t.id} className={`track${isCurrent ? ' current' : ''}`}>
-                  <button type="button" className="track-play" onClick={() => (isCurrent ? player.toggle() : player.play(t, tracks))} aria-label={`${isCurrent && player.playing ? 'Pause' : 'Play'} ${t.title} by ${t.artist}`}>
-                    <img src={t.art} alt="" loading="lazy" width={300} height={300} />
-                    <span className="track-btn" aria-hidden="true">
-                      {isCurrent && player.playing ? '❚❚' : '▶'}
-                    </span>
-                    {isCurrent && player.playing && (
-                      <span className="eq" aria-hidden="true">
-                        <i />
-                        <i />
-                        <i />
-                      </span>
-                    )}
-                  </button>
-                  <div className="track-meta">
-                    <strong title={t.title}>{t.title}</strong>
-                    <span title={t.artist}>{t.artist}</span>
-                  </div>
-                  <div className="track-links">
-                    {fullSongLinks(t.title, t.artist, t.appleUrl).map((l) => (
-                      <a key={l.label} href={l.href} target="_blank" rel="noreferrer">
-                        {l.label}
-                      </a>
-                    ))}
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
+
+        {status.kind === 'done' && fulls.length > 0 && (
+          <div className="music-block">
+            <div className="results-head">
+              <p className="kicker">
+                <span className="len-badge full">FULL</span> full songs · independent artists
+              </p>
+              <button type="button" className="btn btn-sm btn-primary a-lime" onClick={() => player.play(fulls[0], fulls)}>
+                ▶ play all
+              </button>
+            </div>
+            <ul className="track-row">
+              {fulls.map((t) => (
+                <TrackCard key={t.id} t={t} list={fulls} />
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {status.kind === 'done' && (
+          <div className="music-block">
+            <div className="results-head">
+              <p className="kicker">
+                <span className="len-badge preview">30s</span> {label || 'every song'} · previews
+              </p>
+              {tracks.length > 0 && (
+                <button type="button" className="btn btn-sm a-orange btn-primary" onClick={() => player.play(tracks[0], tracks)}>
+                  ▶ play all
+                </button>
+              )}
+            </div>
+            {tracks.length === 0 ? (
+              <p className="muted">Nothing found. Try a different spelling, or switch the region.</p>
+            ) : (
+              <ul className="track-grid">
+                {tracks.map((t) => (
+                  <TrackCard key={t.id} t={t} list={tracks} />
+                ))}
+              </ul>
+            )}
+          </div>
         )}
         <Callout accent="orange" icon="ℹ️">
-          In-site plays are 30-second previews from Apple’s catalogue. Tap YouTube, Spotify or JioSaavn under any song to hear the full track free.
+          <b>FULL</b> songs stream free and legally from independent artists on Audius. <b>30s</b> previews cover every song on Apple’s catalogue — tap YouTube, Spotify or JioSaavn under a song to hear the full version.
         </Callout>
       </Section>
 

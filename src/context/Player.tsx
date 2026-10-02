@@ -7,9 +7,13 @@ export type Track = {
   artist: string
   album: string
   art: string
-  /** 30-second preview stream. */
+  /** Audio stream: a 30-second preview (Apple) or a full track (Audius). */
   src: string
-  appleUrl: string
+  /** 'preview' = 30-second clip, 'full' = whole song. */
+  kind: 'preview' | 'full'
+  /** Where the song lives (Apple Music page, Audius page) — shown as attribution. */
+  link?: string
+  source: 'Apple Music' | 'Audius'
 }
 
 type Player = {

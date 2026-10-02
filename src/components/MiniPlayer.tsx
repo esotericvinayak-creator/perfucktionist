@@ -8,17 +8,27 @@ export function MiniPlayer() {
       <div className="mp-progress" style={{ width: `${progress * 100}%` }} />
       <img className={`mp-art${playing ? ' spinning' : ''}`} src={track.art} alt="" width={52} height={52} />
       <div className="mp-meta">
-        <strong>{track.title}</strong>
+        <strong>
+          <span className={`len-badge ${track.kind}`}>{track.kind === 'full' ? 'FULL' : '30s'}</span> {track.title}
+        </strong>
         <span>{track.artist}</span>
         <span className="mp-links">
-          full song →{' '}
-          {fullSongLinks(track.title, track.artist, track.appleUrl)
-            .slice(0, 3)
-            .map((l) => (
-              <a key={l.label} href={l.href} target="_blank" rel="noreferrer">
-                {l.label}
-              </a>
-            ))}
+          {track.kind === 'full' ? (
+            <a href={track.link} target="_blank" rel="noreferrer">
+              on {track.source} ↗
+            </a>
+          ) : (
+            <>
+              full song →{' '}
+              {fullSongLinks(track.title, track.artist, track.link)
+                .slice(0, 3)
+                .map((l) => (
+                  <a key={l.label} href={l.href} target="_blank" rel="noreferrer">
+                    {l.label}
+                  </a>
+                ))}
+            </>
+          )}
         </span>
       </div>
       <div className="mp-controls">
