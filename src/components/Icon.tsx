@@ -2,7 +2,7 @@
 // Emojis stay for the buddy and casual copy; structure gets consistent line icons.
 import {
   Activity, Ban, BarChart3, Bath, BedDouble, BookOpen, Brain, Briefcase, CalendarCheck, CalendarDays, CheckCircle2, ClipboardList, Coffee, Compass, CreditCard, Droplets,
-  Dumbbell, Ear, Eye, Flag, Flame, Footprints, HandHeart, Headphones, Heart, HeartCrack, Hourglass, IdCard, Image, KeyRound, Layers, LifeBuoy, LineChart, ListChecks, Lock,
+  Dumbbell, Ear, House, Eye, Flag, Flame, Footprints, HandHeart, Headphones, Heart, HeartCrack, Hourglass, IdCard, Image, KeyRound, Layers, LifeBuoy, LineChart, ListChecks, Lock,
   Mail, MessageSquareQuote, MessagesSquare, Mic, Moon, Newspaper, NotebookPen, Package, PenLine, PieChart, PiggyBank, Pizza, Receipt, RefreshCw, Repeat, Rocket, Scale,
   ScanSearch, Shield, Siren, SlidersHorizontal, Smartphone, Smile, Sparkles, Sprout, StretchHorizontal, Sun, Target, Thermometer, Timer, TrendingUp, Trophy, Users,
   UtensilsCrossed, Wallet, Waves, Wind, Zap, type LucideIcon,
@@ -10,7 +10,7 @@ import {
 
 export const ICONS = {
   // tabs
-  today: Sun, explore: Compass, library: BookOpen, me: Flame,
+  today: Sun, home: House, explore: Compass, library: BookOpen, me: Flame,
   // areas / categories
   calm: Wind, focus: Target, body: Dumbbell, money: Wallet, safety: Shield, people: Heart, grow: Sprout, faith: HandHeart, read: Newspaper, listen: Headphones, mind: Brain,
   // goals

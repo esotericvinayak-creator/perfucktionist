@@ -19,7 +19,7 @@ export function MiniPlayer() {
             </a>
           ) : (
             <>
-              full song →{' '}
+              iTunes preview · full song →{' '}
               {fullSongLinks(track.title, track.artist, track.link)
                 .slice(0, 3)
                 .map((l) => (

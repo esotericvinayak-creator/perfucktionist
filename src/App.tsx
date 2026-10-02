@@ -6,8 +6,10 @@ import { ShareHost, Toaster } from './components/Overlays'
 import { TabBar } from './components/TabBar'
 import { PlayerProvider } from './context/Player'
 import { zoneByPath } from './data/zones'
+import { useAuth } from './lib/auth'
 import { applyStreakFreeze } from './lib/progress'
 import { useRoute } from './lib/router'
+import Auth from './pages/Auth'
 import Brave from './pages/Brave'
 import Breathe from './pages/Breathe'
 import Bro from './pages/Bro'
@@ -53,8 +55,12 @@ const pages: Record<string, ComponentType> = {
   '/tools': Tools,
 }
 
+// Safety comes before sign-up: these stay open even when logged out.
+const PUBLIC = ['/shield', '/tools/panic', '/tools/safe-walk']
+
 export default function App() {
   const route = useRoute()
+  const auth = useAuth()
   // Only the first segment picks the page; the rest is for the page itself (e.g. #/library/gita/2).
   const base = `/${route.split('/')[1] ?? ''}`
   const Page = pages[base] ?? NotFound
@@ -64,7 +70,19 @@ export default function App() {
     document.title = zone ? `${zone.title} — perfucktionist` : 'perfucktionist — perfection is a scam'
   }, [base])
 
-  useEffect(applyStreakFreeze, [])
+  useEffect(() => {
+    applyStreakFreeze()
+  }, [])
+
+  if (auth.status === 'loading')
+    return (
+      <div className="splash" aria-busy="true">
+        <span className="logo-text">
+          per<span className="logo-hl">fuck</span>tionist
+        </span>
+      </div>
+    )
+  if ((auth.status === 'out' && !PUBLIC.includes(route)) || auth.recovering) return <Auth />
 
   return (
     <PlayerProvider>

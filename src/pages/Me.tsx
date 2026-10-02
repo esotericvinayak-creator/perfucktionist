@@ -5,15 +5,29 @@ import { BADGES, RITUAL, SKINS, dayKey, levelOf, monthStats, ritualToday, showed
 import { usePlus } from '../lib/plus'
 import { pick, todayKey } from '../lib/storage'
 import { useTheme } from '../lib/theme'
+import { cloud, logOut, useAuth } from '../lib/auth'
 import { Icon } from '../components/Icon'
 import { GOALS } from '../data/app'
 
 function Settings() {
   const p = useProgress()
   const [theme, setTheme] = useTheme()
+  const auth = useAuth()
   const toggle = (id: string) => update((x) => ({ goals: x.goals.includes(id) ? x.goals.filter((g) => g !== id) : x.goals.length < 3 ? [...x.goals, id] : x.goals }))
   return (
     <div className="settings">
+      <div className="set-row">
+        <span>
+          account
+          <small className="set-sub">
+            {auth.user?.email}
+            {!cloud && ' · saved on this device'}
+          </small>
+        </span>
+        <button type="button" className="btn btn-sm" onClick={() => confirm('Log out of perfucktionist?') && void logOut()}>
+          log out
+        </button>
+      </div>
       <div className="set-row">
         <span>theme</span>
         <div className="row gap-sm">
@@ -34,12 +48,6 @@ function Settings() {
             </button>
           ))}
         </div>
-      </div>
-      <div className="set-row">
-        <span>about the app</span>
-        <a className="btn btn-sm" href="#/about">
-          what is perfucktionist?
-        </a>
       </div>
     </div>
   )

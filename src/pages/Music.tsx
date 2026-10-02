@@ -60,11 +60,11 @@ export default function Music() {
 
   // Both catalogues are searched together: Apple = every song (30s), Audius = full songs by independent artists.
   const run = useCallback(
-    async (term: string, heading: string, fullTerm = term) => {
+    async (term: string, heading: string, fullTerm?: string) => {
       const id = ++latest.current
       setLabel(heading)
       setStatus({ kind: 'loading' })
-      const [previews, full] = await Promise.allSettled([searchSongs(term, store), searchFull(fullTerm)])
+      const [previews, full] = await Promise.allSettled([searchSongs(term, store), fullTerm ? searchFull(fullTerm) : Promise.resolve([])])
       if (id !== latest.current) return
       setTracks(previews.status === 'fulfilled' ? previews.value : [])
       setFulls(full.status === 'fulfilled' ? full.value : [])
@@ -142,7 +142,7 @@ export default function Music() {
           <div className="music-block">
             <div className="results-head">
               <p className="kicker">
-                <span className="len-badge full">FULL</span> full songs · independent artists
+                <span className="len-badge full">FULL</span> full tracks · independent artists on Audius
               </p>
               <button type="button" className="btn btn-sm btn-primary a-lime" onClick={() => player.play(fulls[0], fulls)}>
                 ▶ play all
@@ -162,11 +162,7 @@ export default function Music() {
               <p className="kicker">
                 <span className="len-badge preview">30s</span> {label || 'every song'} · previews
               </p>
-              {tracks.length > 0 && (
-                <button type="button" className="btn btn-sm a-orange btn-primary" onClick={() => player.play(tracks[0], tracks)}>
-                  ▶ play all
-                </button>
-              )}
+              <span className="muted itunes-credit">previews courtesy of iTunes</span>
             </div>
             {tracks.length === 0 ? (
               <p className="muted">Nothing found. Try a different spelling, or switch the region.</p>
@@ -180,11 +176,11 @@ export default function Music() {
           </div>
         )}
         <Callout accent="orange" icon="ℹ️">
-          <b>FULL</b> songs stream free and legally from independent artists on Audius. <b>30s</b> previews cover every song on Apple’s catalogue — tap YouTube, Spotify or JioSaavn under a song to hear the full version.
+          <b>FULL</b> tracks are original instrumental and lofi music by independent artists on Audius (shown for Lofi only). <b>30s</b> previews come from Apple Music — tap Apple Music, YouTube, Spotify or JioSaavn under a song for the full version.
         </Callout>
       </Section>
 
-      <Section kicker="full playlists" title={<>press play, <span className="serif">forget the world</span></>} intro="Full-length Spotify playlists. Log in to Spotify in this browser for full songs (free accounts work).">
+      <Section kicker="full playlists" title={<>press play, <span className="serif">forget the world</span></>} intro="Full songs on a laptop or desktop (Chrome, Edge, Firefox) when you’re logged in to Spotify. Phones and iPhones get 30-second previews.">
         <div className="row gap-sm wrap filter-row" role="group" aria-label="Playlists">
           {playlists.map((p) => (
             <button key={p.id} type="button" className={`chip${playlist === p.id ? ' on' : ''}`} onClick={() => setPlaylist(p.id)}>

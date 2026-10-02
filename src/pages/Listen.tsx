@@ -14,7 +14,7 @@ type Item = { badge: string; original?: string; lang?: string; rtl?: boolean; te
 const MIXES: { id: string; name: string; line: string; music: string; themes: Theme[]; shlokaVibes: string[]; accent: string }[] = [
   { id: 'morning', name: 'Morning calm', line: 'start soft', music: 'lofi', themes: ['calm', 'golden'], shlokaVibes: ['peace'], accent: 'violet' },
   { id: 'focus', name: 'Exam focus', line: 'lock in', music: 'lofi study', themes: ['action'], shlokaVibes: ['focus', 'strength'], accent: 'lime' },
-  { id: 'brave', name: 'Hype me up', line: 'courage, every faith', music: 'desi hip hop', themes: ['courage', 'action'], shlokaVibes: ['strength'], accent: 'sun' },
+  { id: 'brave', name: 'Hype me up', line: 'courage, every faith', music: 'lofi hip hop instrumental', themes: ['courage', 'action'], shlokaVibes: ['strength'], accent: 'sun' },
   { id: 'heart', name: 'Heavy heart', line: 'for the hard days', music: 'ambient piano', themes: ['calm', 'oneness'], shlokaVibes: ['peace', 'love'], accent: 'pink' },
   { id: 'faith', name: 'Every faith', line: 'one message, many voices', music: 'meditation', themes: ['golden', 'oneness', 'truth'], shlokaVibes: ['faith', 'truth'], accent: 'cyan' },
   { id: 'night', name: 'Wind down', line: 'before sleep', music: 'ambient sleep', themes: ['calm'], shlokaVibes: ['peace'], accent: 'orange' },

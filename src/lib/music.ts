@@ -50,6 +50,10 @@ type AudiusTrack = {
   user: { name: string }
 }
 
+// Audius has re-uploads of label songs. We only search instrumental/ambient genres, and drop
+// titles that look like versions of someone else's song. A hand-checked track list is the real fix.
+const LOOKS_LIKE_RIP = /(version|remix|mashup|cover|slowed|reverb|lyrics?|official|bollywood|punjabi|hindi song|tamil|telugu|kpop|k-pop|from ["“]|ft\.|feat\.|\bx\b|full song|audio song|movie|film|ost)/i
+
 const AUDIUS = 'https://api.audius.co/v1'
 const APP = 'perfucktionist'
 
@@ -60,7 +64,7 @@ export async function searchFull(term: string, limit = 24): Promise<Track[]> {
   if (!res.ok) throw new Error(`Search failed (${res.status})`)
   const data = (await res.json()) as { data: AudiusTrack[] }
   return data.data
-    .filter((t) => t.is_streamable !== false && !t.is_stream_gated && t.duration > 60)
+    .filter((t) => t.is_streamable !== false && !t.is_stream_gated && t.duration > 60 && !LOOKS_LIKE_RIP.test(t.title))
     .slice(0, limit)
     .map((t) => ({
       id: `au-${t.id}`,
@@ -75,27 +79,27 @@ export async function searchFull(term: string, limit = 24): Promise<Track[]> {
     }))
 }
 
-/** `full` is the matching search on Audius (independent artists), which works better with genre words. */
-export type Mood = { label: string; terms: string[]; full: string }
+/** `full` (lofi-type moods only) also searches Audius for full-length original tracks. */
+export type Mood = { label: string; terms: string[]; full?: string }
 
 /** Each click picks a random seed so the same chip gives fresh results. */
 export const moods: Mood[] = [
-  { label: '🎬 Bollywood', full: 'bollywood', terms: ['arijit singh', 'shreya ghoshal', 'pritam', 'a r rahman', 'atif aslam', 'sonu nigam', 'vishal shekhar', 'jubin nautiyal'] },
-  { label: '🌎 Hollywood / Pop', full: 'pop', terms: ['taylor swift', 'the weeknd', 'dua lipa', 'ed sheeran', 'billie eilish', 'bruno mars', 'sabrina carpenter', 'olivia rodrigo'] },
-  { label: '🥁 Punjabi', full: 'punjabi', terms: ['diljit dosanjh', 'ap dhillon', 'karan aujla', 'sidhu moose wala', 'shubh', 'guru randhawa'] },
+  { label: '🎬 Bollywood', terms: ['arijit singh', 'shreya ghoshal', 'pritam', 'a r rahman', 'atif aslam', 'sonu nigam', 'vishal shekhar', 'jubin nautiyal'] },
+  { label: '🌎 Hollywood / Pop', terms: ['taylor swift', 'the weeknd', 'dua lipa', 'ed sheeran', 'billie eilish', 'bruno mars', 'sabrina carpenter', 'olivia rodrigo'] },
+  { label: '🥁 Punjabi', terms: ['diljit dosanjh', 'ap dhillon', 'karan aujla', 'sidhu moose wala', 'shubh', 'guru randhawa'] },
   { label: '☕ Lofi', full: 'lofi', terms: ['lofi hip hop', 'lofi chill beats', 'lofi study', 'bollywood lofi'] },
-  { label: '🌙 Sufi', full: 'sufi', terms: ['nusrat fateh ali khan', 'rahat fateh ali khan', 'abida parveen', 'kailash kher'] },
-  { label: '🪔 Bhajan', full: 'bhajan', terms: ['anup jalota bhajan', 'hari om sharan', 'hanuman chalisa', 'shiv tandav stotram', 'krishna das kirtan', 'jagjit singh bhajan'] },
-  { label: '💜 K-Pop', full: 'kpop', terms: ['bts', 'blackpink', 'newjeans', 'stray kids', 'twice', 'seventeen'] },
-  { label: '🌴 South', full: 'tamil', terms: ['anirudh ravichander', 'sid sriram', 'devi sri prasad', 'yuvan shankar raja', 'ilaiyaraaja'] },
-  { label: '🎤 Rap / Hip-Hop', full: 'desi hip hop', terms: ['divine', 'seedhe maut', 'krsna', 'raftaar', 'drake', 'kendrick lamar', 'eminem', 'travis scott'] },
-  { label: '🎸 Rock', full: 'indie rock', terms: ['queen', 'coldplay', 'linkin park', 'imagine dragons', 'arctic monkeys', 'the local train', 'indian ocean'] },
-  { label: '📻 Retro', full: 'retro', terms: ['kishore kumar', 'lata mangeshkar', 'mohammed rafi', 'r d burman', 'asha bhosle', 'mukesh'] },
-  { label: '🥀 Ghazal', full: 'ghazal', terms: ['jagjit singh', 'ghulam ali', 'mehdi hassan', 'pankaj udhas'] },
-  { label: '🌻 Indie', full: 'indian indie', terms: ['prateek kuhad', 'anuv jain', 'when chai met toast', 'ritviz', 'the yellow diary', 'lifafa'] },
-  { label: '⚡ EDM', full: 'edm', terms: ['avicii', 'martin garrix', 'calvin harris', 'nucleya', 'alan walker', 'david guetta'] },
-  { label: '🎻 Classical', full: 'indian classical', terms: ['ravi shankar', 'zakir hussain', 'hariprasad chaurasia', 'bhimsen joshi', 'ludovico einaudi', 'mozart'] },
-  { label: '💃 Latin', full: 'reggaeton', terms: ['bad bunny', 'shakira', 'j balvin', 'karol g', 'daddy yankee'] },
+  { label: '🌙 Sufi', terms: ['nusrat fateh ali khan', 'rahat fateh ali khan', 'abida parveen', 'kailash kher'] },
+  { label: '🪔 Bhajan', terms: ['anup jalota bhajan', 'hari om sharan', 'hanuman chalisa', 'shiv tandav stotram', 'krishna das kirtan', 'jagjit singh bhajan'] },
+  { label: '💜 K-Pop', terms: ['bts', 'blackpink', 'newjeans', 'stray kids', 'twice', 'seventeen'] },
+  { label: '🌴 South', terms: ['anirudh ravichander', 'sid sriram', 'devi sri prasad', 'yuvan shankar raja', 'ilaiyaraaja'] },
+  { label: '🎤 Rap / Hip-Hop', terms: ['divine', 'seedhe maut', 'krsna', 'raftaar', 'drake', 'kendrick lamar', 'eminem', 'travis scott'] },
+  { label: '🎸 Rock', terms: ['queen', 'coldplay', 'linkin park', 'imagine dragons', 'arctic monkeys', 'the local train', 'indian ocean'] },
+  { label: '📻 Retro', terms: ['kishore kumar', 'lata mangeshkar', 'mohammed rafi', 'r d burman', 'asha bhosle', 'mukesh'] },
+  { label: '🥀 Ghazal', terms: ['jagjit singh', 'ghulam ali', 'mehdi hassan', 'pankaj udhas'] },
+  { label: '🌻 Indie', terms: ['prateek kuhad', 'anuv jain', 'when chai met toast', 'ritviz', 'the yellow diary', 'lifafa'] },
+  { label: '⚡ EDM', terms: ['avicii', 'martin garrix', 'calvin harris', 'nucleya', 'alan walker', 'david guetta'] },
+  { label: '🎻 Classical', terms: ['ravi shankar', 'zakir hussain', 'hariprasad chaurasia', 'bhimsen joshi', 'ludovico einaudi', 'mozart'] },
+  { label: '💃 Latin', terms: ['bad bunny', 'shakira', 'j balvin', 'karol g', 'daddy yankee'] },
 ]
 
 export const stores = [
@@ -131,6 +135,6 @@ export const playlists = [
 
 /** Lofi Girl's 24/7 YouTube streams. */
 export const radios: { id: string; emoji: string; name: string; note: string; accent: Accent }[] = [
-  { id: 'jfKfPfyJRdk', emoji: '📚', name: 'lofi hip hop radio', note: 'beats to relax / study to', accent: 'violet' },
+  { id: 'rFZHOHl-L8A', emoji: '📚', name: 'lofi hip hop radio', note: 'beats to relax / study to', accent: 'violet' },
   { id: '4xDzrJKXOOY', emoji: '🌌', name: 'synthwave radio', note: 'beats to chill / game to', accent: 'cyan' },
 ]

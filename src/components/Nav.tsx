@@ -2,7 +2,7 @@ import { streakOf, useProgress } from '../lib/progress'
 import { Icon } from './Icon'
 
 export const TABS = [
-  { path: '/', emoji: '☀️', label: 'Today' },
+  { path: '/', emoji: '🏠', label: 'Home' },
   { path: '/explore', emoji: '🧭', label: 'Explore' },
   { path: '/library', emoji: '📚', label: 'Library' },
   { path: '/me', emoji: '🔥', label: 'Me' },
@@ -30,7 +30,7 @@ export function Nav({ route }: { route: string }) {
   const tab = tabFor(route)
   return (
     <header className="nav">
-      <a href="#/" className="logo" aria-label="perfucktionist — today">
+      <a href="#/" className="logo" aria-label="perfucktionist — home">
         <Logo />
       </a>
       <nav className="nav-tabs" aria-label="Main">

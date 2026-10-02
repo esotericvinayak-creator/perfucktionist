@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../components/Icon'
+import { ShlokaCard } from '../components/ShlokaCard'
+import { WisdomCard } from '../components/Voices'
+import { Marquee, Section } from '../components/ui'
 import { shareCard } from '../components/Overlays'
-import { DARES, GOALS, KIND_DARES, goalById, type ActionKind } from '../data/app'
+import { AREAS, DARES, GOALS, KIND_DARES, goalById, type ActionKind } from '../data/app'
 import { journeyById, journeys } from '../data/journeys'
 import { posts } from '../data/posts'
 import { shlokas } from '../data/shlokas'
 import { traditions, wisdom } from '../data/wisdom'
+import { motives } from '../data/zones'
 import { confetti } from '../lib/confetti'
 import { buddyEmoji, levelOf, log, streakOf, update, useProgress } from '../lib/progress'
 import { usePlus } from '../lib/plus'
 import { dayOfYear, todayKey, useLocalState } from '../lib/storage'
-import { toolById } from '../tools/registry'
+import { TOOLS, toolById } from '../tools/registry'
 import { MIXES } from './Listen'
 
 type CheckIn = { mood: number; energy: number; sleep: number; note: string }
@@ -332,7 +336,9 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
     document.body.classList.add('onboarding')
     return () => document.body.classList.remove('onboarding')
   }, [])
-  const [step, setStep] = useState(0)
+  // Signed-up users already gave their name, so they start at goals.
+  const first = p.name ? 2 : 0
+  const [step, setStep] = useState(first)
   const [name, setName] = useState(p.name)
   const [goals, setGoals] = useState<string[]>(p.goals)
   const [pet, setPet] = useState(p.pet || 'Bodhi')
@@ -341,11 +347,12 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
   return (
     <div className="onboard">
       <div className="fs-dots">
-        {[0, 1, 2, 3].map((d) => (
+        {[0, 1, 2, 3].slice(first).map((d) => (
           <span key={d} className={d < step ? 'past' : d === step ? 'now' : ''} />
         ))}
       </div>
       <div className="ob-body" key={step}>
+        {step === 2 && p.name && <p className="kicker">welcome, {p.name} 🌱</p>}
         {step === 0 && (
           <>
             <h1 className="ob-mega">
@@ -411,7 +418,7 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
           </>
         )}
       </div>
-      {step > 0 && (
+      {step > first && (
         <button type="button" className="linkish muted ob-back" onClick={() => setStep(step - 1)}>
           ← back
         </button>
@@ -420,7 +427,7 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
   )
 }
 
-// ─── today ────────────────────────────────────────────────────
+// ─── home ─────────────────────────────────────────────────────
 const BELIEFS = [
   ['Done > perfect.', 'Ship it at 70%. The world gives feedback, not grades.'],
   ['Your mess is your story.', 'Nobody remembers the flawless ones. They remember the real ones.'],
@@ -432,7 +439,7 @@ const BELIEFS = [
   ['Trees > tantrums.', 'Plant one every birthday. Future you will breathe easier.'],
 ]
 
-function TodayHome({ onStart }: { onStart: () => void }) {
+function Home({ onStart }: { onStart: () => void }) {
   const p = useProgress()
   const plus = usePlus()
   const [flows] = useLocalState<Record<string, boolean>>('tool:flow', {})
@@ -453,170 +460,199 @@ function TodayHome({ onStart }: { onStart: () => void }) {
   const tools = (forYou.length ? forYou : ['focus', 'panic', 'expenses', 'sleep-calc']).map(toolById).filter(Boolean)
   const mixId = p.goals.includes('sleep') ? 'night' : p.goals.includes('focus') ? 'focus' : p.goals.includes('confidence') ? 'brave' : 'morning'
   const mix = MIXES.find((m) => m.id === mixId) ?? MIXES[0]
-  const post = posts[dayOfYear() % Math.max(1, posts.length)]
+  const day = dayOfYear()
+  const post = posts[day % Math.max(1, posts.length)]
+  const dailyShloka = shlokas[day % shlokas.length]
+  const dailyWisdom = wisdom[day % wisdom.length]
 
   return (
-    <div className="page today">
-      <section className="hello">
-        <div>
-          <p className="kicker">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}</p>
-          <h1 className="hello-name">hey {p.name || 'you'} 👋</h1>
+    <>
+      <section className="home-hero page">
+        <div className="hero-stickers" aria-hidden="true">
+          <span className="sticker a-pink s1">no filter ✶</span>
+          <span className="sticker a-orange s2">🔥 {streak}-day streak</span>
+          <span className="sticker a-sun s3">made in india 🇮🇳</span>
+          <span className="sticker a-cyan s4">
+            {buddyEmoji(p)} {p.pet} · lvl {lvl.level}
+          </span>
         </div>
-        <a className="hello-buddy" href="#/me" aria-label={`${p.pet}, level ${lvl.level}`}>
-          <span className={done ? 'happy' : ''}>{buddyEmoji(p)}</span>
-          <small>
-            {p.pet} · lvl {lvl.level}
-          </small>
-        </a>
-      </section>
-
-      <section className={`flow-card${done ? ' done' : ''}`}>
-        {done ? (
-          <>
-            <p className="fc-big">✓ today’s done</p>
-            <p className="fc-sub">🔥 {streak}-day streak. come back tomorrow to keep it going.</p>
-          </>
-        ) : (
-          <>
-            <p className="kicker">your 5 minutes</p>
-            <p className="fc-big">{streak ? `keep your 🔥${streak} going` : 'start your streak'}</p>
-            <div className="fc-steps">
-              <span>mood</span>
-              <span>one small thing</span>
-              <span>today’s line</span>
-            </div>
-            <button type="button" className="btn btn-primary big-cta fc-btn" onClick={onStart}>
-              ▶ start
+        <p className="kicker">
+          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })} · hey {p.name || 'you'} 👋
+        </p>
+        <h1 className="mega">
+          <span className="strike">
+            Perfection
+            <svg className="scribble" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M4 26 C 60 8, 110 34, 170 18 S 280 6, 330 22 S 380 30, 396 14" />
+            </svg>
+          </span>
+          <br />
+          is a <span className="serif">scam.</span>
+        </h1>
+        <p className="lede">{done ? 'today’s done. you showed up — that’s the whole thing. see you tomorrow.' : 'your 5 minutes are waiting: one mood, one small thing, one line of wisdom. no pressure, no perfect.'}</p>
+        <div className="row gap wrap">
+          {done ? (
+            <span className="btn btn-primary a-lime done-pill">✓ done today · 🔥 {streak}</span>
+          ) : (
+            <button type="button" className="btn btn-primary a-lime big-cta" onClick={onStart}>
+              ▶ start my 5 minutes
             </button>
-          </>
-        )}
+          )}
+          <a className="btn" href="#/listen">
+            <Icon name="listen" size={18} /> listen
+          </a>
+          <a className="btn" href="#/read">
+            <Icon name="read" size={18} /> read
+          </a>
+        </div>
+        <div className="spin-badge" aria-hidden="true">
+          <svg viewBox="0 0 200 200">
+            <defs>
+              <path id="home-circle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
+            </defs>
+            <text>
+              <textPath href="#home-circle" textLength="486" lengthAdjust="spacing">
+                give zero f*cks about perfect ✶
+              </textPath>
+            </text>
+          </svg>
+          <span>✶</span>
+        </div>
       </section>
 
-      {todaysIntent && (
-        <button
-          type="button"
-          className={`intent${todaysIntent.done ? ' done' : ''}`}
-          onClick={() => {
-            if (!todaysIntent.done) {
-              log('tool')
-              confetti()
-            }
-            setIntent({ ...todaysIntent, done: !todaysIntent.done })
-          }}
-        >
-          <span className="intent-box">{todaysIntent.done ? '✓' : ''}</span>
-          <span>
-            <small>today’s one thing</small>
-            {todaysIntent.text}
-          </span>
-        </button>
-      )}
-
-      <div className="duo">
-        <a className={`feature-card a-${mix.accent}`} href="#/listen">
-          <span className="ibub">
-            <Icon name="listen" />
-          </span>
-          <b>listen</b>
-          <small>{mix.name} · quotes + music, hands-free</small>
-          <span className="feature-go">
-            <Icon name="play" size={16} /> play
-          </span>
-        </a>
-        {post ? (
-          <a className={`feature-card a-${post.accent}`} href={`#/read/${post.slug}`}>
-            <span className="ibub">
-              <Icon name="read" />
-            </span>
-            <b>read</b>
-            <small>{post.title}</small>
-            <span className="feature-go">{post.minutes} min →</span>
-          </a>
-        ) : (
-          <a className="feature-card a-cyan" href="#/read">
-            <span className="ibub">
-              <Icon name="read" />
-            </span>
-            <b>read</b>
-            <small>honest pieces on pressure, low days & starting over</small>
-            <span className="feature-go">open →</span>
-          </a>
-        )}
+      <div className="marquee-cross">
+        <Marquee items={motives} accent="lime" tilt={-2.5} />
+        <Marquee items={motives.slice().reverse()} accent="pink" tilt={2} reverse />
       </div>
 
-      {plan && (
-        <a className="plan-card" href={`#/journeys/${plan.id}`}>
-          <span className="ibub">
-            <Icon name="explore" />
-          </span>
-          <span className="grow">
-            <small>{active ? 'your plan' : 'suggested for you'}</small>
-            <b>{plan.title}</b>
-            <span className="muted">
-              day {Math.min(planDay, plan.days.length)} · {plan.days[Math.min(planDay, plan.days.length) - 1]?.title}
+      <div className="page home-body">
+        {todaysIntent && (
+          <button
+            type="button"
+            className={`intent${todaysIntent.done ? ' done' : ''}`}
+            onClick={() => {
+              if (!todaysIntent.done) {
+                log('tool')
+                confetti()
+              }
+              setIntent({ ...todaysIntent, done: !todaysIntent.done })
+            }}
+          >
+            <span className="intent-box">{todaysIntent.done ? '✓' : ''}</span>
+            <span>
+              <small>today’s one thing</small>
+              {todaysIntent.text}
             </span>
-          </span>
-          <span className="plan-go">→</span>
-        </a>
-      )}
+          </button>
+        )}
 
-      <section className="t-section">
-        <div className="t-head">
-          <p className="kicker">for you</p>
-          <a className="muted" href="#/explore">
-            see all →
-          </a>
-        </div>
-        <div className="t-tools">
-          {tools.map((t) => (
-            <a key={t!.id} className="t-tool" href={`#/tools/${t!.id}`}>
-              <Icon name={t!.id === 'focus' ? 'focus-timer' : t!.id} />
-              {t!.name}
+        <Section kicker="your day" title={<>made for <span className="serif">you</span></>}>
+          <div className="day-grid">
+            {plan && (
+              <a className="feature-card a-cyan" href={`#/journeys/${plan.id}`}>
+                <span className="ibub">
+                  <Icon name="explore" />
+                </span>
+                <b>{active ? 'your plan' : 'try a plan'}</b>
+                <small>
+                  {plan.title} · day {Math.min(planDay, plan.days.length)}
+                </small>
+                <span className="feature-go">continue →</span>
+              </a>
+            )}
+            <a className={`feature-card a-${mix.accent}`} href="#/listen">
+              <span className="ibub">
+                <Icon name="listen" />
+              </span>
+              <b>listen</b>
+              <small>{mix.name} · quotes + music, hands-free</small>
+              <span className="feature-go">
+                <Icon name="play" size={14} /> play
+              </span>
             </a>
-          ))}
-        </div>
-      </section>
+            {post && (
+              <a className={`feature-card a-${post.accent}`} href={`#/read/${post.slug}`}>
+                <span className="ibub">
+                  <Icon name="read" />
+                </span>
+                <b>read</b>
+                <small>{post.title}</small>
+                <span className="feature-go">{post.minutes} min →</span>
+              </a>
+            )}
+          </div>
+          <div className="t-tools home-tools">
+            {tools.map((t) => (
+              <a key={t!.id} className="t-tool" href={`#/tools/${t!.id}`}>
+                <Icon name={t!.id === 'focus' ? 'focus-timer' : t!.id} />
+                {t!.name}
+              </a>
+            ))}
+          </div>
+        </Section>
 
-      <section className="t-section">
-        <p className="kicker">need help right now?</p>
-        <div className="help-row">
-          <a href="#/tools/panic">
-            <Icon name="panic" size={16} /> panic
-          </a>
-          <a href="#/tools/safe-walk">
-            <Icon name="safe-walk" size={16} /> safe walk
-          </a>
-          <a href="#/shield">
-            <Icon name="safety" size={16} /> SOS tools
-          </a>
-          <a href="tel:14416">
-            <Icon name="people" size={16} /> talk · 14416
-          </a>
-        </div>
-      </section>
+        <Section kicker={`${AREAS.length} areas · ${TOOLS.length} tools`} title={<>pick your <span className="serif">vibe</span></>}>
+          <div className="zone-grid">
+            {AREAS.map((a, i) => (
+              <a key={a.id} href={`#/explore/${a.id}`} className={`card zone-card a-${a.accent}`} style={{ animationDelay: `${i * 40}ms` }}>
+                <span className="ibub">
+                  <Icon name={a.id} />
+                </span>
+                <h3>{a.name}</h3>
+                <p>{a.line}</p>
+                <span className="zone-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+            ))}
+          </div>
+        </Section>
 
-      {!plus.active && streak >= 3 && (
-        <a className="nudge" href="#/plus">
-          🧊 <b>{streak}-day streak.</b> Plus protects it if you miss a day →
-        </a>
-      )}
+        <Section kicker="the manifesto" title={<>8 things we <span className="serif">actually</span> believe</>}>
+          <ol className="manifesto">
+            {BELIEFS.map(([big, small], i) => (
+              <li key={big}>
+                <span className="mf-num">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <strong>{big}</strong>
+                  <p>{small}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Section>
 
-      <section className="t-section beliefs">
-        <p className="kicker">why this app exists</p>
-        <h2 className="beliefs-title">
-          perfection is a <span className="serif">scam.</span>
-        </h2>
-        <div className="belief-row">
-          {BELIEFS.map(([big, small], i) => (
-            <div key={big} className="belief">
-              <span className="belief-n">{String(i + 1).padStart(2, '0')}</span>
-              <b>{big}</b>
-              <small>{small}</small>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
+        <Section kicker="today’s wisdom · every faith" title={<>thousands of years old. <span className="serif">still hits.</span></>}>
+          <div className="grid grid-2">
+            <ShlokaCard shloka={dailyShloka} accent="sun" />
+            <WisdomCard w={dailyWisdom} />
+          </div>
+        </Section>
+
+        <section className="section">
+          <p className="kicker">need help right now?</p>
+          <div className="help-row">
+            <a href="#/tools/panic">
+              <Icon name="panic" size={16} /> panic
+            </a>
+            <a href="#/tools/safe-walk">
+              <Icon name="safe-walk" size={16} /> safe walk
+            </a>
+            <a href="#/shield">
+              <Icon name="safety" size={16} /> SOS tools
+            </a>
+            <a href="tel:14416">
+              <Icon name="people" size={16} /> talk · 14416
+            </a>
+          </div>
+          {!plus.active && streak >= 3 && (
+            <a className="nudge" href="#/plus">
+              🧊 <b>{streak}-day streak.</b> Plus protects it if you miss a day →
+            </a>
+          )}
+        </section>
+      </div>
+    </>
   )
 }
 
@@ -635,7 +671,7 @@ export default function Today() {
     )
   return (
     <>
-      <TodayHome key={k} onStart={() => setFlowOpen(true)} />
+      <Home key={k} onStart={() => setFlowOpen(true)} />
       {flowOpen && (
         <DailyFlow
           onClose={() => {

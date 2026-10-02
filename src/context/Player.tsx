@@ -64,7 +64,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const onPlay = () => setPlaying(true)
     const onPause = () => setPlaying(false)
     const onTime = () => setProgress(el.duration ? el.currentTime / el.duration : 0)
-    const onEnd = () => step(1)
+    // Apple's preview rules: previews are samples, not a radio — only full tracks auto-advance.
+    const onEnd = () => {
+      if (track?.kind === 'full') step(1)
+    }
     el.addEventListener('play', onPlay)
     el.addEventListener('pause', onPause)
     el.addEventListener('timeupdate', onTime)
@@ -75,7 +78,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       el.removeEventListener('timeupdate', onTime)
       el.removeEventListener('ended', onEnd)
     }
-  }, [step])
+  }, [step, track])
 
   const value = useMemo<Player>(
     () => ({
@@ -119,9 +122,10 @@ export function usePlayer() {
 export function fullSongLinks(title: string, artist: string, appleUrl?: string) {
   const q = encodeURIComponent(`${title} ${artist}`)
   return [
+    // Apple first: the preview comes from Apple, and its terms ask for the store link up front.
+    ...(appleUrl ? [{ label: 'Apple Music', href: appleUrl }] : []),
     { label: 'YouTube', href: `https://www.youtube.com/results?search_query=${q}` },
     { label: 'Spotify', href: `https://open.spotify.com/search/${q}` },
-    { label: 'JioSaavn', href: `https://www.jiosaavn.com/search/${q}` },
-    ...(appleUrl ? [{ label: 'Apple', href: appleUrl }] : []),
+    { label: 'JioSaavn', href: `https://www.jiosaavn.com/search/song/${q}` },
   ]
 }

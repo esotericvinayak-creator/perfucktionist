@@ -68,6 +68,20 @@ Safety tools and scripture are **never** paywalled — the Plus page says so.
 
 **Payments are not wired up yet.** `src/lib/plus.ts` → `startTrial()` currently unlocks Plus on the device for 7 days. Replace it with a real checkout (Razorpay / Stripe) plus a server-side entitlement check before launch. The Plus page also promises *"every yearly member = one real tree planted"* — only ship that line once a planting partner is in place.
 
+## Accounts (login & signup)
+
+Everyone signs up or logs in before reaching Home. Panic SOS, the safe-walk timer and the Shield page stay open without an account.
+
+- **Preview mode (default, no setup):** accounts live on the device; passwords are stored as PBKDF2 hashes. Nothing syncs between devices, and password reset isn't available.
+- **Cloud mode:** create a [Supabase](https://supabase.com) project, then add to `.env.local` (and your host's env vars):
+  ```
+  VITE_SUPABASE_URL=https://<project>.supabase.co
+  VITE_SUPABASE_ANON_KEY=<anon public key>
+  ```
+  In Supabase → Authentication: turn on Email (and Google if you want the button), and add your site URL to the allowed redirect URLs. Users then get real accounts, email confirmation, Google sign-in and password reset. The Supabase library only downloads in this mode.
+- Streaks, journal and other progress are still stored on the device in both modes; syncing them to the account is the next step.
+- Before launch you need a **privacy policy and terms** (signup collects emails; YouTube's developer policy also requires one for the embedded players), and a proper **parental-consent** flow for under-18s under India's DPDP Act — the signup checkbox is a placeholder.
+
 ## Run it
 
 ```bash
