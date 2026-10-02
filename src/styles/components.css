@@ -406,6 +406,8 @@ textarea { resize: vertical; min-height: 110px; }
 .mp-progress { position: absolute; left: 0; bottom: 0; height: 4px; background: var(--orange); transition: width 0.25s linear; }
 .mp-art { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--line); object-fit: cover; }
 .mp-art.spinning { animation: spin 6s linear infinite; }
+.mp-open { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.mp-up { flex: none; color: var(--ink-faint); }
 .mp-meta { display: grid; min-width: 0; flex: 1; line-height: 1.25; }
 .mp-meta strong, .mp-meta > span:not(.mp-links) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mp-meta > span { color: var(--ink-dim); font-size: 0.86rem; }
@@ -417,6 +419,7 @@ textarea { resize: vertical; min-height: 110px; }
 @media (max-width: 520px) {
   .mp-links { display: none; }
   .mp-controls .icon-btn:first-child { display: none; }
+  .mp-up { display: none; }
 }
 body:has(.mini-player) .footer { padding-bottom: 110px; }
 

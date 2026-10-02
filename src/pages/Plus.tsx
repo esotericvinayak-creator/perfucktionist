@@ -9,10 +9,10 @@ const REASONS = [
   { emoji: '🧊', title: 'Your streak is safe', body: 'Miss a day? Plus quietly covers it — 2 times a month. No more starting from zero.' },
   { emoji: '🧭', title: 'Full programs', body: 'Every day of every journey: calm in 7 days, brave in 14, unperfect in 21, the whole Gita in 18.' },
   { emoji: '📈', title: 'See yourself change', body: 'Mood & focus patterns, your monthly Wrapped, study timetable and a speaking coach.' },
-  { emoji: '✨', title: 'Make it yours', body: '8 buddy skins, aesthetic story cards with no watermark, unlimited habits, decks and sounds.' },
+  { emoji: '✨', title: 'Make it yours', body: 'Outfits for your pet (shades, crown, headphones…), aesthetic story cards with no watermark, unlimited habits, decks and sounds.' },
 ]
 
-const FREE = ['Daily 5 minutes, streaks & your buddy', 'Sacred library — every scripture', 'All safety & SOS tools', '56 of 60 tools', 'Music, breathing, everything else']
+const FREE = ['Daily 5 minutes, streaks & your pet', 'Sacred library — every scripture', 'All safety & SOS tools', '56 of 60 tools', 'Music, breathing, everything else']
 
 export default function Plus() {
   const plus = usePlus()

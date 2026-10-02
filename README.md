@@ -6,15 +6,23 @@ A Gen Z toolkit for living, not polishing.
 
 ## How the app flows
 
-Four tabs, nothing else: **Today · Explore · Library · Me**.
+Four tabs, nothing else: **Home · Explore · Library · Me**. Full flowchart: [docs/FLOW.md](docs/FLOW.md).
 
-1. **First visit** → 30-second onboarding: name → pick up to 3 goals → name your buddy → straight into day 1.
-2. **Today** (`#/`) → one big "▶ start" for *your 5 minutes*: mood (1 tap) → one small thing picked from your mood + goals (breathe, gratitude, a brave or kind dare, today's one task, or log spending) → today's line from any scripture → done 🔥. Below it: today's one task, your plan (journey), tools for your goals, and SOS shortcuts.
-3. **Explore** (`#/explore`) → search, "I'm feeling…" chips, and 8 areas (Calm, Focus & study, Body, Money, Safety, Love & family, Grow, Faith). Each area lists its guides (the long pages) and tools.
-4. **Me** (`#/me`) → buddy, streak, badges, insights, settings (theme, goals).
-5. **Listen** (`#/listen`) and **Read** (`#/read`) are reachable from Today and Explore. The "why this app exists" beliefs now sit at the bottom of Today. Full flowchart: [docs/FLOW.md](docs/FLOW.md).
+1. **Landing** → hero, real numbers (60 tools · 1,22,156 verses · 6 scriptures · ₹0), a no-account demo (pick a mood → box breathing, a line of wisdom or a tiny dare), tap-to-hatch pet egg, how it works, what's inside, "made for everyone", promises, FAQ. Panic SOS, safe-walk and Shield work without an account.
+2. **Sign up / log in** → then a short onboarding: name → gender (optional, 9 options incl. self-describe) → faith (optional, 15 options incl. atheist, agnostic, spiritual, every faith) → up to 3 goals → pick and name a pet → day 1.
+3. **Home** (`#/`) → "▶ start my 5 minutes" (mood → one small thing → one line of wisdom → done 🔥), your pet and how close it is to hatching/growing, a "for you first" spotlight, your plan, tools for you, Listen, Read, today's wisdom from your faith, SOS.
+4. **Explore** (`#/explore`) → search, "I'm feeling…" chips, quick picks (yours first), 10 areas.
+5. **Library** (`#/library`) → your faith's scripture opens first; change your faith right on the page.
+6. **Me** (`#/me`) → your pet (type, name, outfits), streak, badges, insights, settings (account, theme, gender, faith, goals).
+7. **Listen** (`#/listen`) → *quotes + music* (a mix from your own tradition when you've set one) and the **vibe room** (`#/listen/vibe`): a swipe deck — right saves, left skips, tap plays. Tapping the mini player anywhere opens **Now Playing**: big art (swipe to change), a seek bar, up next, credits, and lyrics.
 
-Icons come from [Lucide](https://lucide.dev) (ISC licence) via `src/components/Icon.tsx`; the buddy and casual copy keep emojis.
+**Gender and faith only change order and defaults — nothing is hidden from anyone.** Gender picks the spotlight and the first quick tools (`priorities()` in `src/data/profile.ts`); faith picks which quotes, Listen mix and scripture come first (`linesFor()`, `FAITHS`). Atheist and agnostic get philosophy (Stoic, Taoist, Confucian) instead of scripture on Home. Both are stored on the device only; if you ever sync them to accounts, treat them as sensitive (religion is special-category data under GDPR): keep them optional and ask for explicit consent.
+
+**Your pet** starts as an egg, hatches at 60 XP (a day or two of showing up) and grows through 10 levels. It's happy when you've shown up today and just sleepy when you haven't — it never dies or runs away. 12 animals; outfits (bow and cap free, 5 more with Plus).
+
+**Lyrics:** song lyrics are licensed separately from audio, and we don't have a lyrics licence. Instrumental tracks show a visualizer; songs with words link to Apple Music, Spotify and YouTube, which show licensed synced lyrics. Real in-app lyrics need a licensed provider (for example Musixmatch's commercial API or LyricFind), not a scraped database.
+
+Icons come from [Lucide](https://lucide.dev) (ISC licence) via `src/components/Icon.tsx`; the pet and casual copy keep emojis.
 
 Original intro: Eleven zones, a 1.2-lakh-verse library of every major faith, and a glow-up layer people can pay for.
 
@@ -25,7 +33,7 @@ Original intro: Eleven zones, a 1.2-lakh-verse library of every major faith, and
 | 🔱 **Bro Code** `#/bro` | Consent, mental health, respect, a daily checklist that resets at midnight, warrior shlokas |
 | 📚 **Sacred Library** `#/library` | **1,22,156 verses** from 6 complete scriptures (table below) in the original script + English (+ Hindi for Gita, Quran, Gurbani), Gita audio recitations, "surprise me" across all faiths, the Golden Rule in 11 traditions, 60+ hand-picked cross-faith quotes, and the Sanskrit shloka stack. Deep links: `#/library/gita/2`, `#/library/bible/JHN/3` |
 | 🫁 **Breathe** `#/breathe` | Animated breathing orb (box, physiological sigh, 4-7-8, Anulom Vilom, Bhramari, power hold), meditation timer with bells |
-| 🎧 **Vibe Room** `#/music` | Search any song on earth (Apple's catalogue, 30s previews), 16 genre/mood chips, 18 Spotify playlists, Lofi Girl 24/7 radio. A mini player follows you across the site |
+| 🎧 **Music search** `#/music` | Search any song on earth (Apple's catalogue, 30s previews; full songs for Lofi from Audius), 16 genre/mood chips, 18 Spotify playlists, Lofi Girl 24/7 radio. The swipe-deck vibe room lives in Listen (`#/listen/vibe`). A mini player follows you across the site and opens Now Playing |
 | 🫧 **Happy Zone** `#/happy` | Dopamine button, bubble wrap, stress yeeter, gratitude jar, instant dance break |
 | 🦁 **Be Brave** `#/brave` | 5-second launch countdown, brave dares, goal smasher, the 5 D's of bystander intervention, desi legends |
 | 🏠 **No Secrets Club** `#/fam` | What to always tell your parents, copy-paste conversation starters, a tab for parents, help if home isn't safe |
@@ -56,13 +64,13 @@ Notes: the password check sends only the first 5 characters of the SHA-1 hash to
 
 | | Free | Plus (₹49/mo · ₹399/yr) |
 | --- | --- | --- |
-| `#/me` daily ritual (breathe · read · dare · gratitude — any one keeps the streak), XP, 10 levels, 13 badges, 16-week heatmap, a companion tree that grows | ✓ | ✓ |
+| `#/me` daily ritual (breathe · read · dare · gratitude — any one keeps the streak), XP, 10 levels, 13 badges, 16-week heatmap, a pet that hatches and grows | ✓ | ✓ |
 | `#/tools` 60-tool toolkit | 56 tools | all 60 |
 | `#/journeys` 5 guided programs (21 days unperfect, 7 days calm, 14 days brave, 18 days of the Gita, every faith in 12 days), one step unlocks per day | first 3 days each | all days |
 | Streak freezes | — | 2 a month, automatic |
 | Story cards (1080×1920 PNG for IG/WhatsApp/Snap) from any verse, streak or month | 2 styles + watermark | 5 styles, no watermark |
 | Monthly Wrapped | — | ✓ |
-| Companion skins | classic | 8 |
+| Pet outfits | bow, cap | + shades, crown, top hat, flower, headphones |
 
 Safety tools and scripture are **never** paywalled — the Plus page says so.
 

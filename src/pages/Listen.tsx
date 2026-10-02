@@ -2,16 +2,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { shareCard } from '../components/Overlays'
+import { VibeRoom } from '../components/VibeRoom'
+import { faithById, linesFor } from '../data/profile'
 import { shlokas } from '../data/shlokas'
 import { traditions, wisdom, type Theme } from '../data/wisdom'
 import { searchFull } from '../lib/music'
-import { log } from '../lib/progress'
+import { log, useProgress } from '../lib/progress'
 import { unlockAudio } from '../lib/sound'
 import type { Track } from '../context/Player'
 
 type Item = { badge: string; original?: string; lang?: string; rtl?: boolean; text: string; speak: string }
 
-const MIXES: { id: string; name: string; line: string; music: string; themes: Theme[]; shlokaVibes: string[]; accent: string }[] = [
+type Mix = { id: string; name: string; line: string; music: string; themes: Theme[]; shlokaVibes: string[]; accent: string }
+
+const MIXES: Mix[] = [
   { id: 'morning', name: 'Morning calm', line: 'start soft', music: 'lofi', themes: ['calm', 'golden'], shlokaVibes: ['peace'], accent: 'violet' },
   { id: 'focus', name: 'Exam focus', line: 'lock in', music: 'lofi study', themes: ['action'], shlokaVibes: ['focus', 'strength'], accent: 'lime' },
   { id: 'brave', name: 'Hype me up', line: 'courage, every faith', music: 'lofi hip hop instrumental', themes: ['courage', 'action'], shlokaVibes: ['strength'], accent: 'sun' },
@@ -22,9 +26,21 @@ const MIXES: { id: string; name: string; line: string; music: string; themes: Th
 
 const INTERLUDE = 18 // seconds of music between quotes
 
-function buildQueue(mix: (typeof MIXES)[number]): Item[] {
-  const w = wisdom.filter((x) => x.themes.some((t) => mix.themes.includes(t))).map((x) => ({ badge: `${traditions[x.tradition].emoji} ${x.source}`, original: x.original, lang: x.lang, rtl: x.rtl, text: x.text, speak: x.text }))
-  const s = shlokas.filter((x) => x.vibes.some((v) => mix.shlokaVibes.includes(v as never))).map((x) => ({ badge: `🕉️ ${x.source}`, original: x.devanagari, lang: 'sa', text: x.meaning, speak: `${x.meaning}. ${x.genz}` }))
+/** A mix made from your own tradition (if you told us your faith). */
+function mineFor(faithId?: string): Mix | null {
+  const f = faithById(faithId)
+  if (!f || f.traditions === 'all') return null
+  return { id: 'mine', name: f.secular ? 'Philosophy' : `${f.label} wisdom`, line: f.secular ? 'stoic, taoist & more' : 'your tradition, read aloud', music: 'meditation', themes: [], shlokaVibes: [], accent: 'lime' }
+}
+
+function buildQueue(mix: Mix, faithId?: string): Item[] {
+  if (mix.id === 'mine') return linesFor(faithId).sort(() => Math.random() - 0.5)
+  const w = wisdom
+    .filter((x) => x.themes.some((t) => mix.themes.includes(t)))
+    .map((x) => ({ badge: `${traditions[x.tradition].emoji} ${x.source}`, original: x.original, lang: x.lang, rtl: x.rtl, text: x.text, speak: x.text }))
+  const s = shlokas
+    .filter((x) => x.vibes.some((v) => mix.shlokaVibes.includes(v as never)))
+    .map((x) => ({ badge: `🕉️ ${x.source}`, original: x.devanagari, lang: 'sa', text: x.meaning, speak: `${x.meaning}. ${x.genz}` }))
   return [...w, ...s].sort(() => Math.random() - 0.5)
 }
 
@@ -42,7 +58,14 @@ function speak(text: string, onEnd: () => void) {
 }
 
 export default function Listen() {
-  const [mix, setMix] = useState<(typeof MIXES)[number] | null>(null)
+  const p = useProgress()
+  const mixes = useMemo(() => [...(mineFor(p.faith) ? [mineFor(p.faith)!] : []), ...MIXES], [p.faith])
+  const [tab, setTab] = useState<'quotes' | 'vibe'>(() => (window.location.hash.startsWith('#/listen/vibe') ? 'vibe' : 'quotes'))
+  const switchTab = (t: 'quotes' | 'vibe') => {
+    setTab(t)
+    history.replaceState(null, '', t === 'vibe' ? '#/listen/vibe' : '#/listen')
+  }
+  const [mix, setMix] = useState<Mix | null>(null)
   const [queue, setQueue] = useState<Item[]>([])
   const [i, setI] = useState(0)
   const [phase, setPhase] = useState<'idle' | 'speaking' | 'music'>('idle')
@@ -59,7 +82,9 @@ export default function Listen() {
   useEffect(() => {
     if (!mix) return
     setTracks([])
-    searchFull(mix.music, 30).then((t) => setTracks(t.sort(() => Math.random() - 0.5))).catch(() => setTracks([]))
+    searchFull(mix.music, 30)
+      .then((t) => setTracks(t.sort(() => Math.random() - 0.5)))
+      .catch(() => setTracks([]))
   }, [mix])
 
   const musicTrack = useMemo(() => (tracks.length ? tracks[i % tracks.length] : null), [tracks, i])
@@ -116,10 +141,10 @@ export default function Listen() {
     return () => clearTimeout(t)
   }, [phase, paused, left])
 
-  const start = (m: (typeof MIXES)[number]) => {
+  const start = (m: Mix) => {
     unlockAudio()
     setMix(m)
-    setQueue(buildQueue(m))
+    setQueue(buildQueue(m, p.faith))
     setI(0)
     setLeft(INTERLUDE)
     setPaused(false)
@@ -146,20 +171,36 @@ export default function Listen() {
             <Icon name="listen" size={30} />
           </span>
           <h1>listen</h1>
-          <p className="muted">quotes from every faith, read to you, with music in between. hands-free — like a podcast you don’t have to think about.</p>
+          <p className="muted">
+            {tab === 'quotes' ? 'quotes from every faith, read to you, with music in between. hands-free — like a podcast you don’t have to think about.' : 'swipe through songs. save the ones that hit.'}
+          </p>
         </header>
-        <div className="mix-grid">
-          {MIXES.map((m) => (
-            <button key={m.id} type="button" className={`mix a-${m.accent}`} onClick={() => start(m)}>
-              <span className="mix-play">
-                <Icon name="play" size={20} />
-              </span>
-              <b>{m.name}</b>
-              <small>{m.line}</small>
-            </button>
-          ))}
+        <div className="listen-tabs" role="tablist" aria-label="Listen">
+          <button type="button" role="tab" aria-selected={tab === 'quotes'} className={tab === 'quotes' ? 'on' : ''} onClick={() => switchTab('quotes')}>
+            <Icon name="listen" size={16} /> quotes + music
+          </button>
+          <button type="button" role="tab" aria-selected={tab === 'vibe'} className={tab === 'vibe' ? 'on' : ''} onClick={() => switchTab('vibe')}>
+            <Icon name="play" size={16} /> vibe room
+          </button>
         </div>
-        {!canSpeak && <p className="muted center">Your browser can’t read aloud — quotes will show on screen with music.</p>}
+        {tab === 'vibe' ? (
+          <VibeRoom />
+        ) : (
+          <>
+            <div className="mix-grid">
+              {mixes.map((m) => (
+                <button key={m.id} type="button" className={`mix a-${m.accent}`} onClick={() => start(m)}>
+                  <span className="mix-play">
+                    <Icon name="play" size={20} />
+                  </span>
+                  <b>{m.name}</b>
+                  <small>{m.line}</small>
+                </button>
+              ))}
+            </div>
+            {!canSpeak && <p className="muted center">Your browser can’t read aloud — quotes will show on screen with music.</p>}
+          </>
+        )}
       </div>
     )
 

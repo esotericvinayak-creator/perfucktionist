@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Eye, EyeOff, LogIn, Mail } from 'lucide-react'
+import { LandingMore } from '../components/Landing'
 import { Logo } from '../components/Nav'
 import { Marquee } from '../components/ui'
 import { motives } from '../data/zones'
@@ -310,6 +311,7 @@ function Welcome({ onSignup, onLogin }: { onSignup: () => void; onLogin: () => v
       <p className="auth-sos">
         need help right now? <a href="tel:112">112</a> · <a href="#/tools/panic">panic SOS</a> · <a href="tel:14416">14416 (mental health)</a>
       </p>
+      <LandingMore onSignup={onSignup} onLogin={onLogin} />
       {!cloud && <p className="auth-preview">preview mode: accounts are saved on this device until cloud accounts are connected.</p>}
     </div>
   )

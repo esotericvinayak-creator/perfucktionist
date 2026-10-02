@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { journeys } from '../data/journeys'
+import { petById } from '../data/profile'
 import { isPlus } from './plus'
 import { todayKey } from './storage'
 import { toast } from './toast'
@@ -35,28 +36,16 @@ const XP: Record<Activity, { xp: number; dailyCap: number; label: string }> = {
 }
 
 export const LEVELS = [
-  { xp: 0, name: 'Seed', emoji: '🌰' },
-  { xp: 60, name: 'Sprout', emoji: '🌱' },
-  { xp: 180, name: 'Sapling', emoji: '🌿' },
-  { xp: 400, name: 'Young tree', emoji: '🪴' },
-  { xp: 750, name: 'Tree', emoji: '🌳' },
-  { xp: 1250, name: 'Big tree', emoji: '🌳' },
-  { xp: 2000, name: 'Banyan', emoji: '🌳' },
-  { xp: 3000, name: 'Grove', emoji: '🌳' },
-  { xp: 4500, name: 'Forest', emoji: '🌳' },
-  { xp: 6500, name: 'Bodhi', emoji: '🌳' },
-]
-
-/** Plus cosmetic: what your companion turns into once it's a tree. */
-export const SKINS = [
-  { id: 'classic', emoji: '🌳', name: 'Classic', plus: false },
-  { id: 'sakura', emoji: '🌸', name: 'Sakura', plus: true },
-  { id: 'palm', emoji: '🌴', name: 'Beach palm', plus: true },
-  { id: 'cactus', emoji: '🌵', name: 'Desert cactus', plus: true },
-  { id: 'bamboo', emoji: '🎋', name: 'Bamboo', plus: true },
-  { id: 'lotus', emoji: '🪷', name: 'Lotus', plus: true },
-  { id: 'pine', emoji: '🌲', name: 'Mountain pine', plus: true },
-  { id: 'mushroom', emoji: '🍄', name: 'Goblincore', plus: true },
+  { xp: 0, name: 'Egg', emoji: '🥚' },
+  { xp: 60, name: 'Hatchling', emoji: '🐣' },
+  { xp: 180, name: 'Baby', emoji: '✨' },
+  { xp: 400, name: 'Kid', emoji: '✨' },
+  { xp: 750, name: 'Teen', emoji: '✨' },
+  { xp: 1250, name: 'Grown-up', emoji: '✨' },
+  { xp: 2000, name: 'Pro', emoji: '🌟' },
+  { xp: 3000, name: 'Legend', emoji: '🌟' },
+  { xp: 4500, name: 'Mythic', emoji: '💫' },
+  { xp: 6500, name: 'Iconic', emoji: '👑' },
 ]
 
 export type Progress = {
@@ -73,10 +62,16 @@ export type Progress = {
   journeys: Record<string, { startedAt: string; done: Record<number, string> }>
   goals: string[]
   onboarded: boolean
+  /** Optional profile — only changes what we suggest first. */
+  gender?: string
+  genderSelf?: string
+  faith?: string
+  petType: string
+  petHat: string
 }
 
 const KEY = 'pf:progress'
-const empty: Progress = { name: '', pet: 'Bodhi', skin: 'classic', xp: 0, days: {}, dayXp: {}, totals: {}, books: [], badges: {}, freezes: [], journeys: {}, goals: [], onboarded: false }
+const empty: Progress = { name: '', pet: '', skin: 'classic', xp: 0, days: {}, dayXp: {}, totals: {}, books: [], badges: {}, freezes: [], journeys: {}, goals: [], onboarded: false, petType: '', petHat: 'none' }
 const listeners = new Set<() => void>()
 let state: Progress = load()
 
@@ -152,12 +147,10 @@ export function levelOf(xp: number) {
   return { index: i, level: i + 1, ...cur, next, progress: next ? (xp - cur.xp) / (next.xp - cur.xp) : 1 }
 }
 
-/** Your buddy: a seed that grows into a tree (or a Plus skin) as you level up. */
-export function buddyEmoji(p: Progress) {
-  const level = levelOf(p.xp).level
-  const stages = ['🌰', '🌱', '🌿', '🪴']
-  if (level <= stages.length) return stages[level - 1]
-  return SKINS.find((s) => s.id === p.skin)?.emoji ?? '🌳'
+/** Your pet: an egg until it hatches at level 2, then your chosen animal. */
+export function petEmoji(p: Progress) {
+  if (levelOf(p.xp).level <= 1) return '🥚'
+  return petById(p.petType).emoji
 }
 
 export const ritualToday = (p: Progress) => RITUAL.filter((r) => (p.days[todayKey()]?.[r.kind] ?? 0) > 0).map((r) => r.kind)
@@ -176,7 +169,7 @@ export const BADGES: { id: string; emoji: string; name: string; how: string; tes
   { id: 'grateful-10', emoji: '🙏', name: 'Grateful', how: '10 gratitude notes', test: (p) => (p.totals.gratitude ?? 0) >= 10 },
   { id: 'pops-500', emoji: '🫧', name: 'Pop star', how: 'Pop 500 bubbles', test: (p) => (p.totals.pop ?? 0) >= 500 },
   { id: 'finisher', emoji: '🧭', name: 'Finisher', how: 'Complete a journey', test: (p) => journeys.some((j) => Object.keys(p.journeys[j.id]?.done ?? {}).length >= j.days.length) },
-  { id: 'tree-mode', emoji: '🌳', name: 'Tree mode', how: 'Reach level 5', test: (p) => levelOf(p.xp).level >= 5 },
+  { id: 'tree-mode', emoji: '🐾', name: 'All grown up', how: 'Your pet reaches level 5', test: (p) => levelOf(p.xp).level >= 5 },
 ]
 
 function awardBadges(p: Progress): Progress {
@@ -214,7 +207,12 @@ export function log(kind: Activity, opts: LogOptions = {}) {
   const lvlAfter = levelOf(next.xp)
   if (!opts.silent && gain >= 10) toast({ icon: '✶', title: `+${gain} XP`, sub: XP[kind].label, tone: 'xp' })
   if (!opts.silent && !wasShowedUp && showedUp(next, day)) toast({ icon: '🔥', title: `${streakOf(next)}-day streak`, sub: 'you showed up. that’s the whole thing.', tone: 'streak' })
-  if (lvlAfter.level > lvlBefore.level) toast({ icon: lvlAfter.emoji, title: `Level ${lvlAfter.level}: ${lvlAfter.name}`, sub: 'your companion grew!', tone: 'badge' })
+  if (lvlAfter.level > lvlBefore.level)
+    toast(
+      lvlAfter.level === 2
+        ? { icon: '🐣', title: 'Your pet hatched!', sub: 'say hi on the Me tab', tone: 'badge' }
+        : { icon: lvlAfter.emoji, title: `Level ${lvlAfter.level}: ${lvlAfter.name}`, sub: 'your pet grew!', tone: 'badge' },
+    )
 
   next = awardBadges(next)
   commit(next)

@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../components/Icon'
-import { ShlokaCard } from '../components/ShlokaCard'
-import { WisdomCard } from '../components/Voices'
+import { PetView } from '../components/Pet'
 import { Marquee, Section } from '../components/ui'
 import { shareCard } from '../components/Overlays'
 import { AREAS, DARES, GOALS, KIND_DARES, goalById, type ActionKind } from '../data/app'
 import { journeyById, journeys } from '../data/journeys'
 import { posts } from '../data/posts'
-import { shlokas } from '../data/shlokas'
-import { traditions, wisdom } from '../data/wisdom'
+import { FAITHS, GENDERS, PETS, faithById, linesFor, priorities, type Line } from '../data/profile'
 import { motives } from '../data/zones'
 import { confetti } from '../lib/confetti'
-import { buddyEmoji, levelOf, log, streakOf, update, useProgress } from '../lib/progress'
+import { levelOf, log, petEmoji, streakOf, update, useProgress } from '../lib/progress'
 import { usePlus } from '../lib/plus'
 import { dayOfYear, todayKey, useLocalState } from '../lib/storage'
 import { TOOLS, toolById } from '../tools/registry'
@@ -29,14 +27,11 @@ function pickAction(mood: number, goals: string[]): ActionKind {
   return kinds[dayOfYear() % kinds.length]
 }
 
-function dailyWisdom() {
-  const d = dayOfYear()
-  if (d % 2) {
-    const s = shlokas[d % shlokas.length]
-    return { badge: `🕉️ ${s.source}`, original: s.devanagari, lang: 'sa', rtl: false, text: s.meaning, extra: s.genz }
-  }
-  const w = wisdom[d % wisdom.length]
-  return { badge: `${traditions[w.tradition].emoji} ${w.source}`, original: w.original, lang: w.lang, rtl: !!w.rtl, text: w.text, extra: '' }
+/** Today's line, from your own faith first (or philosophy, if you'd rather skip religion). `second` picks a different one. */
+function dailyLine(faith: string | undefined, second = false): Line {
+  const lines = linesFor(faith)
+  const offset = second ? Math.max(1, Math.floor(lines.length / 2)) : 0
+  return lines[(dayOfYear() + offset) % lines.length]
 }
 
 // ─── actions (each is one tiny thing) ─────────────────────────
@@ -200,7 +195,7 @@ export function DailyFlow({ onClose }: { onClose: () => void }) {
   const [mood, setMood] = useState(checkins[todayKey()]?.mood ?? 0)
   const [acted, setActed] = useState(false)
   const action = pickAction(mood, p.goals)
-  const w = dailyWisdom()
+  const w = dailyLine(p.faith)
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -282,10 +277,12 @@ export function DailyFlow({ onClose }: { onClose: () => void }) {
         )}
         {step === 3 && (
           <div className="act">
-            <span className="fs-buddy">{buddyEmoji(p)}</span>
+            <span className="fs-pet">
+              <PetView p={p} size={110} />
+            </span>
             <p className="fs-streak">🔥 {streakOf(p)}</p>
             <p className="act-q">done. that’s the whole thing.</p>
-            <p className="muted">{p.pet || 'Bodhi'} grew a little. see you tomorrow.</p>
+            <p className="muted">{p.pet || 'your pet'} is fed and happy. see you tomorrow.</p>
           </div>
         )}
       </div>
@@ -315,7 +312,11 @@ export function DailyFlow({ onClose }: { onClose: () => void }) {
         )}
         {step === 3 && (
           <div className="row gap-sm center wrap">
-            <button type="button" className="btn" onClick={() => shareCard({ kicker: `${p.name || 'my'} streak`, hero: `🔥${streakOf(p)}`, text: 'showing up > being perfect.', footer: `level ${levelOf(p.xp).level} · ${levelOf(p.xp).name}` })}>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => shareCard({ kicker: `${p.name || 'my'} streak`, hero: `🔥${streakOf(p)}`, text: 'showing up > being perfect.', footer: `level ${levelOf(p.xp).level} · ${levelOf(p.xp).name}` })}
+            >
               ↗ share streak
             </button>
             <button type="button" className="btn btn-primary a-lime" onClick={onClose}>
@@ -329,6 +330,7 @@ export function DailyFlow({ onClose }: { onClose: () => void }) {
 }
 
 // ─── first run ────────────────────────────────────────────────
+// Steps: 0 welcome · 1 name · 2 gender · 3 faith · 4 goals · 5 pet. Signed-up users start at 2.
 function Onboarding({ onFinish }: { onFinish: () => void }) {
   const p = useProgress()
   // Full focus while onboarding: no tab bar or footer.
@@ -336,37 +338,34 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
     document.body.classList.add('onboarding')
     return () => document.body.classList.remove('onboarding')
   }, [])
-  // Signed-up users already gave their name, so they start at goals.
   const first = p.name ? 2 : 0
   const [step, setStep] = useState(first)
   const [name, setName] = useState(p.name)
+  const [gender, setGender] = useState(p.gender ?? '')
+  const [genderSelf, setGenderSelf] = useState(p.genderSelf ?? '')
+  const [faith, setFaith] = useState(p.faith ?? '')
   const [goals, setGoals] = useState<string[]>(p.goals)
-  const [pet, setPet] = useState(p.pet || 'Bodhi')
+  const [petType, setPetType] = useState(p.petType || 'cat')
+  const [pet, setPet] = useState(p.pet || '')
   const toggle = (id: string) => setGoals(goals.includes(id) ? goals.filter((g) => g !== id) : goals.length < 3 ? [...goals, id] : goals)
+  const next = () => setStep(step + 1)
+  const chosen = PETS.find((x) => x.id === petType) ?? PETS[0]
 
   return (
     <div className="onboard">
       <div className="fs-dots">
-        {[0, 1, 2, 3].slice(first).map((d) => (
+        {[0, 1, 2, 3, 4, 5].slice(first).map((d) => (
           <span key={d} className={d < step ? 'past' : d === step ? 'now' : ''} />
         ))}
       </div>
       <div className="ob-body" key={step}>
-        {step === 2 && p.name && <p className="kicker">welcome, {p.name} 🌱</p>}
         {step === 0 && (
           <>
             <h1 className="ob-mega">
               perfection is a <span className="serif">scam.</span>
             </h1>
             <p className="ob-sub">5 minutes a day to feel okay, get stuff done and grow — at your own pace.</p>
-            <div className="ob-points">
-              {(['calm', 'focus', 'money', 'safety', 'faith'] as const).map((a) => (
-                <span key={a}>
-                  <Icon name={a} size={14} /> {a === 'calm' ? 'breathe' : a === 'faith' ? 'every faith' : a}
-                </span>
-              ))}
-            </div>
-            <button type="button" className="btn btn-primary a-lime big-cta" onClick={() => setStep(1)}>
+            <button type="button" className="btn btn-primary a-lime big-cta" onClick={next}>
               let’s go →
             </button>
           </>
@@ -375,12 +374,46 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
           <>
             <p className="act-q">what should we call you?</p>
             <input className="act-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="your name or nickname" maxLength={16} autoFocus />
-            <button type="button" className="btn btn-primary a-lime big-cta" onClick={() => setStep(2)}>
+            <button type="button" className="btn btn-primary a-lime big-cta" onClick={next}>
               {name.trim() ? 'next →' : 'skip →'}
             </button>
           </>
         )}
         {step === 2 && (
+          <>
+            {p.name && <p className="kicker">welcome, {p.name} 🌱</p>}
+            <p className="act-q">how do you identify?</p>
+            <p className="muted">optional. it only changes what we suggest first — you can always see everything.</p>
+            <div className="opt-grid">
+              {GENDERS.map((g) => (
+                <button key={g.id} type="button" className={`opt${gender === g.id ? ' on' : ''}`} onClick={() => setGender(g.id)} aria-pressed={gender === g.id}>
+                  {g.label}
+                </button>
+              ))}
+            </div>
+            {gender === 'self' && <input className="act-input" value={genderSelf} onChange={(e) => setGenderSelf(e.target.value)} placeholder="in your words" maxLength={30} autoFocus />}
+            <button type="button" className="btn btn-primary a-lime big-cta" onClick={next}>
+              {gender ? 'next →' : 'skip →'}
+            </button>
+          </>
+        )}
+        {step === 3 && (
+          <>
+            <p className="act-q">your faith?</p>
+            <p className="muted">optional. we’ll show your scripture and quotes first. every faith stays open to everyone.</p>
+            <div className="opt-grid faith">
+              {FAITHS.map((f) => (
+                <button key={f.id} type="button" className={`opt${faith === f.id ? ' on' : ''}`} onClick={() => setFaith(f.id)} aria-pressed={faith === f.id}>
+                  <span>{f.emoji}</span> {f.label}
+                </button>
+              ))}
+            </div>
+            <button type="button" className="btn btn-primary a-lime big-cta" onClick={next}>
+              {faith ? 'next →' : 'skip →'}
+            </button>
+          </>
+        )}
+        {step === 4 && (
           <>
             <p className="act-q">what do you want help with?</p>
             <p className="muted">pick up to 3</p>
@@ -394,26 +427,41 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
                 </button>
               ))}
             </div>
-            <button type="button" className="btn btn-primary a-lime big-cta" disabled={!goals.length} onClick={() => setStep(3)}>
+            <button type="button" className="btn btn-primary a-lime big-cta" disabled={!goals.length} onClick={next}>
               next →
             </button>
           </>
         )}
-        {step === 3 && (
+        {step === 5 && (
           <>
-            <span className="ob-seed">🌰</span>
-            <p className="act-q">this is your buddy.</p>
-            <p className="muted">it grows every day you show up. skip a day? it waits. no guilt here.</p>
-            <input className="act-input center" value={pet} onChange={(e) => setPet(e.target.value)} maxLength={16} aria-label="Buddy name" />
+            <p className="act-q">pick your pet</p>
+            <p className="muted">show up a day or two and it hatches, then it grows with you. skip a day? it just gets sleepy. no guilt.</p>
+            <div className="pet-pick">
+              {PETS.map((x) => (
+                <button key={x.id} type="button" className={`pet-opt${petType === x.id ? ' on' : ''}`} onClick={() => setPetType(x.id)} aria-label={x.name} aria-pressed={petType === x.id}>
+                  {x.emoji}
+                </button>
+              ))}
+            </div>
+            <input className="act-input center" value={pet} onChange={(e) => setPet(e.target.value)} maxLength={16} placeholder={`name your ${chosen.name.toLowerCase()}`} aria-label="Pet name" />
             <button
               type="button"
               className="btn btn-primary a-lime big-cta"
               onClick={() => {
-                update(() => ({ name: name.trim(), goals, pet: pet.trim() || 'Bodhi', onboarded: true }))
+                update(() => ({
+                  name: name.trim(),
+                  gender: gender || undefined,
+                  genderSelf: gender === 'self' ? genderSelf.trim() : undefined,
+                  faith: faith || undefined,
+                  goals,
+                  petType,
+                  pet: pet.trim() || chosen.name,
+                  onboarded: true,
+                }))
                 onFinish()
               }}
             >
-              start day 1 🌱
+              🥚 start day 1
             </button>
           </>
         )}
@@ -456,14 +504,17 @@ function Home({ onStart }: { onStart: () => void }) {
   const suggested = journeyById(p.goals.map((g) => goalById(g)?.journey).find(Boolean) ?? 'unperfect-21')
   const plan = active ?? suggested
   const planDay = plan ? Object.keys(p.journeys[plan.id]?.done ?? {}).length + 1 : 1
-  const forYou = [...new Set(p.goals.flatMap((g) => goalById(g)?.tools.slice(0, 2) ?? []))].slice(0, 6)
+  const pri = priorities(p.gender)
+  // Gender priorities first, then goals — never hiding anything, just ordering it.
+  const forYou = [...new Set([...pri.tools.slice(0, 2), ...p.goals.flatMap((g) => goalById(g)?.tools.slice(0, 2) ?? [])])].slice(0, 6)
   const tools = (forYou.length ? forYou : ['focus', 'panic', 'expenses', 'sleep-calc']).map(toolById).filter(Boolean)
+  const faith = faithById(p.faith)
   const mixId = p.goals.includes('sleep') ? 'night' : p.goals.includes('focus') ? 'focus' : p.goals.includes('confidence') ? 'brave' : 'morning'
   const mix = MIXES.find((m) => m.id === mixId) ?? MIXES[0]
   const day = dayOfYear()
   const post = posts[day % Math.max(1, posts.length)]
-  const dailyShloka = shlokas[day % shlokas.length]
-  const dailyWisdom = wisdom[day % wisdom.length]
+  const lineA = dailyLine(p.faith)
+  const lineB = dailyLine(p.faith, true)
 
   return (
     <>
@@ -473,7 +524,7 @@ function Home({ onStart }: { onStart: () => void }) {
           <span className="sticker a-orange s2">🔥 {streak}-day streak</span>
           <span className="sticker a-sun s3">made in india 🇮🇳</span>
           <span className="sticker a-cyan s4">
-            {buddyEmoji(p)} {p.pet} · lvl {lvl.level}
+            {petEmoji(p)} {p.pet || 'your pet'} · lvl {lvl.level}
           </span>
         </div>
         <p className="kicker">
@@ -505,6 +556,15 @@ function Home({ onStart }: { onStart: () => void }) {
             <Icon name="read" size={18} /> read
           </a>
         </div>
+        <a className="home-pet" href="#/me">
+          <PetView p={p} size={46} />
+          <span>
+            <b>{p.pet || 'your pet'}</b> {lvl.level <= 1 ? `is still an egg — ${Math.max(0, (lvl.next?.xp ?? 0) - p.xp)} XP to hatch` : done ? 'is fed & happy 💗' : 'is hungry — your 5 minutes feed them'}
+          </span>
+          <span className="home-pet-bar" aria-hidden="true">
+            <i style={{ width: `${Math.round(lvl.progress * 100)}%` }} />
+          </span>
+        </a>
         <div className="spin-badge" aria-hidden="true">
           <svg viewBox="0 0 200 200">
             <defs>
@@ -546,7 +606,34 @@ function Home({ onStart }: { onStart: () => void }) {
           </button>
         )}
 
-        <Section kicker="your day" title={<>made for <span className="serif">you</span></>}>
+        {(!p.gender || !p.faith) && (
+          <a className="nudge make-yours" href="#/me">
+            ✨ <b>make it yours:</b> add your gender and faith (both optional) so we can put the right stuff first →
+          </a>
+        )}
+
+        {pri.spotlight && (
+          <a className="spotlight" href={`#${pri.spotlight.path}`}>
+            <span className="ibub big">
+              <Icon name={pri.spotlight.icon} size={28} />
+            </span>
+            <span className="grow">
+              <small>for you first</small>
+              <b>{pri.spotlight.title}</b>
+              <span>{pri.spotlight.why}</span>
+            </span>
+            <span className="plan-go">→</span>
+          </a>
+        )}
+
+        <Section
+          kicker="your day"
+          title={
+            <>
+              made for <span className="serif">you</span>
+            </>
+          }
+        >
           <div className="day-grid">
             {plan && (
               <a className="feature-card a-cyan" href={`#/journeys/${plan.id}`}>
@@ -591,7 +678,14 @@ function Home({ onStart }: { onStart: () => void }) {
           </div>
         </Section>
 
-        <Section kicker={`${AREAS.length} areas · ${TOOLS.length} tools`} title={<>pick your <span className="serif">vibe</span></>}>
+        <Section
+          kicker={`${AREAS.length} areas · ${TOOLS.length} tools`}
+          title={
+            <>
+              pick your <span className="serif">vibe</span>
+            </>
+          }
+        >
           <div className="zone-grid">
             {AREAS.map((a, i) => (
               <a key={a.id} href={`#/explore/${a.id}`} className={`card zone-card a-${a.accent}`} style={{ animationDelay: `${i * 40}ms` }}>
@@ -608,7 +702,14 @@ function Home({ onStart }: { onStart: () => void }) {
           </div>
         </Section>
 
-        <Section kicker="the manifesto" title={<>8 things we <span className="serif">actually</span> believe</>}>
+        <Section
+          kicker="the manifesto"
+          title={
+            <>
+              8 things we <span className="serif">actually</span> believe
+            </>
+          }
+        >
           <ol className="manifesto">
             {BELIEFS.map(([big, small], i) => (
               <li key={big}>
@@ -622,10 +723,32 @@ function Home({ onStart }: { onStart: () => void }) {
           </ol>
         </Section>
 
-        <Section kicker="today’s wisdom · every faith" title={<>thousands of years old. <span className="serif">still hits.</span></>}>
+        <Section
+          kicker={faith?.secular ? 'today’s philosophy' : faith && faith.traditions !== 'all' ? `today’s wisdom · ${faith.label}` : 'today’s wisdom · every faith'}
+          title={
+            <>
+              thousands of years old. <span className="serif">still hits.</span>
+            </>
+          }
+        >
           <div className="grid grid-2">
-            <ShlokaCard shloka={dailyShloka} accent="sun" />
-            <WisdomCard w={dailyWisdom} />
+            {[lineA, lineB].map((l, i) => (
+              <article key={i} className={`card line-card a-${i ? 'violet' : 'sun'}`}>
+                <span className="trad-chip">{l.badge}</span>
+                {l.original && (
+                  <p className={`orig lang-${l.lang}`} lang={l.lang} dir={l.rtl ? 'rtl' : undefined}>
+                    {l.original}
+                  </p>
+                )}
+                <p className="wisdom-text">“{l.text}”</p>
+                {l.extra && <p className="wis-extra">💬 {l.extra}</p>}
+              </article>
+            ))}
+          </div>
+          <div className="center-row">
+            <a className="btn" href="#/library">
+              <Icon name="library" size={18} /> open the library
+            </a>
           </div>
         </Section>
 
@@ -684,4 +807,3 @@ export default function Today() {
     </>
   )
 }
-

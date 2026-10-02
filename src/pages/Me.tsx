@@ -1,13 +1,15 @@
 import { useMemo } from 'react'
 import { PlusBadge, PlusWall, shareCard } from '../components/Overlays'
 import { Section } from '../components/ui'
-import { BADGES, RITUAL, SKINS, dayKey, levelOf, monthStats, ritualToday, showedUp, streakOf, update, useProgress, type Progress } from '../lib/progress'
+import { BADGES, RITUAL, dayKey, levelOf, monthStats, ritualToday, showedUp, streakOf, update, useProgress, type Progress } from '../lib/progress'
 import { usePlus } from '../lib/plus'
 import { pick, todayKey } from '../lib/storage'
 import { useTheme } from '../lib/theme'
 import { cloud, logOut, useAuth } from '../lib/auth'
 import { Icon } from '../components/Icon'
 import { GOALS } from '../data/app'
+import { ACCESSORIES, FAITHS, GENDERS, PETS } from '../data/profile'
+import { PetView } from '../components/Pet'
 
 function Settings() {
   const p = useProgress()
@@ -40,6 +42,31 @@ function Settings() {
         </div>
       </div>
       <div className="set-row col">
+        <span>
+          gender <small className="set-sub">optional · changes what we suggest first, never what you can see</small>
+        </span>
+        <div className="row gap-sm wrap">
+          {GENDERS.map((g) => (
+            <button key={g.id} type="button" className={`chip${p.gender === g.id ? ' on' : ''}`} onClick={() => update(() => ({ gender: g.id }))}>
+              {g.label}
+            </button>
+          ))}
+        </div>
+        {p.gender === 'self' && <input value={p.genderSelf ?? ''} maxLength={30} placeholder="in your words" onChange={(e) => update(() => ({ genderSelf: e.target.value }))} aria-label="Your gender, in your words" />}
+      </div>
+      <div className="set-row col">
+        <span>
+          faith <small className="set-sub">optional · picks your scripture, daily line and Listen quotes</small>
+        </span>
+        <div className="row gap-sm wrap">
+          {FAITHS.map((f) => (
+            <button key={f.id} type="button" className={`chip${p.faith === f.id ? ' on' : ''}`} onClick={() => update(() => ({ faith: f.id }))}>
+              {f.emoji} {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="set-row col">
         <span>I want help with (up to 3)</span>
         <div className="row gap-sm wrap">
           {GOALS.map((g) => (
@@ -54,14 +81,8 @@ function Settings() {
 }
 
 const PET_LINES = {
-  happy: ['we showed up today. proud of us. 🫶', 'look at me growing. that’s YOU doing that.', 'not perfect. just consistent. iconic.', 'one more breath and I sprout a new leaf 🌿'],
-  waiting: ['psst… one tiny thing today keeps our streak alive', 'I’m a little thirsty. one breath? one verse? 🥺', 'any one ritual counts. we’re not perfectionists here.', 'hey. I believe in you. also please water me.'],
-}
-
-function companionEmoji(p: Progress, level: number) {
-  const stages = ['🌰', '🌱', '🌿', '🪴']
-  if (level <= stages.length) return stages[level - 1]
-  return SKINS.find((s) => s.id === p.skin)?.emoji ?? '🌳'
+  happy: ['we showed up today. proud of us. 🫶', 'look at me growing. that’s YOU doing that.', 'not perfect. just consistent. iconic.', 'full tummy, full heart. see you tomorrow?'],
+  waiting: ['psst… one tiny thing today keeps our streak alive', 'I’m a little hungry. one breath? one verse? 🥺', 'any one thing counts. we’re not perfectionists here.', 'hey. I believe in you. also… snacks?'],
 }
 
 function Heatmap({ p }: { p: Progress }) {
@@ -104,16 +125,7 @@ export default function Me() {
         <div className="me-id">
           <span className="sticker a-lime">your glow-up</span>
           <h1 className="display">
-            hey{' '}
-            <input
-              className="name-input"
-              value={p.name}
-              placeholder="you"
-              maxLength={16}
-              aria-label="Your name"
-              onChange={(e) => update(() => ({ name: e.target.value }))}
-              size={Math.max(3, p.name.length || 3)}
-            />
+            hey <input className="name-input" value={p.name} placeholder="you" maxLength={16} aria-label="Your name" onChange={(e) => update(() => ({ name: e.target.value }))} size={Math.max(3, p.name.length || 3)} />
             <span className="serif">.</span>
           </h1>
           <p className="lede">Nobody’s grading this. It’s just proof that you keep showing up.</p>
@@ -130,7 +142,14 @@ export default function Me() {
             <button
               type="button"
               className="btn btn-sm"
-              onClick={() => shareCard({ kicker: `${p.name || 'my'} streak`, hero: `🔥${streak}`, text: streak === 1 ? 'day one. showing up > being perfect.' : `${streak} days of showing up. not perfect — just consistent.`, footer: `level ${lvl.level} · ${lvl.name}` })}
+              onClick={() =>
+                shareCard({
+                  kicker: `${p.name || 'my'} streak`,
+                  hero: `🔥${streak}`,
+                  text: streak === 1 ? 'day one. showing up > being perfect.' : `${streak} days of showing up. not perfect — just consistent.`,
+                  footer: `level ${lvl.level} · ${lvl.name}`,
+                })
+              }
             >
               ↗ share my streak
             </button>
@@ -158,7 +177,15 @@ export default function Me() {
         </div>
       </header>
 
-      <Section kicker="today’s ritual · ~5 minutes" title={<>any <span className="serif">one</span> keeps your streak.</>} intro="All four = a “full send” day. One = still a win.">
+      <Section
+        kicker="today’s ritual · ~5 minutes"
+        title={
+          <>
+            any <span className="serif">one</span> keeps your streak.
+          </>
+        }
+        intro="All four = a “full send” day. One = still a win."
+      >
         <div className="row gap-sm wrap me-quick">
           <a className="btn btn-sm btn-primary a-violet" href="#/tools/checkin">
             🌡️ 3-tap check-in
@@ -184,51 +211,87 @@ export default function Me() {
         </div>
       </Section>
 
-      <Section kicker="your companion" title={<>meet <span className="serif">{p.pet || 'Bodhi'}</span></>} intro="It grows with every XP you earn. Skip a day and it gets thirsty — never dies though. We don’t do guilt here.">
+      <Section
+        kicker="your pet"
+        title={
+          <>
+            {p.pet ? (
+              <>
+                say hi to <span className="serif">{p.pet}</span>
+              </>
+            ) : (
+              <>
+                your <span className="serif">pet</span>
+              </>
+            )}
+          </>
+        }
+        intro="It hatches at 60 XP (a day or two of showing up) and grows with every bit after. Show up and it’s happy; skip a day and it gets a little sleepy — it never runs away."
+      >
         <div className="pet-card card a-lime">
-          <div className={`pet ${happy ? 'happy' : 'waiting'}`}>
-            <span className="pet-body">
-              <span className="pet-emoji" style={{ fontSize: `${4.5 + Math.min(lvl.index, 6) * 0.6}rem` }}>
-                {companionEmoji(p, lvl.level)}
-              </span>
-              <span className="pet-face">{happy ? '😊' : '🥺'}</span>
-            </span>
+          <div className="pet-stage">
+            <PetView p={p} size={Math.round(84 + Math.min(lvl.index, 6) * 10)} interactive />
             <span className="pet-ground" />
+            <span className="pet-mood">{happy ? '😊 fed & happy' : '🥺 a little hungry'}</span>
           </div>
           <div className="pet-side">
             <p className="pet-bubble">“{line}”</p>
             <label className="field">
-              <span>companion name</span>
-              <input value={p.pet} maxLength={16} onChange={(e) => update(() => ({ pet: e.target.value }))} />
+              <span>pet name</span>
+              <input value={p.pet} maxLength={16} placeholder="name your pet" onChange={(e) => update(() => ({ pet: e.target.value }))} />
             </label>
             <div>
-              <p className="kicker">tree skins {!plus.active && <PlusBadge small />}</p>
+              <p className="kicker">pet</p>
               <div className="row gap-sm wrap skins">
-                {SKINS.map((s) => {
-                  const locked = s.plus && !plus.active
+                {PETS.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`skin${(p.petType || 'cat') === t.id ? ' on' : ''}`}
+                    title={t.name}
+                    aria-label={t.name}
+                    aria-pressed={(p.petType || 'cat') === t.id}
+                    onClick={() => update(() => ({ petType: t.id }))}
+                  >
+                    {t.emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="kicker">wear {!plus.active && <PlusBadge small />}</p>
+              <div className="row gap-sm wrap skins">
+                {ACCESSORIES.map((a) => {
+                  const locked = a.plus && !plus.active
                   return (
                     <button
-                      key={s.id}
+                      key={a.id}
                       type="button"
-                      className={`skin${p.skin === s.id ? ' on' : ''}`}
-                      title={locked ? `${s.name} — Plus` : s.name}
-                      aria-label={`${s.name}${locked ? ' (Plus)' : ''}`}
+                      className={`skin${p.petHat === a.id ? ' on' : ''}`}
+                      title={locked ? `${a.name} — Plus` : a.name}
+                      aria-label={`${a.name}${locked ? ' (Plus)' : ''}`}
                       disabled={locked}
-                      onClick={() => update(() => ({ skin: s.id }))}
+                      onClick={() => update(() => ({ petHat: a.id }))}
                     >
-                      {s.emoji}
+                      {a.emoji || '∅'}
                       {locked && <span className="lock">🔒</span>}
                     </button>
                   )
                 })}
               </div>
-              <p className="muted">Skins show once your companion reaches level 5.</p>
             </div>
           </div>
         </div>
       </Section>
 
-      <Section kicker="last 16 weeks" title={<>your <span className="serif">glow-up</span> map</>}>
+      <Section
+        kicker="last 16 weeks"
+        title={
+          <>
+            your <span className="serif">glow-up</span> map
+          </>
+        }
+      >
         <div className="card heat-card a-cyan">
           <Heatmap p={p} />
           <div className="row gap-sm wrap muted heat-legend">
@@ -237,7 +300,14 @@ export default function Me() {
         </div>
       </Section>
 
-      <Section kicker={`${monthName} wrapped`} title={<>your month, <span className="serif">wrapped</span></>}>
+      <Section
+        kicker={`${monthName} wrapped`}
+        title={
+          <>
+            your month, <span className="serif">wrapped</span>
+          </>
+        }
+      >
         {plus.active ? (
           <div className="card wrapped a-pink">
             <div className="wrapped-grid">

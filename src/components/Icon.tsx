@@ -1,5 +1,5 @@
 // Real icons (Lucide, ISC licence) for the app's structure — tabs, areas, goals, tools.
-// Emojis stay for the buddy and casual copy; structure gets consistent line icons.
+// Emojis stay for the pet and casual copy; structure gets consistent line icons.
 import {
   Activity, Ban, BarChart3, Bath, BedDouble, BookOpen, Brain, Briefcase, CalendarCheck, CalendarDays, CheckCircle2, ClipboardList, Coffee, Compass, CreditCard, Droplets,
   Dumbbell, Ear, House, Eye, Flag, Flame, Footprints, HandHeart, Headphones, Heart, HeartCrack, Hourglass, IdCard, Image, KeyRound, Layers, LifeBuoy, LineChart, ListChecks, Lock,

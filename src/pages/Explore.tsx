@@ -3,8 +3,10 @@ import { ArrowRight, Search, X } from 'lucide-react'
 import { Icon } from '../components/Icon'
 import { PlusBadge } from '../components/Overlays'
 import { AREAS, type Area } from '../data/app'
+import { priorities } from '../data/profile'
 import { zoneByPath } from '../data/zones'
 import { usePlus } from '../lib/plus'
+import { useProgress } from '../lib/progress'
 import { NEEDS, TOOLS, toolById, type Need, type ToolMeta } from '../tools/registry'
 
 // Long-form guide pages, named for people (not for the codebase).
@@ -24,10 +26,12 @@ const GUIDES: Record<string, { icon: string; title: string; blurb: string }> = {
   '/green': { icon: 'grow', title: 'Save trees', blurb: 'grow a forest, green pledge' },
   '/faith': { icon: 'faith', title: 'Real faith', blurb: 'spot fake babas, pastors & peers' },
 }
-const guide = (path: string) => GUIDES[path] ?? (() => {
-  const z = zoneByPath(path)
-  return z ? { icon: 'explore', title: z.title, blurb: z.blurb } : null
-})()
+const guide = (path: string) =>
+  GUIDES[path] ??
+  (() => {
+    const z = zoneByPath(path)
+    return z ? { icon: 'explore', title: z.title, blurb: z.blurb } : null
+  })()
 
 const QUICK = ['panic', 'focus', 'journal', 'sleep-calc', 'expenses', 'safe-walk']
 const iconFor = (id: string) => (id === 'focus' ? 'focus-timer' : id)
@@ -114,6 +118,9 @@ export default function Explore() {
   // #/explore, #/explore/<area>, #/explore/for/<need>  (old #/tools and #/tools/for/<need> land here too)
   const parts = window.location.hash.replace(/^#\/(explore|tools)\/?/, '').split('/')
   const plus = usePlus().active
+  const gender = useProgress().gender
+  // Your priorities first (by gender, if you told us), then the usual quick picks.
+  const quick = [...new Set([...priorities(gender).tools, ...QUICK])].filter((id) => toolById(id)).slice(0, 6)
   const [q, setQ] = useState('')
   const [need, setNeed] = useState<Need | null>(parts[0] === 'for' && NEEDS.some((n) => n.id === parts[1]) ? (parts[1] as Need) : null)
   const area = AREAS.find((a) => a.id === parts[0])
@@ -122,7 +129,11 @@ export default function Explore() {
     const s = q.trim().toLowerCase()
     if (!s && !need) return null
     const tools = TOOLS.filter((t) => (!need || t.needs.includes(need)) && (!s || `${t.name} ${t.hook} ${t.cat}`.toLowerCase().includes(s)))
-    const guides = s ? Object.entries(GUIDES).filter(([, g]) => `${g.title} ${g.blurb}`.toLowerCase().includes(s)).map(([p]) => p) : []
+    const guides = s
+      ? Object.entries(GUIDES)
+          .filter(([, g]) => `${g.title} ${g.blurb}`.toLowerCase().includes(s))
+          .map(([p]) => p)
+      : []
     return { tools, guides }
   }, [q, need])
 
@@ -175,9 +186,9 @@ export default function Explore() {
       ) : (
         <>
           <section className="ex-section">
-            <p className="kicker">quick picks</p>
+            <p className="kicker">{gender && priorities(gender).tools.length ? 'quick picks · for you' : 'quick picks'}</p>
             <div className="quick-row">
-              {QUICK.map((id) => {
+              {quick.map((id) => {
                 const t = toolById(id)!
                 return (
                   <a key={id} href={`#/tools/${id}`} className={`quick cat-${t.cat}`}>

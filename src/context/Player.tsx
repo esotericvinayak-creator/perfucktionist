@@ -20,11 +20,33 @@ type Player = {
   track: Track | null
   playing: boolean
   progress: number
+  /** Seconds into the track, and its length. */
+  time: number
+  duration: number
+  queue: Track[]
+  index: number
   play: (track: Track, queue?: Track[]) => void
   toggle: () => void
   next: () => void
   prev: () => void
+  jump: (index: number) => void
+  seek: (seconds: number) => void
   close: () => void
+  /** The full-screen Now Playing sheet. */
+  sheet: boolean
+  setSheet: (open: boolean) => void
+  liked: Track[]
+  isLiked: (t: Track) => boolean
+  toggleLike: (t: Track) => void
+}
+
+const LIKED_KEY = 'pf:liked'
+function readLiked(): Track[] {
+  try {
+    return JSON.parse(localStorage.getItem(LIKED_KEY) ?? '[]') as Track[]
+  } catch {
+    return []
+  }
 }
 
 const PlayerContext = createContext<Player | null>(null)
@@ -36,7 +58,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [index, setIndex] = useState(-1)
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [time, setTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [sheet, setSheet] = useState(false)
+  const [liked, setLiked] = useState<Track[]>(readLiked)
   const track = queue[index] ?? null
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(LIKED_KEY, JSON.stringify(liked))
+    } catch {
+      // storage blocked — likes live in memory for this visit
+    }
+  }, [liked])
 
   if (!audio.current && typeof Audio !== 'undefined') audio.current = new Audio()
 
@@ -45,6 +79,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (!el) return
     el.src = t.src
     setProgress(0)
+    setTime(0)
+    setDuration(0)
     el.play().catch(() => setPlaying(false))
   }, [])
 
@@ -63,7 +99,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (!el) return
     const onPlay = () => setPlaying(true)
     const onPause = () => setPlaying(false)
-    const onTime = () => setProgress(el.duration ? el.currentTime / el.duration : 0)
+    const onTime = () => {
+      const d = Number.isFinite(el.duration) ? el.duration : 0
+      setProgress(d ? el.currentTime / d : 0)
+      setTime(el.currentTime)
+      setDuration(d)
+    }
     // Apple's preview rules: previews are samples, not a radio — only full tracks auto-advance.
     const onEnd = () => {
       if (track?.kind === 'full') step(1)
@@ -71,11 +112,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     el.addEventListener('play', onPlay)
     el.addEventListener('pause', onPause)
     el.addEventListener('timeupdate', onTime)
+    el.addEventListener('loadedmetadata', onTime)
     el.addEventListener('ended', onEnd)
     return () => {
       el.removeEventListener('play', onPlay)
       el.removeEventListener('pause', onPause)
       el.removeEventListener('timeupdate', onTime)
+      el.removeEventListener('loadedmetadata', onTime)
       el.removeEventListener('ended', onEnd)
     }
   }, [step, track])
@@ -85,10 +128,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       track,
       playing,
       progress,
+      time,
+      duration,
+      queue,
+      index,
       play: (t, list) => {
         const q = list?.length ? list : [t]
         setQueue(q)
-        setIndex(Math.max(0, q.findIndex((x) => x.id === t.id)))
+        setIndex(
+          Math.max(
+            0,
+            q.findIndex((x) => x.id === t.id),
+          ),
+        )
         load(t)
         log('music', { silent: true })
       },
@@ -99,14 +151,34 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         else el.pause()
       },
       next: () => step(1),
-      prev: () => step(-1),
+      prev: () => {
+        // Like every music app: "previous" restarts the song unless you're right at the start.
+        const el = audio.current
+        if (el && el.currentTime > 3) el.currentTime = 0
+        else step(-1)
+      },
+      jump: (i) => {
+        if (!queue[i]) return
+        setIndex(i)
+        load(queue[i])
+      },
+      seek: (sec) => {
+        const el = audio.current
+        if (el && Number.isFinite(sec)) el.currentTime = sec
+      },
       close: () => {
         audio.current?.pause()
         setQueue([])
         setIndex(-1)
+        setSheet(false)
       },
+      sheet,
+      setSheet,
+      liked,
+      isLiked: (t) => liked.some((x) => x.id === t.id),
+      toggleLike: (t) => setLiked((l) => (l.some((x) => x.id === t.id) ? l.filter((x) => x.id !== t.id) : [t, ...l].slice(0, 100))),
     }),
-    [track, playing, progress, load, step],
+    [track, playing, progress, time, duration, queue, index, load, step, sheet, liked],
   )
 
   return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>
