@@ -5,6 +5,7 @@ import { BADGES, RITUAL, SKINS, dayKey, levelOf, monthStats, ritualToday, showed
 import { usePlus } from '../lib/plus'
 import { pick, todayKey } from '../lib/storage'
 import { useTheme } from '../lib/theme'
+import { Icon } from '../components/Icon'
 import { GOALS } from '../data/app'
 
 function Settings() {
@@ -29,7 +30,7 @@ function Settings() {
         <div className="row gap-sm wrap">
           {GOALS.map((g) => (
             <button key={g.id} type="button" className={`chip${p.goals.includes(g.id) ? ' on' : ''}`} onClick={() => toggle(g.id)}>
-              {g.emoji} {g.label}
+              <Icon name={`goal:${g.id}`} size={14} /> {g.label}
             </button>
           ))}
         </div>

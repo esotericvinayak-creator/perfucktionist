@@ -1,8 +1,7 @@
 import { useState, type CSSProperties } from 'react'
-import { MoodCheck } from '../components/MoodCheck'
 import { PageHero, Section } from '../components/ui'
 import { usePlayer } from '../context/Player'
-import { confetti, confettiFrom } from '../lib/confetti'
+import { confettiFrom } from '../lib/confetti'
 import { moods, searchSongs } from '../lib/music'
 import { log } from '../lib/progress'
 import { pop, whoosh } from '../lib/sound'
@@ -236,14 +235,6 @@ export default function Happy() {
         <GratitudeJar />
       </Section>
 
-      <Section kicker="check-in" title={<>still not feeling it?</>}>
-        <MoodCheck />
-        <div className="center-row">
-          <button type="button" className="btn" onClick={() => confetti()}>
-            🎉 just give me confetti
-          </button>
-        </div>
-      </Section>
     </div>
   )
 }

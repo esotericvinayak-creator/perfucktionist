@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { Icon } from '../components/Icon'
 import { shareCard } from '../components/Overlays'
 import { DARES, GOALS, KIND_DARES, goalById, type ActionKind } from '../data/app'
 import { journeyById, journeys } from '../data/journeys'
+import { posts } from '../data/posts'
 import { shlokas } from '../data/shlokas'
 import { traditions, wisdom } from '../data/wisdom'
 import { confetti } from '../lib/confetti'
@@ -9,6 +11,7 @@ import { buddyEmoji, levelOf, log, streakOf, update, useProgress } from '../lib/
 import { usePlus } from '../lib/plus'
 import { dayOfYear, todayKey, useLocalState } from '../lib/storage'
 import { toolById } from '../tools/registry'
+import { MIXES } from './Listen'
 
 type CheckIn = { mood: number; energy: number; sleep: number; note: string }
 type Intent = { date: string; text: string; done: boolean }
@@ -350,11 +353,11 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
             </h1>
             <p className="ob-sub">5 minutes a day to feel okay, get stuff done and grow — at your own pace.</p>
             <div className="ob-points">
-              <span>🫁 breathe</span>
-              <span>🎯 focus</span>
-              <span>💸 money</span>
-              <span>🛡️ safety</span>
-              <span>🙏 every faith</span>
+              {(['calm', 'focus', 'money', 'safety', 'faith'] as const).map((a) => (
+                <span key={a}>
+                  <Icon name={a} size={14} /> {a === 'calm' ? 'breathe' : a === 'faith' ? 'every faith' : a}
+                </span>
+              ))}
             </div>
             <button type="button" className="btn btn-primary a-lime big-cta" onClick={() => setStep(1)}>
               let’s go →
@@ -377,7 +380,9 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
             <div className="goal-grid">
               {GOALS.map((g) => (
                 <button key={g.id} type="button" className={`goal${goals.includes(g.id) ? ' on' : ''}`} onClick={() => toggle(g.id)}>
-                  <span>{g.emoji}</span>
+                  <span className="ibub">
+                    <Icon name={`goal:${g.id}`} />
+                  </span>
                   {g.label}
                 </button>
               ))}
@@ -416,6 +421,17 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
 }
 
 // ─── today ────────────────────────────────────────────────────
+const BELIEFS = [
+  ['Done > perfect.', 'Ship it at 70%. The world gives feedback, not grades.'],
+  ['Your mess is your story.', 'Nobody remembers the flawless ones. They remember the real ones.'],
+  ['No secrets that hurt you.', 'Anyone who says “don’t tell your parents” is the red flag.'],
+  ['God is free. Middlemen aren’t.', 'Real faith — any faith — never sends a QR code.'],
+  ['Your body, your rules.', 'No means no. Silence means no. Only yes means yes.'],
+  ['Breathe before you break.', 'Four seconds in. Four seconds hold. You’re back.'],
+  ['Brave ≠ fearless.', 'Brave is shaking and doing it anyway.'],
+  ['Trees > tantrums.', 'Plant one every birthday. Future you will breathe easier.'],
+]
+
 function TodayHome({ onStart }: { onStart: () => void }) {
   const p = useProgress()
   const plus = usePlus()
@@ -435,6 +451,9 @@ function TodayHome({ onStart }: { onStart: () => void }) {
   const planDay = plan ? Object.keys(p.journeys[plan.id]?.done ?? {}).length + 1 : 1
   const forYou = [...new Set(p.goals.flatMap((g) => goalById(g)?.tools.slice(0, 2) ?? []))].slice(0, 6)
   const tools = (forYou.length ? forYou : ['focus', 'panic', 'expenses', 'sleep-calc']).map(toolById).filter(Boolean)
+  const mixId = p.goals.includes('sleep') ? 'night' : p.goals.includes('focus') ? 'focus' : p.goals.includes('confidence') ? 'brave' : 'morning'
+  const mix = MIXES.find((m) => m.id === mixId) ?? MIXES[0]
+  const post = posts[dayOfYear() % Math.max(1, posts.length)]
 
   return (
     <div className="page today">
@@ -462,9 +481,9 @@ function TodayHome({ onStart }: { onStart: () => void }) {
             <p className="kicker">your 5 minutes</p>
             <p className="fc-big">{streak ? `keep your 🔥${streak} going` : 'start your streak'}</p>
             <div className="fc-steps">
-              <span>😐 mood</span>
-              <span>✨ one small thing</span>
-              <span>📖 today’s line</span>
+              <span>mood</span>
+              <span>one small thing</span>
+              <span>today’s line</span>
             </div>
             <button type="button" className="btn btn-primary big-cta fc-btn" onClick={onStart}>
               ▶ start
@@ -493,9 +512,43 @@ function TodayHome({ onStart }: { onStart: () => void }) {
         </button>
       )}
 
+      <div className="duo">
+        <a className={`feature-card a-${mix.accent}`} href="#/listen">
+          <span className="ibub">
+            <Icon name="listen" />
+          </span>
+          <b>listen</b>
+          <small>{mix.name} · quotes + music, hands-free</small>
+          <span className="feature-go">
+            <Icon name="play" size={16} /> play
+          </span>
+        </a>
+        {post ? (
+          <a className={`feature-card a-${post.accent}`} href={`#/read/${post.slug}`}>
+            <span className="ibub">
+              <Icon name="read" />
+            </span>
+            <b>read</b>
+            <small>{post.title}</small>
+            <span className="feature-go">{post.minutes} min →</span>
+          </a>
+        ) : (
+          <a className="feature-card a-cyan" href="#/read">
+            <span className="ibub">
+              <Icon name="read" />
+            </span>
+            <b>read</b>
+            <small>honest pieces on pressure, low days & starting over</small>
+            <span className="feature-go">open →</span>
+          </a>
+        )}
+      </div>
+
       {plan && (
         <a className="plan-card" href={`#/journeys/${plan.id}`}>
-          <span className="plan-emoji">{plan.emoji}</span>
+          <span className="ibub">
+            <Icon name="explore" />
+          </span>
           <span className="grow">
             <small>{active ? 'your plan' : 'suggested for you'}</small>
             <b>{plan.title}</b>
@@ -517,7 +570,7 @@ function TodayHome({ onStart }: { onStart: () => void }) {
         <div className="t-tools">
           {tools.map((t) => (
             <a key={t!.id} className="t-tool" href={`#/tools/${t!.id}`}>
-              <span>{t!.emoji}</span>
+              <Icon name={t!.id === 'focus' ? 'focus-timer' : t!.id} />
               {t!.name}
             </a>
           ))}
@@ -527,10 +580,18 @@ function TodayHome({ onStart }: { onStart: () => void }) {
       <section className="t-section">
         <p className="kicker">need help right now?</p>
         <div className="help-row">
-          <a href="#/tools/panic">🆘 panic</a>
-          <a href="#/tools/safe-walk">🚶‍♀️ safe walk</a>
-          <a href="#/shield">🛡️ SOS tools</a>
-          <a href="tel:14416">💜 talk · 14416</a>
+          <a href="#/tools/panic">
+            <Icon name="panic" size={16} /> panic
+          </a>
+          <a href="#/tools/safe-walk">
+            <Icon name="safe-walk" size={16} /> safe walk
+          </a>
+          <a href="#/shield">
+            <Icon name="safety" size={16} /> SOS tools
+          </a>
+          <a href="tel:14416">
+            <Icon name="people" size={16} /> talk · 14416
+          </a>
         </div>
       </section>
 
@@ -539,6 +600,22 @@ function TodayHome({ onStart }: { onStart: () => void }) {
           🧊 <b>{streak}-day streak.</b> Plus protects it if you miss a day →
         </a>
       )}
+
+      <section className="t-section beliefs">
+        <p className="kicker">why this app exists</p>
+        <h2 className="beliefs-title">
+          perfection is a <span className="serif">scam.</span>
+        </h2>
+        <div className="belief-row">
+          {BELIEFS.map(([big, small], i) => (
+            <div key={big} className="belief">
+              <span className="belief-n">{String(i + 1).padStart(2, '0')}</span>
+              <b>{big}</b>
+              <small>{small}</small>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }

@@ -11,7 +11,10 @@ Four tabs, nothing else: **Today · Explore · Library · Me**.
 1. **First visit** → 30-second onboarding: name → pick up to 3 goals → name your buddy → straight into day 1.
 2. **Today** (`#/`) → one big "▶ start" for *your 5 minutes*: mood (1 tap) → one small thing picked from your mood + goals (breathe, gratitude, a brave or kind dare, today's one task, or log spending) → today's line from any scripture → done 🔥. Below it: today's one task, your plan (journey), tools for your goals, and SOS shortcuts.
 3. **Explore** (`#/explore`) → search, "I'm feeling…" chips, and 8 areas (Calm, Focus & study, Body, Money, Safety, Love & family, Grow, Faith). Each area lists its guides (the long pages) and tools.
-4. **Me** (`#/me`) → buddy, streak, badges, insights, settings (theme, goals). The old landing page lives at `#/about`.
+4. **Me** (`#/me`) → buddy, streak, badges, insights, settings (theme, goals).
+5. **Listen** (`#/listen`) and **Read** (`#/read`) are reachable from Today and Explore. The "why this app exists" beliefs now sit at the bottom of Today. Full flowchart: [docs/FLOW.md](docs/FLOW.md).
+
+Icons come from [Lucide](https://lucide.dev) (ISC licence) via `src/components/Icon.tsx`; the buddy and casual copy keep emojis.
 
 Original intro: Eleven zones, a 1.2-lakh-verse library of every major faith, and a glow-up layer people can pay for.
 

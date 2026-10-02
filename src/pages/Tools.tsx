@@ -1,7 +1,8 @@
 import { Suspense, useEffect } from 'react'
 import { useLocalState } from '../lib/storage'
 import { TOOL_COMPONENTS } from '../tools/loaders'
-import { CATS, toolById } from '../tools/registry'
+import { Icon } from '../components/Icon'
+import { toolById } from '../tools/registry'
 import Explore from './Explore'
 
 const AREA_OF: Record<string, string> = { mind: 'calm', focus: 'focus', body: 'body', money: 'money', safety: 'safety', people: 'people', grow: 'grow' }
@@ -25,18 +26,19 @@ function ToolView({ id }: { id: string }) {
       </div>
     )
   const pinned = pins.includes(id)
-  const cat = CATS.find((c) => c.id === t.cat)!
   return (
     <div className={`page tool-page cat-${t.cat}`}>
       <header className="tool-head">
         <a className="icon-btn" href={`#/explore/${AREA_OF[t.cat] ?? ''}`} aria-label="Back">
           ←
         </a>
-        <span className="tool-head-emoji">{t.emoji}</span>
+        <span className="ibub big">
+          <Icon name={t.id === 'focus' ? 'focus-timer' : t.id} size={26} />
+        </span>
         <div className="grow">
           <h1>{t.name}</h1>
           <p>
-            {cat.emoji} {t.hook}
+            {t.hook}
           </p>
         </div>
         <button type="button" className={`icon-btn${pinned ? ' pinned' : ''}`} aria-pressed={pinned} aria-label={pinned ? 'Unpin from dock' : 'Pin to dock'} onClick={() => setPins(pinned ? pins.filter((p) => p !== id) : [id, ...pins])}>
@@ -56,7 +58,7 @@ function ToolView({ id }: { id: string }) {
               const nt = toolById(n)
               return nt ? (
                 <a key={n} href={`#/tools/${n}`} className="next-tile">
-                  <span>{nt.emoji}</span>
+                  <Icon name={n === 'focus' ? 'focus-timer' : n} size={18} />
                   {nt.name}
                 </a>
               ) : null

@@ -1,4 +1,5 @@
 import { streakOf, useProgress } from '../lib/progress'
+import { Icon } from './Icon'
 
 export const TABS = [
   { path: '/', emoji: '☀️', label: 'Today' },
@@ -35,7 +36,7 @@ export function Nav({ route }: { route: string }) {
       <nav className="nav-tabs" aria-label="Main">
         {TABS.map((t) => (
           <a key={t.path} href={`#${t.path}`} className={tab === t.path ? 'on' : ''} aria-current={tab === t.path ? 'page' : undefined}>
-            {t.label}
+            <Icon name={t.label.toLowerCase()} size={16} /> {t.label}
           </a>
         ))}
       </nav>

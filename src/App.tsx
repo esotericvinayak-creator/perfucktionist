@@ -16,13 +16,14 @@ import Fam from './pages/Fam'
 import Green from './pages/Green'
 import Happy from './pages/Happy'
 import Explore from './pages/Explore'
-import Home from './pages/Home'
 import Journeys from './pages/Journeys'
 import Library from './pages/Library'
+import Listen from './pages/Listen'
 import Me from './pages/Me'
 import Music from './pages/Music'
 import NotFound from './pages/NotFound'
 import Plus from './pages/Plus'
+import Read from './pages/Read'
 import Shield from './pages/Shield'
 import Today from './pages/Today'
 import Tools from './pages/Tools'
@@ -30,7 +31,9 @@ import Unperfect from './pages/Unperfect'
 
 const pages: Record<string, ComponentType> = {
   '/': Today,
-  '/about': Home,
+  '/about': Today,
+  '/listen': Listen,
+  '/read': Read,
   '/explore': Explore,
   '/unperfect': Unperfect,
   '/shield': Shield,

@@ -24,13 +24,15 @@ export type Area = { id: string; emoji: string; name: string; line: string; acce
 /** Everything in the app, grouped into 8 places. Guides are the long-form pages; tools come from the registry. */
 export const AREAS: Area[] = [
   { id: 'calm', emoji: '😌', name: 'Calm', line: 'stress, overthinking, low days', accent: 'violet', guides: ['/breathe', '/unperfect', '/happy'], toolCats: ['mind'] },
-  { id: 'focus', emoji: '🎯', name: 'Focus & study', line: 'exams, procrastination, lofi', accent: 'lime', guides: ['/music'], toolCats: ['focus'] },
+  { id: 'focus', emoji: '🎯', name: 'Focus & study', line: 'exams, procrastination', accent: 'lime', guides: [], toolCats: ['focus'] },
   { id: 'body', emoji: '💪', name: 'Body', line: 'move, sleep, water, cycle', accent: 'orange', guides: [], toolCats: ['body'] },
   { id: 'money', emoji: '💸', name: 'Money', line: 'budget, UPI, salary, scams', accent: 'sun', guides: [], toolCats: ['money'] },
   { id: 'safety', emoji: '🛡️', name: 'Safety', line: 'self-defence, SOS, online', accent: 'pink', guides: ['/shield'], toolCats: ['safety'] },
   { id: 'people', emoji: '💗', name: 'Love & family', line: 'parents, friends, dating', accent: 'pink', guides: ['/fam', '/bro'], toolCats: ['people'] },
   { id: 'grow', emoji: '🌱', name: 'Grow', line: 'habits, courage, career', accent: 'cyan', guides: ['/journeys', '/brave', '/green'], toolCats: ['grow'] },
   { id: 'faith', emoji: '🙏', name: 'Faith', line: 'every scripture, no fake babas', accent: 'sun', guides: ['/library', '/faith'], toolCats: [] },
+  { id: 'read', emoji: '📖', name: 'Read', line: 'depression, pressure, starting over', accent: 'cyan', guides: ['/read'], toolCats: [] },
+  { id: 'listen', emoji: '🎧', name: 'Listen', line: 'quotes + music, hands-free', accent: 'violet', guides: ['/listen', '/music'], toolCats: [] },
 ]
 
 export const DARES = [

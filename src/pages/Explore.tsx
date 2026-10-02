@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Icon } from '../components/Icon'
 import { PlusBadge } from '../components/Overlays'
 import { AREAS } from '../data/app'
 import { zoneByPath } from '../data/zones'
@@ -9,6 +10,9 @@ import { NEEDS, TOOLS, type Need, type ToolMeta } from '../tools/registry'
 const GUIDES: Record<string, { emoji: string; title: string; blurb: string }> = {
   '/journeys': { emoji: '🧭', title: 'Guided journeys', blurb: '5 min a day programs' },
   '/library': { emoji: '📚', title: 'Sacred library', blurb: 'Gita, Gurbani, Quran, Bible & more' },
+  '/read': { emoji: '📖', title: 'Read', blurb: 'honest pieces on depression & adversity' },
+  '/listen': { emoji: '🎧', title: 'Listen', blurb: 'quotes read aloud with music' },
+  '/music': { emoji: '🎵', title: 'Vibe room', blurb: 'full songs, previews, playlists, lofi radio' },
 }
 const guide = (path: string) => GUIDES[path] ?? (() => {
   const z = zoneByPath(path)
@@ -18,7 +22,9 @@ const guide = (path: string) => GUIDES[path] ?? (() => {
 function Tile({ t, plus }: { t: ToolMeta; plus: boolean }) {
   return (
     <a href={`#/tools/${t.id}`} className={`tile cat-${t.cat}`}>
-      <span className="tile-emoji">{t.emoji}</span>
+      <span className="ibub">
+        <Icon name={t.id === 'focus' ? 'focus-timer' : t.id} />
+      </span>
       <b>{t.name}</b>
       <small>{t.hook}</small>
       {t.plus && !plus && <PlusBadge small />}
@@ -63,7 +69,9 @@ export default function Explore() {
           <a className="icon-btn" href="#/explore" aria-label="Back to explore">
             ←
           </a>
-          <span className="area-emoji">{area.emoji}</span>
+          <span className="ibub big">
+            <Icon name={area.id} size={28} />
+          </span>
           <div>
             <h1>{area.name}</h1>
             <p className="muted">{area.line}</p>
@@ -101,7 +109,7 @@ export default function Explore() {
         <div className="need-row" role="group" aria-label="I'm feeling">
           {NEEDS.map((n) => (
             <button key={n.id} type="button" className={`need${need === n.id ? ' on' : ''}`} onClick={() => setNeed(need === n.id ? null : n.id)}>
-              <span>{n.emoji}</span>
+              <Icon name={n.id === 'focus' ? 'need:focus' : n.id === 'money' ? 'need:money' : n.id} size={16} />
               {n.label}
             </button>
           ))}
@@ -121,7 +129,9 @@ export default function Explore() {
         <div className="areas">
           {AREAS.map((a) => (
             <a key={a.id} className={`area a-${a.accent}`} href={`#/explore/${a.id}`}>
-              <span className="area-emoji">{a.emoji}</span>
+              <span className="ibub">
+                <Icon name={a.id} />
+              </span>
               <b>{a.name}</b>
               <small>{a.line}</small>
             </a>
