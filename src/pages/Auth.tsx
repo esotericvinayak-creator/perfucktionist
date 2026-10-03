@@ -5,6 +5,7 @@ import { Logo } from '../components/Nav'
 import { Marquee } from '../components/ui'
 import { motives } from '../data/zones'
 import { cloud, logIn, logInWithGoogle, sendReset, setNewPassword, signUp, useAuth } from '../lib/auth'
+import { alreadyInstalled } from '../lib/install'
 
 type Screen = 'welcome' | 'signup' | 'login' | 'forgot' | 'sent' | 'confirm'
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -311,6 +312,13 @@ function Welcome({ onSignup, onLogin }: { onSignup: () => void; onLogin: () => v
       <p className="auth-sos">
         need help right now? <a href="tel:112">112</a> · <a href="#/tools/panic">panic SOS</a> · <a href="tel:14416">14416 (mental health)</a>
       </p>
+      {!alreadyInstalled() && (
+        <p className="auth-get">
+          <a className="get-chip" href="#/get">
+            📲 get the app — Android, iPhone or computer
+          </a>
+        </p>
+      )}
       <LandingMore onSignup={onSignup} onLogin={onLogin} />
       {!cloud && <p className="auth-preview">preview mode: accounts are saved on this device until cloud accounts are connected.</p>}
     </div>

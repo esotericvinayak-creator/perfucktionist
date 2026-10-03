@@ -781,3 +781,24 @@ body.onboarding .float-back, body.np-open .float-back { display: none; }
 .st-chapter { padding: 9px 10px; border-radius: 12px; border: 1.5px solid color-mix(in srgb, var(--line) 28%, transparent); background: var(--bg-soft); color: inherit; font-weight: 600; font-size: 0.84rem; text-align: left; }
 .st-chapter:hover { border-color: var(--line); }
 .st-allch { font-size: 0.8rem; color: var(--ink-dim); }
+
+/* ═════════════════════════ get the app ═════════════════════════ */
+.get-page { max-width: 680px; display: grid; gap: 18px; padding-bottom: 40px !important; }
+.get-hero { display: grid; gap: 12px; justify-items: start; padding: 10px 0 6px; }
+.get-hero .lede b { color: var(--ink); }
+.get-card { display: grid; gap: 12px; justify-items: start; padding: 22px 20px; border-radius: 24px; border: 2px solid var(--line); background: color-mix(in srgb, var(--a, var(--violet)) 10%, var(--surface)); box-shadow: 5px 5px 0 var(--a, var(--line)); }
+.get-card h2 { font-size: clamp(1.3rem, 5vw, 1.7rem); letter-spacing: -0.03em; }
+.get-card .big-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.get-card details { width: 100%; border-top: 1.5px solid color-mix(in srgb, var(--line) 18%, transparent); padding: 12px 0 2px; }
+.get-card summary { font-weight: 800; cursor: pointer; }
+.get-card details p { margin-top: 8px; line-height: 1.5; }
+.get-steps { display: grid; gap: 10px; margin: 4px 0 0; padding-left: 22px; line-height: 1.5; color: var(--ink-dim); }
+.get-steps b { color: var(--ink); }
+.inline-ic { display: inline; vertical-align: -2px; }
+.get-note { font-size: 0.86rem; color: var(--ink-faint); }
+.get-sha code { display: block; margin: 8px 0; padding: 10px 12px; border-radius: 12px; background: var(--bg-soft); font-family: var(--font-mono); font-size: 0.72rem; word-break: break-all; }
+.get-perks { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.get-perks li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; border: 1.5px solid color-mix(in srgb, var(--line) 22%, transparent); background: var(--surface); font-weight: 600; }
+.get-done { display: grid; justify-items: center; gap: 12px; padding: 50px 10px; text-align: center; }
+.get-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 2px solid var(--line); background: var(--lime); color: #0d0c12; font-weight: 800; font-size: 0.9rem; text-decoration: none; }
+.auth-get { display: flex; justify-content: center; padding: 4px 16px 10px; }

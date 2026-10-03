@@ -115,6 +115,41 @@ Everyone signs up or logs in before reaching Home. Panic SOS, the safe-walk time
 - Streaks, journal and other progress are still stored on the device in both modes; syncing them to the account is the next step.
 - Before launch you need a **privacy policy and terms** (signup collects emails; YouTube's developer policy also requires one for the embedded players), and a proper **parental-consent** flow for under-18s under India's DPDP Act — the signup checkbox is a placeholder.
 
+## Get the app (`#/get`)
+
+One "get the app" page that detects the device and offers what actually works on it. It needs no account, and it's linked from the landing page, the footer and Me → settings. Those links hide themselves once you're already in the app.
+
+| Device | What it gets | Why |
+| --- | --- | --- |
+| **Android** | The signed APK, with version, size and SHA-256 shown, plus plain steps for the "unknown developer" warning. The browser install is offered alongside as the no-warnings route | An APK is the Android app format |
+| **iPhone / iPad** | Safari's *Add to Home Screen*, in three steps | iOS can't install APKs at all; native iOS apps only come through the App Store |
+| **Windows / Mac / Linux** | The browser's own install button (Chrome, Edge) or the menu steps | APKs are Android-only |
+
+The browser install is a proper PWA: `public/manifest.webmanifest`, icons in `public/icons/`, and a small service worker (`public/sw.js`). The service worker caches only our own app shell, so the app opens offline. It never caches scripture, books or music, and it's skipped inside the APK.
+
+### Building the APK
+
+```
+npm run apk
+```
+
+`scripts/build-apk.mjs` runs four steps:
+
+1. builds the site;
+2. copies it into the Capacitor Android project (`android/`);
+3. builds a **signed release APK**;
+4. publishes it at `public/app/perfucktionist.apk` with `public/app/apk.json` (version, size, SHA-256), which the page reads.
+
+The build needs **JDK 21** (`brew install openjdk@21`) and the **Android SDK**. The only permission the app asks for is internet access.
+
+**⚠️ The signing key — back it up.** The release key is at `~/.perfucktionist/release.jks`, deliberately outside the repo. Its password is in `android/keystore.properties`, which is gitignored along with every `*.jks` and `*.keystore` file. **Every future update must be signed with this same key.** If it's lost, phones that installed this APK can't update to a new one and people have to uninstall first. Keep a copy of both files somewhere safe and offline. Without `keystore.properties` the script still works, but it builds a debug APK instead.
+
+**Committing the APK:** `public/app/perfucktionist.apk` (~8 MB) isn't gitignored, so a static host deployed from git can serve it. Every release you commit adds about 8 MB to git history. If that becomes a problem, upload it to a GitHub Release instead and change `APK_URL` in `src/lib/install.ts`.
+
+**Hosting:** `public/_headers` sets the right `Content-Type` for `.apk` downloads on Netlify and Cloudflare Pages. On other hosts, map `.apk` to `application/vnd.android.package-archive`.
+
+**Not done yet:** Google Play (one-time $25 developer fee, then review) and the iOS App Store ($99/year Apple Developer account, plus Xcode on a Mac, which isn't installed on this machine). The Capacitor project is already set up for Play. For iOS, it's `npx cap add ios`.
+
 ## Run it
 
 ```bash

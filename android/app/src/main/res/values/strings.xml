@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">perfucktionist</string>
+    <string name="title_activity_main">perfucktionist</string>
+    <string name="package_name">in.perfucktionist.app</string>
+    <string name="custom_url_scheme">in.perfucktionist.app</string>
+</resources>

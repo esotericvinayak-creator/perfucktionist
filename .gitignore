@@ -4,3 +4,8 @@ dist
 *.log
 .env*
 public/library/
+
+# Android signing — the key must never be committed
+android/keystore.properties
+*.jks
+*.keystore

@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { PlusBadge, PlusWall, shareCard } from '../components/Overlays'
 import { Section } from '../components/ui'
 import { BADGES, RITUAL, dayKey, levelOf, monthStats, ritualToday, showedUp, streakOf, update, useProgress, type Progress } from '../lib/progress'
+import { alreadyInstalled } from '../lib/install'
 import { usePlus } from '../lib/plus'
 import { pick, todayKey } from '../lib/storage'
 import { useTheme } from '../lib/theme'
@@ -30,6 +31,17 @@ function Settings() {
           log out
         </button>
       </div>
+      {!alreadyInstalled() && (
+        <div className="set-row">
+          <span>
+            the app
+            <small className="set-sub">home-screen icon, opens offline</small>
+          </span>
+          <a className="btn btn-sm" href="#/get">
+            📲 get it
+          </a>
+        </div>
+      )}
       <div className="set-row">
         <span>theme</span>
         <div className="row gap-sm">

@@ -15,6 +15,7 @@ import Brave from './pages/Brave'
 import Breathe from './pages/Breathe'
 import Bro from './pages/Bro'
 import Faith from './pages/Faith'
+import Get from './pages/Get'
 import Fam from './pages/Fam'
 import Green from './pages/Green'
 import Happy from './pages/Happy'
@@ -53,11 +54,12 @@ const pages: Record<string, ComponentType> = {
   '/me': Me,
   '/journeys': Journeys,
   '/plus': Plus,
+  '/get': Get,
   '/tools': Tools,
 }
 
 // Safety comes before sign-up: these stay open even when logged out.
-const PUBLIC = ['/shield', '/tools/panic', '/tools/safe-walk']
+const PUBLIC = ['/shield', '/tools/panic', '/tools/safe-walk', '/get']
 
 export default function App() {
   const route = useRoute()

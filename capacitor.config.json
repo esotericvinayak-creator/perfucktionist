@@ -1,0 +1,11 @@
+{
+  "appId": "in.perfucktionist.app",
+  "appName": "perfucktionist",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
