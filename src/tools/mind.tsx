@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { shareCard } from '../components/Overlays'
+import { WebLink } from '../components/WebView'
 import { log } from '../lib/progress'
 import { usePlus } from '../lib/plus'
 import { pick } from '../lib/storage'
@@ -26,7 +27,18 @@ export function CheckInTool() {
 
   if (saved && existing) {
     const s = existing
-    const tips = s.mood <= 1 ? ['bad-day', 'safety-plan'] : s.mood === 2 ? ['thought-flip', 'journal'] : s.sleep && s.sleep < 6 ? ['wind-down', 'sleep-calc'] : s.energy === 1 ? ['stretch', 'water'] : s.mood >= 4 ? ['kindness', 'focus'] : ['journal', 'sounds']
+    const tips =
+      s.mood <= 1
+        ? ['bad-day', 'safety-plan']
+        : s.mood === 2
+          ? ['thought-flip', 'journal']
+          : s.sleep && s.sleep < 6
+            ? ['wind-down', 'sleep-calc']
+            : s.energy === 1
+              ? ['stretch', 'water']
+              : s.mood >= 4
+                ? ['kindness', 'focus']
+                : ['journal', 'sounds']
     return (
       <div className="stack">
         <Done emoji={MOODS[s.mood - 1]?.label ?? '✓'} title="checked in for today">
@@ -115,7 +127,8 @@ export function MoodInsights() {
           <Columns title="mood, last 30 days (1–5)" data={days.map((d) => ({ label: shortDate(d), value: all[d]?.mood ?? 0 }))} format={(n) => (n ? String(n) : '—')} />
           {goodSleep > 0 && lowSleep > 0 && (
             <Card>
-              💤 On <b>7h+ sleep</b> your mood averages <b>{goodSleep.toFixed(1)}</b>. Under 7h it’s <b>{lowSleep.toFixed(1)}</b>. {goodSleep > lowSleep ? 'Sleep is literally a mood booster for you.' : 'Interesting — sleep isn’t your main mood driver.'}
+              💤 On <b>7h+ sleep</b> your mood averages <b>{goodSleep.toFixed(1)}</b>. Under 7h it’s <b>{lowSleep.toFixed(1)}</b>.{' '}
+              {goodSleep > lowSleep ? 'Sleep is literally a mood booster for you.' : 'Interesting — sleep isn’t your main mood driver.'}
             </Card>
           )}
         </div>
@@ -481,12 +494,92 @@ export function WorryBox() {
 
 // ─── Journal ──────────────────────────────────────────────────
 const PACKS: { id: string; emoji: string; name: string; plus: boolean; prompts: string[] }[] = [
-  { id: 'self', emoji: '🪞', name: 'Self', plus: false, prompts: ['What’s taking up most space in your head today?', 'When did you feel most like yourself this week?', 'What are you pretending not to know?', 'What would you do if nobody would judge you?', 'What did you need to hear today? Write it to yourself.', 'What drained you this week, and what filled you up?', 'Describe a version of you from 5 years ago. What would they be proud of?', 'What’s one thing you can forgive yourself for?'] },
-  { id: 'gratitude', emoji: '🙏', name: 'Gratitude', plus: false, prompts: ['3 tiny things that went right today.', 'Who made your life easier this week? How?', 'What’s something you have now that you once wished for?', 'A smell, song or place that makes you feel safe.', 'Something your body did for you today.', 'A person you’re grateful for but never told.'] },
-  { id: 'heartbreak', emoji: '💔', name: 'Heartbreak', plus: true, prompts: ['Write everything you wish you could say to them. You won’t send it.', 'What did this relationship teach you about what you need?', 'List 5 red flags you ignored. No shame — just data.', 'What parts of yourself did you put on hold?', 'What does your life look like 6 months from now, on a good day?', 'Who were you before them? Who are you becoming?'] },
-  { id: 'future', emoji: '🔭', name: 'Future', plus: true, prompts: ['Describe a normal Tuesday in your dream life.', 'What skill would change everything if you learned it this year?', 'What are you scared to want?', 'What does “enough” look like for you?', 'If this year had a title, what would you want it to be?', 'What’s one door you can knock on this month?'] },
-  { id: 'family', emoji: '🏠', name: 'Family', plus: true, prompts: ['What’s something you wish your parents understood about you?', 'A family moment you want to remember forever.', 'What pattern from your family do you want to keep — and break?', 'If you could ask your parent one honest question, what would it be?', 'How do the people at home show love, even badly?', 'What boundary would make home feel lighter?'] },
-  { id: 'anxiety', emoji: '🌀', name: 'Anxiety', plus: true, prompts: ['What’s the worst case — and how would you cope if it happened?', 'What’s actually in your control right now?', 'When did a worry not come true?', 'What does your anxiety want to protect you from?', 'Write the scary thought. Now write it as a question.', 'What would calm-you do in the next hour?'] },
+  {
+    id: 'self',
+    emoji: '🪞',
+    name: 'Self',
+    plus: false,
+    prompts: [
+      'What’s taking up most space in your head today?',
+      'When did you feel most like yourself this week?',
+      'What are you pretending not to know?',
+      'What would you do if nobody would judge you?',
+      'What did you need to hear today? Write it to yourself.',
+      'What drained you this week, and what filled you up?',
+      'Describe a version of you from 5 years ago. What would they be proud of?',
+      'What’s one thing you can forgive yourself for?',
+    ],
+  },
+  {
+    id: 'gratitude',
+    emoji: '🙏',
+    name: 'Gratitude',
+    plus: false,
+    prompts: [
+      '3 tiny things that went right today.',
+      'Who made your life easier this week? How?',
+      'What’s something you have now that you once wished for?',
+      'A smell, song or place that makes you feel safe.',
+      'Something your body did for you today.',
+      'A person you’re grateful for but never told.',
+    ],
+  },
+  {
+    id: 'heartbreak',
+    emoji: '💔',
+    name: 'Heartbreak',
+    plus: true,
+    prompts: [
+      'Write everything you wish you could say to them. You won’t send it.',
+      'What did this relationship teach you about what you need?',
+      'List 5 red flags you ignored. No shame — just data.',
+      'What parts of yourself did you put on hold?',
+      'What does your life look like 6 months from now, on a good day?',
+      'Who were you before them? Who are you becoming?',
+    ],
+  },
+  {
+    id: 'future',
+    emoji: '🔭',
+    name: 'Future',
+    plus: true,
+    prompts: [
+      'Describe a normal Tuesday in your dream life.',
+      'What skill would change everything if you learned it this year?',
+      'What are you scared to want?',
+      'What does “enough” look like for you?',
+      'If this year had a title, what would you want it to be?',
+      'What’s one door you can knock on this month?',
+    ],
+  },
+  {
+    id: 'family',
+    emoji: '🏠',
+    name: 'Family',
+    plus: true,
+    prompts: [
+      'What’s something you wish your parents understood about you?',
+      'A family moment you want to remember forever.',
+      'What pattern from your family do you want to keep — and break?',
+      'If you could ask your parent one honest question, what would it be?',
+      'How do the people at home show love, even badly?',
+      'What boundary would make home feel lighter?',
+    ],
+  },
+  {
+    id: 'anxiety',
+    emoji: '🌀',
+    name: 'Anxiety',
+    plus: true,
+    prompts: [
+      'What’s the worst case — and how would you cope if it happened?',
+      'What’s actually in your control right now?',
+      'When did a worry not come true?',
+      'What does your anxiety want to protect you from?',
+      'Write the scary thought. Now write it as a question.',
+      'What would calm-you do in the next hour?',
+    ],
+  },
 ]
 
 type Entry = { id: string; date: string; prompt: string; text: string }
@@ -669,7 +762,11 @@ export function HypeFile() {
           <p className="muted">saved {shortDate(shown.date)} — this is still true.</p>
         </Card>
       )}
-      {items.length ? <List items={items} onRemove={(h) => setItems(items.filter((x) => x.id !== h.id))} render={(h) => h.text} /> : <Empty emoji="🏆">Screenshot-worthy moments go here. Future you will need them.</Empty>}
+      {items.length ? (
+        <List items={items} onRemove={(h) => setItems(items.filter((x) => x.id !== h.id))} render={(h) => h.text} />
+      ) : (
+        <Empty emoji="🏆">Screenshot-worthy moments go here. Future you will need them.</Empty>
+      )}
     </div>
   )
 }
@@ -707,9 +804,9 @@ export function BadDay() {
         <p className="big-q">{s.body}</p>
         <div className="row gap-sm wrap center">
           {s.href && (
-            <a className="btn" href={s.href} target="_blank" rel="noreferrer">
+            <WebLink className="btn" url={s.href} title="Your comfort song">
               ▶ play
-            </a>
+            </WebLink>
           )}
           <button type="button" className="btn btn-primary a-lime" onClick={() => setRun(run + 1)}>
             done → next
@@ -765,12 +862,54 @@ export function BadDay() {
 
 // ─── Affirmations ─────────────────────────────────────────────
 const AFFIRM: Record<string, string[]> = {
-  '💖 self-worth': ['I am enough before I achieve anything.', 'I don’t have to earn rest.', 'My worth isn’t my marks, my followers or my body.', 'I’m allowed to take up space.', 'I am becoming, not behind.', 'I talk to myself like someone I love.'],
-  '🪞 body': ['My body is a home, not a project.', 'I eat to fuel, not to punish.', 'Bodies change. That’s what living looks like.', 'I move because it feels good.', 'Filters are fake. My face is real and enough.', 'I’m grateful for what my body did today.'],
-  '📚 exams': ['I prepared, and I’ll do my best.', 'One exam doesn’t write my whole story.', 'My brain works better calm. I breathe first.', 'I’ve survived every hard day so far.', 'Done is better than perfect.', 'I am more than a rank.'],
-  '💌 love': ['I deserve love that doesn’t confuse me.', 'Their silence is an answer, and I accept it.', 'I don’t chase. I attract what I’m ready for.', 'Being alone isn’t being lonely.', 'My standards aren’t too high. They’re just right.', 'I can love someone and still leave.'],
-  '💸 money': ['I can learn money. It’s a skill, not a gift.', 'Every rupee saved is future-me saying thanks.', 'I don’t buy things to impress people I don’t like.', 'Small and steady beats big and scared.', 'I am building, slowly. That counts.', 'I am worthy of financial peace.'],
-  '🌀 anxiety': ['This feeling is temporary.', 'I’ve felt this before and I got through it.', 'Thoughts are not facts.', 'I can do hard things while feeling scared.', 'Right now, in this moment, I am safe.', 'I don’t need to solve everything today.'],
+  '💖 self-worth': [
+    'I am enough before I achieve anything.',
+    'I don’t have to earn rest.',
+    'My worth isn’t my marks, my followers or my body.',
+    'I’m allowed to take up space.',
+    'I am becoming, not behind.',
+    'I talk to myself like someone I love.',
+  ],
+  '🪞 body': [
+    'My body is a home, not a project.',
+    'I eat to fuel, not to punish.',
+    'Bodies change. That’s what living looks like.',
+    'I move because it feels good.',
+    'Filters are fake. My face is real and enough.',
+    'I’m grateful for what my body did today.',
+  ],
+  '📚 exams': [
+    'I prepared, and I’ll do my best.',
+    'One exam doesn’t write my whole story.',
+    'My brain works better calm. I breathe first.',
+    'I’ve survived every hard day so far.',
+    'Done is better than perfect.',
+    'I am more than a rank.',
+  ],
+  '💌 love': [
+    'I deserve love that doesn’t confuse me.',
+    'Their silence is an answer, and I accept it.',
+    'I don’t chase. I attract what I’m ready for.',
+    'Being alone isn’t being lonely.',
+    'My standards aren’t too high. They’re just right.',
+    'I can love someone and still leave.',
+  ],
+  '💸 money': [
+    'I can learn money. It’s a skill, not a gift.',
+    'Every rupee saved is future-me saying thanks.',
+    'I don’t buy things to impress people I don’t like.',
+    'Small and steady beats big and scared.',
+    'I am building, slowly. That counts.',
+    'I am worthy of financial peace.',
+  ],
+  '🌀 anxiety': [
+    'This feeling is temporary.',
+    'I’ve felt this before and I got through it.',
+    'Thoughts are not facts.',
+    'I can do hard things while feeling scared.',
+    'Right now, in this moment, I am safe.',
+    'I don’t need to solve everything today.',
+  ],
 }
 
 export function Affirm() {
@@ -832,7 +971,15 @@ export function Affirm() {
 
 // ─── Urge surfer ──────────────────────────────────────────────
 const URGES = ['📱 doomscroll', '💨 vape / smoke', '🍔 junk food', '🔞 porn', '💬 text my ex', '🛍️ impulse shop', '🎮 one more game']
-const SURF_PROMPTS = ['Notice where you feel the urge in your body.', 'Breathe into that spot. Don’t fight it.', 'Urges peak and fall, like waves. You’re riding it.', 'Name it: “I’m having the urge to…”. That’s all it is.', 'It’s getting weaker even if it doesn’t feel like it.', 'You don’t have to act on a feeling.', 'Almost there. The wave is breaking.']
+const SURF_PROMPTS = [
+  'Notice where you feel the urge in your body.',
+  'Breathe into that spot. Don’t fight it.',
+  'Urges peak and fall, like waves. You’re riding it.',
+  'Name it: “I’m having the urge to…”. That’s all it is.',
+  'It’s getting weaker even if it doesn’t feel like it.',
+  'You don’t have to act on a feeling.',
+  'Almost there. The wave is breaking.',
+]
 
 export function Urge() {
   const [wins, setWins] = useTool<number>('urge-wins', 0)
@@ -910,4 +1057,3 @@ export function Urge() {
     </div>
   )
 }
-

@@ -1,7 +1,8 @@
 // Full-screen Now Playing: big art you can swipe, a real scrubber, lyrics, up next and credits.
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
-import { ChevronDown, ExternalLink, Heart, ListMusic, Mic2, Pause, Play, SkipBack, SkipForward, Info } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Heart, Info, ListMusic, Mic2, Pause, Play, SkipBack, SkipForward } from 'lucide-react'
 import { fullSongLinks, usePlayer, type Track } from '../context/Player'
+import { WebLink } from './WebView'
 
 const fmt = (s: number) => (Number.isFinite(s) && s > 0 ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : '0:00')
 
@@ -65,9 +66,9 @@ function Lyrics({ track, playing }: { track: Track; playing: boolean }) {
             {fullSongLinks(track.title, track.artist, track.link)
               .slice(0, 3)
               .map((l) => (
-                <a key={l.label} className="btn btn-sm" href={l.href} target="_blank" rel="noreferrer">
+                <WebLink key={l.label} className="btn btn-sm" url={l.href} title={`${track.title} — ${l.label}`} note={`${l.label} shows the licensed, synced lyrics.`}>
                   <Mic2 size={14} /> {l.label}
-                </a>
+                </WebLink>
               ))}
           </div>
         </>
@@ -232,18 +233,18 @@ export function NowPlaying() {
                 <p>
                   A public-domain recording by <b>LibriVox</b> volunteers, hosted by the Internet Archive. Free for everyone, forever.
                 </p>
-                <a className="btn btn-sm" href={track.link} target="_blank" rel="noreferrer">
-                  <ExternalLink size={14} /> this audiobook on the Internet Archive
-                </a>
+                <WebLink className="btn btn-sm" url={track.link ?? ''} title={track.album || track.title}>
+                  <ArrowUpRight size={14} /> this audiobook on the Internet Archive
+                </WebLink>
               </>
             ) : track.kind === 'full' ? (
               <>
                 <p>
                   A full track by an independent artist, streamed from <b>Audius</b>. Show them some love:
                 </p>
-                <a className="btn btn-sm" href={track.link} target="_blank" rel="noreferrer">
-                  <ExternalLink size={14} /> {track.artist} on Audius
-                </a>
+                <WebLink className="btn btn-sm" url={track.link ?? ''} title={`${track.artist} on Audius`}>
+                  <ArrowUpRight size={14} /> {track.artist} on Audius
+                </WebLink>
               </>
             ) : (
               <>
@@ -252,9 +253,9 @@ export function NowPlaying() {
                 </p>
                 <div className="np-links">
                   {fullSongLinks(track.title, track.artist, track.link).map((l) => (
-                    <a key={l.label} className="btn btn-sm" href={l.href} target="_blank" rel="noreferrer">
-                      <ExternalLink size={14} /> {l.label}
-                    </a>
+                    <WebLink key={l.label} className="btn btn-sm" url={l.href} title={`${track.title} — ${l.label}`}>
+                      <ArrowUpRight size={14} /> {l.label}
+                    </WebLink>
                   ))}
                 </div>
               </>

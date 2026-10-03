@@ -743,3 +743,41 @@ body.vr-on .mini-player { display: none; }
 .pr-big { font-size: clamp(3.5rem, 18vw, 6rem); font-weight: 800; letter-spacing: -0.06em; line-height: 1; color: var(--lime); }
 .pr-result .row { margin-top: 12px; }
 .pr-result .btn { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ═════════════════════════ in-app web viewer ═════════════════════════ */
+.wv { position: fixed; inset: 0; z-index: 460; display: grid; grid-template-rows: auto 1fr; background: var(--bg); animation: np-up 0.3s cubic-bezier(0.2, 1, 0.3, 1); }
+.wv-top { display: flex; align-items: center; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 12px 10px; border-bottom: 2px solid color-mix(in srgb, var(--line) 20%, transparent); }
+.wv-title { display: grid; flex: 1; min-width: 0; text-align: center; line-height: 1.2; }
+.wv-title b { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wv-title small { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wv-frame { width: 100%; height: 100%; border: 0; background: var(--surface); color-scheme: light; }
+.wv-loading { position: absolute; inset: 56px 0 0; z-index: 1; display: grid; place-items: center; align-content: center; gap: 14px; background: var(--bg); color: var(--ink-dim); font-family: var(--font-mono); font-size: 0.82rem; }
+.wv-spin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid color-mix(in srgb, var(--ink) 15%, transparent); border-top-color: var(--lime); animation: spin 0.8s linear infinite; }
+.wv-refused { display: grid; justify-items: center; align-content: center; gap: 14px; padding: 30px 22px; text-align: center; }
+.wv-refused h2 { font-size: clamp(1.4rem, 6vw, 1.9rem); letter-spacing: -0.03em; }
+.wv-refused p { max-width: 42ch; line-height: 1.5; }
+.wv-refused .big-cta { display: inline-flex; align-items: center; gap: 8px; width: min(380px, 100%); margin-top: 6px; }
+.wv-refused .ibub { --a: var(--orange); }
+
+/* ═════════════════════════ back buttons ═════════════════════════ */
+.back-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px 8px 10px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; font-size: 0.9rem; }
+.back-btn:hover { background: var(--surface-2); }
+.back-btn:active { transform: scale(0.96); }
+.nav-back { flex: none; margin-right: 4px; }
+@media (max-width: 720px) {
+  .nav-back { padding: 8px; }
+  .nav-back .back-label { display: none; }
+}
+/* On phones it floats just above the tab bar, where the thumb already is. */
+
+body.onboarding .float-back, body.np-open .float-back { display: none; }
+.st-count { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faint); margin-bottom: 10px; }
+.st-book { display: inline-flex; align-items: center; gap: 7px; }
+.st-book small { font-family: var(--font-mono); font-size: 0.64rem; color: var(--ink-faint); }
+.st-book.on { background: var(--lime); color: #0d0c12; border-color: var(--line); }
+.st-book.on small { color: #0d0c12; }
+.st-chapters { margin-top: 12px; padding-top: 12px; border-top: 1.5px dashed color-mix(in srgb, var(--line) 30%, transparent); }
+.st-chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 7px; margin: 8px 0; }
+.st-chapter { padding: 9px 10px; border-radius: 12px; border: 1.5px solid color-mix(in srgb, var(--line) 28%, transparent); background: var(--bg-soft); color: inherit; font-weight: 600; font-size: 0.84rem; text-align: left; }
+.st-chapter:hover { border-color: var(--line); }
+.st-allch { font-size: 0.8rem; color: var(--ink-dim); }

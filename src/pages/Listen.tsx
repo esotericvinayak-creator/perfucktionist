@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { shareCard } from '../components/Overlays'
 import { MusicReels } from '../components/MusicReels'
+import { WebLink } from '../components/WebView'
 import { faithById, linesFor } from '../data/profile'
 import { shlokas } from '../data/shlokas'
 import { traditions, wisdom, type Theme } from '../data/wisdom'
@@ -261,9 +262,9 @@ export default function Listen() {
       {musicTrack && (
         <p className="lp-credit">
           music:{' '}
-          <a href={musicTrack.link} target="_blank" rel="noreferrer">
+          <WebLink className="linkish" url={musicTrack.link ?? ''} title={`${musicTrack.title} on Audius`}>
             {musicTrack.title} — {musicTrack.artist} on Audius
-          </a>
+          </WebLink>
         </p>
       )}
     </div>

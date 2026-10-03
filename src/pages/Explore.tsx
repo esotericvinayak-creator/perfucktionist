@@ -79,9 +79,6 @@ function AreaPage({ area, plus }: { area: Area; plus: boolean }) {
   return (
     <div className={`page explore2 a-${area.accent}`}>
       <header className="area-hero">
-        <a className="icon-btn" href="#/explore" aria-label="Back to explore">
-          ←
-        </a>
         <span className="area-hero-icon">
           <Icon name={area.id} size={40} />
         </span>

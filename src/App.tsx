@@ -4,6 +4,7 @@ import { MiniPlayer } from './components/MiniPlayer'
 import { Nav } from './components/Nav'
 import { ShareHost, Toaster } from './components/Overlays'
 import { TabBar } from './components/TabBar'
+import { WebView } from './components/WebView'
 import { PlayerProvider } from './context/Player'
 import { zoneByPath } from './data/zones'
 import { useAuth } from './lib/auth'
@@ -98,6 +99,7 @@ export default function App() {
       <TabBar route={route} />
       <Toaster />
       <ShareHost />
+      <WebView />
     </PlayerProvider>
   )
 }

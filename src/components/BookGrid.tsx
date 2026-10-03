@@ -1,9 +1,10 @@
 // Shared bits for every shelf: a book cover, a grid, and the in-app reader.
 import { useEffect, useState } from 'react'
-import { BookOpen, Bookmark, Download, ExternalLink, Headphones, Play, X } from 'lucide-react'
+import { ArrowUpRight, BookOpen, Bookmark, Download, Headphones, Play, X } from 'lucide-react'
 import { usePlayer } from '../context/Player'
 import { chapters, onShelf, toggleShelf, useShelf, type Book } from '../lib/books'
 import { log } from '../lib/progress'
+import { WebLink } from './WebView'
 
 export function Cover({ b, size = 'md' }: { b: Book; size?: 'md' | 'sm' }) {
   const [bad, setBad] = useState(false)
@@ -138,13 +139,13 @@ export function BookSheet({ book, onClose }: { book: Book | null; onClose: () =>
               <Play size={14} /> listen
             </button>
           )}
-          <a className="btn btn-sm" href={book.page} target="_blank" rel="noreferrer">
-            <ExternalLink size={14} /> open on {book.source}
-          </a>
+          <WebLink className="btn btn-sm" url={book.page} title={book.title}>
+            <ArrowUpRight size={14} /> open on {book.source}
+          </WebLink>
           {book.download && (
-            <a className="btn btn-sm" href={book.download} target="_blank" rel="noreferrer">
+            <WebLink className="btn btn-sm" url={book.download} title={`${book.title} — epub`}>
               <Download size={14} /> epub
-            </a>
+            </WebLink>
           )}
         </span>
       </footer>

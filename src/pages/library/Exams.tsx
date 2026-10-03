@@ -1,6 +1,7 @@
 // Competitive exams: pick yours, see what it actually is, then practise.
 import { useState } from 'react'
-import { ArrowLeft, ExternalLink, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, ShieldCheck } from 'lucide-react'
+import { WebLink } from '../../components/WebView'
 import { EXAMS, EXAM_GROUPS, examById, examsIn } from '../../data/exams'
 import { SUBJECTS } from '../../data/questions'
 import { Practice } from './Practice'
@@ -39,29 +40,40 @@ function ExamPage({ id, onBack }: { id: string; onBack: () => void }) {
         </div>
       </div>
 
-      <a className="ex-official" href={e.site} target="_blank" rel="noreferrer">
+      <WebLink className="ex-official" url={e.site} title={`${e.name} — official site`} note={`Run by ${e.body}.`}>
         <ShieldCheck size={22} aria-hidden="true" />
         <span className="grow">
           <b>official website</b>
           <small>the only place to trust for the pattern, marks, dates and eligibility</small>
         </span>
-        <ExternalLink size={16} aria-hidden="true" />
-      </a>
+        <ArrowUpRight size={16} aria-hidden="true" />
+      </WebLink>
       <p className="ex-warn">
         ⚠️ we deliberately don’t print question counts, marks or dates here — they change with every notification, and a stale number could cost you a year. always read the latest bulletin on the official site.
       </p>
 
       <p className="kicker">free, official prep</p>
       <div className="st-links">
-        {e.free.map((f) => (
-          <a key={f.url} className="st-link" href={f.url} target="_blank" rel="noreferrer">
-            <span className="grow">
-              <b>{f.label}</b>
-              <small>free · official</small>
-            </span>
-            <ExternalLink size={16} aria-hidden="true" />
-          </a>
-        ))}
+        {e.free.map((f) =>
+          // A '#' url is one of our own pages, so it just navigates.
+          f.url.startsWith('#') ? (
+            <a key={f.url} className="st-link" href={f.url}>
+              <span className="grow">
+                <b>{f.label}</b>
+                <small>free · in this app</small>
+              </span>
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </a>
+          ) : (
+            <WebLink key={f.url} className="st-link" url={f.url} title={f.label}>
+              <span className="grow">
+                <b>{f.label}</b>
+                <small>free · official</small>
+              </span>
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </WebLink>
+          ),
+        )}
       </div>
 
       <p className="kicker">practise what it tests</p>

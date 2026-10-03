@@ -5,8 +5,6 @@ import { Icon } from '../components/Icon'
 import { toolById } from '../tools/registry'
 import Explore from './Explore'
 
-const AREA_OF: Record<string, string> = { mind: 'calm', focus: 'focus', body: 'body', money: 'money', safety: 'safety', people: 'people', grow: 'grow' }
-
 function ToolView({ id }: { id: string }) {
   const t = toolById(id)
   const C = TOOL_COMPONENTS[id]
@@ -29,19 +27,20 @@ function ToolView({ id }: { id: string }) {
   return (
     <div className={`page tool-page cat-${t.cat}`}>
       <header className="tool-head">
-        <a className="icon-btn" href={`#/explore/${AREA_OF[t.cat] ?? ''}`} aria-label="Back">
-          ←
-        </a>
         <span className="ibub big">
           <Icon name={t.id === 'focus' ? 'focus-timer' : t.id} size={26} />
         </span>
         <div className="grow">
           <h1>{t.name}</h1>
-          <p>
-            {t.hook}
-          </p>
+          <p>{t.hook}</p>
         </div>
-        <button type="button" className={`icon-btn${pinned ? ' pinned' : ''}`} aria-pressed={pinned} aria-label={pinned ? 'Unpin from dock' : 'Pin to dock'} onClick={() => setPins(pinned ? pins.filter((p) => p !== id) : [id, ...pins])}>
+        <button
+          type="button"
+          className={`icon-btn${pinned ? ' pinned' : ''}`}
+          aria-pressed={pinned}
+          aria-label={pinned ? 'Unpin from dock' : 'Pin to dock'}
+          onClick={() => setPins(pinned ? pins.filter((p) => p !== id) : [id, ...pins])}
+        >
           {pinned ? '★' : '☆'}
         </button>
       </header>

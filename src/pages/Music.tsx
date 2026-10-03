@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Callout, PageHero, Section } from '../components/ui'
+import { WebLink } from '../components/WebView'
 import { fullSongLinks, usePlayer, type Track } from '../context/Player'
 import { moods, playlists, radios, searchFull, searchSongs, stores } from '../lib/music'
 import { pick, useLocalState } from '../lib/storage'
@@ -11,7 +12,12 @@ function TrackCard({ t, list }: { t: Track; list: Track[] }) {
   const isCurrent = player.track?.id === t.id
   return (
     <li className={`track${isCurrent ? ' current' : ''}`}>
-      <button type="button" className="track-play" onClick={() => (isCurrent ? player.toggle() : player.play(t, list))} aria-label={`${isCurrent && player.playing ? 'Pause' : 'Play'} ${t.title} by ${t.artist}${t.kind === 'full' ? ', full song' : ', 30 second preview'}`}>
+      <button
+        type="button"
+        className="track-play"
+        onClick={() => (isCurrent ? player.toggle() : player.play(t, list))}
+        aria-label={`${isCurrent && player.playing ? 'Pause' : 'Play'} ${t.title} by ${t.artist}${t.kind === 'full' ? ', full song' : ', 30 second preview'}`}
+      >
         {t.art ? <img src={t.art} alt="" loading="lazy" width={300} height={300} /> : <span className="track-noart">🎵</span>}
         <span className={`len-badge on-art ${t.kind}`}>{t.kind === 'full' ? 'FULL' : '30s'}</span>
         <span className="track-btn" aria-hidden="true">
@@ -31,14 +37,14 @@ function TrackCard({ t, list }: { t: Track; list: Track[] }) {
       </div>
       <div className="track-links">
         {t.kind === 'full' ? (
-          <a href={t.link} target="_blank" rel="noreferrer">
+          <WebLink className="linkish" url={t.link ?? ''} title={`${t.title} on Audius`}>
             on Audius ↗
-          </a>
+          </WebLink>
         ) : (
           fullSongLinks(t.title, t.artist, t.link).map((l) => (
-            <a key={l.label} href={l.href} target="_blank" rel="noreferrer">
+            <WebLink key={l.label} className="linkish" url={l.href} title={`${t.title} — ${l.label}`}>
               {l.label}
-            </a>
+            </WebLink>
           ))
         )}
       </div>
@@ -99,7 +105,14 @@ export default function Music() {
         sub="Bollywood, Hollywood, Punjabi, K-pop, bhajans, ghazals, lofi — search basically every song on earth and play it right here. Keep browsing; the music follows you."
       />
 
-      <Section kicker="search the planet" title={<>what are we <span className="serif">playing?</span></>}>
+      <Section
+        kicker="search the planet"
+        title={
+          <>
+            what are we <span className="serif">playing?</span>
+          </>
+        }
+      >
         <form
           className="search-bar"
           onSubmit={(e) => {
@@ -176,11 +189,20 @@ export default function Music() {
           </div>
         )}
         <Callout accent="orange" icon="ℹ️">
-          <b>FULL</b> tracks are original instrumental and lofi music by independent artists on Audius (shown for Lofi only). <b>30s</b> previews come from Apple Music — tap Apple Music, YouTube, Spotify or JioSaavn under a song for the full version.
+          <b>FULL</b> tracks are original instrumental and lofi music by independent artists on Audius (shown for Lofi only). <b>30s</b> previews come from Apple Music — tap Apple Music, YouTube, Spotify or JioSaavn
+          under a song for the full version.
         </Callout>
       </Section>
 
-      <Section kicker="full playlists" title={<>press play, <span className="serif">forget the world</span></>} intro="Full songs on a laptop or desktop (Chrome, Edge, Firefox) when you’re logged in to Spotify. Phones and iPhones get 30-second previews.">
+      <Section
+        kicker="full playlists"
+        title={
+          <>
+            press play, <span className="serif">forget the world</span>
+          </>
+        }
+        intro="Full songs on a laptop or desktop (Chrome, Edge, Firefox) when you’re logged in to Spotify. Phones and iPhones get 30-second previews."
+      >
         <div className="row gap-sm wrap filter-row" role="group" aria-label="Playlists">
           {playlists.map((p) => (
             <button key={p.id} type="button" className={`chip${playlist === p.id ? ' on' : ''}`} onClick={() => setPlaylist(p.id)}>
@@ -201,7 +223,14 @@ export default function Music() {
         </div>
       </Section>
 
-      <Section kicker="24/7 radio" title={<>study, chill, <span className="serif">repeat</span></>}>
+      <Section
+        kicker="24/7 radio"
+        title={
+          <>
+            study, chill, <span className="serif">repeat</span>
+          </>
+        }
+      >
         <div className="grid grid-2">
           {radios.map((r) => (
             <div key={r.id} className="card radio a-orange">

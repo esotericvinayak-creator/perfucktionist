@@ -43,7 +43,8 @@ export type Exam = {
 }
 
 // Free, official prep that several exams share.
-const NCERT = { label: 'NCERT textbooks (free PDFs)', url: 'https://www.ncert.nic.in/textbook.php' }
+// An internal link: NCERT's books already live in our own School shelf, chapter by chapter.
+const NCERT = { label: 'NCERT textbooks — right here in the library', url: '#/library/school' }
 const NTA_QUIZ = { label: 'NTA practice tests', url: 'https://www.nta.ac.in/Quiz' }
 const NTA_ABHYAS = { label: 'NTA Abhyas practice app', url: 'https://nta.ac.in/Abhyas' }
 const NPTEL = { label: 'NPTEL — free courses by IIT/IISc faculty', url: 'https://nptel.ac.in' }

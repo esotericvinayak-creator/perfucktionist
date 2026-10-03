@@ -1,6 +1,5 @@
 // The library: scripture, school, college, exams, free books and free audiobooks.
 // One hub, then one screen per shelf — instead of one endless page of cards.
-import { ArrowLeft } from 'lucide-react'
 import { Icon } from '../components/Icon'
 import { BookSheet } from '../components/BookGrid'
 import { BookGrid } from '../components/BookGrid'
@@ -118,9 +117,6 @@ export default function Library() {
   return (
     <div className="page library2">
       <header className="lb-head">
-        <a className="icon-btn" href="#/library" aria-label="Back to the library">
-          <ArrowLeft size={20} />
-        </a>
         <h1>{TITLES[section]}</h1>
       </header>
       {section === 'school' && <School />}

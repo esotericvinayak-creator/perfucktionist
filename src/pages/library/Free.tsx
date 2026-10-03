@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Search, X } from 'lucide-react'
 import { BookGrid, BookSheet, Skeletons } from '../../components/BookGrid'
+import { WebLink } from '../../components/WebView'
 import { audiobooks, gutenberg, openLibrary, type Book } from '../../lib/books'
 
 type Shelf = { id: string; label: string; q?: string; audio?: string }
@@ -134,21 +135,21 @@ export function Free({ mode }: { mode: 'read' | 'listen' }) {
         {mode === 'read' ? (
           <>
             books from{' '}
-            <a href="https://openlibrary.org" target="_blank" rel="noreferrer">
+            <WebLink className="linkish" url="https://openlibrary.org" title="Open Library">
               Open Library
-            </a>{' '}
+            </WebLink>{' '}
             (Internet Archive) and{' '}
-            <a href="https://www.gutenberg.org" target="_blank" rel="noreferrer">
+            <WebLink className="linkish" url="https://www.gutenberg.org" title="Project Gutenberg">
               Project Gutenberg
-            </a>
+            </WebLink>
             . only free-to-read editions are shown.
           </>
         ) : (
           <>
             audiobooks read by volunteers at{' '}
-            <a href="https://librivox.org" target="_blank" rel="noreferrer">
+            <WebLink className="linkish" url="https://librivox.org" title="LibriVox">
               LibriVox
-            </a>
+            </WebLink>
             , hosted by the Internet Archive. all public domain, all free.
           </>
         )}

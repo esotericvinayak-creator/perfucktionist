@@ -1,30 +1,44 @@
 // School (class 1–12) and college shelves — official free textbooks, nothing pirated.
 import { useState } from 'react'
-import { ExternalLink } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
+import { WebLink } from '../../components/WebView'
 import { OPEN_LIBRARIES, SCHOOL_EXTRAS, STREAMS, type Link as L } from '../../data/college'
-import { SCHOOL, ncertUrl } from '../../data/school'
+import { SCHOOL, chapterCount, ncertChapters, ncertUrl, totalSchoolBooks } from '../../data/school'
 import { useLocalState } from '../../lib/storage'
 
 const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII']
 
 function LinkRow({ l }: { l: L }) {
   return (
-    <a className="st-link" href={l.url} target="_blank" rel="noreferrer">
+    <WebLink className="st-link" url={l.url} title={l.title}>
       <span className="grow">
         <b>{l.title}</b>
         <small>{l.by}</small>
       </span>
-      <ExternalLink size={16} aria-hidden="true" />
-    </a>
+      <ArrowUpRight size={16} aria-hidden="true" />
+    </WebLink>
   )
 }
 
 export function School() {
   const [cls, setCls] = useLocalState('school-class', 10)
+  const [lang, setLang] = useLocalState('school-lang', 'English')
+  const [open, setOpen] = useState('')
   const row = SCHOOL.find((c) => c.cls === cls) ?? SCHOOL[9]
+  // Every language NCERT prints this class in, English first.
+  const langs = [...new Set(row.subjects.flatMap((s) => s.langs.map((l) => l.lang)))].sort((a, b) => {
+    const order = ['English', 'Hindi', 'Urdu', 'Sanskrit']
+    const ai = order.indexOf(a)
+    const bi = order.indexOf(b)
+    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi) || a.localeCompare(b)
+  })
+  const pick = langs.includes(lang) ? lang : langs[0]
+  const subjects = row.subjects.map((s) => ({ subject: s.subject, books: s.langs.find((l) => l.lang === pick)?.books ?? [] })).filter((s) => s.books.length)
+  const count = subjects.reduce((n, s) => n + s.books.length, 0)
+
   return (
     <>
-      <p className="lb-note">Every NCERT textbook, free, from NCERT’s own site. Pick your class — each book opens on the official page where the chapters are free PDFs.</p>
+      <p className="lb-note">All {totalSchoolBooks} NCERT textbooks, free, straight from NCERT. Pick your class and language — then tap a book to see its chapters — each one is a free PDF.</p>
       <div className="st-classes" role="group" aria-label="Pick your class">
         {SCHOOL.map((c) => (
           <button key={c.cls} type="button" className={`st-class${c.cls === cls ? ' on' : ''}`} onClick={() => setCls(c.cls)} aria-pressed={c.cls === cls}>
@@ -34,22 +48,48 @@ export function School() {
         ))}
       </div>
 
+      <div className="lb-chips" role="group" aria-label="Pick a language">
+        <span className="lb-chips-label">language:</span>
+        {langs.map((l) => (
+          <button key={l} type="button" className={`chip${pick === l ? ' on' : ''}`} onClick={() => setLang(l)} aria-pressed={pick === l}>
+            {l}
+          </button>
+        ))}
+      </div>
+
+      <p className="st-count">
+        class {ROMAN[cls]} · {pick} · {count} book{count === 1 ? '' : 's'}
+      </p>
+
       <div className="st-subjects">
-        {row.subjects.map((s) => (
+        {subjects.map((s) => (
           <article key={s.subject} className="st-subject">
             <h3>{s.subject}</h3>
             <div className="st-books">
-              {s.en.map((b) => (
-                <a key={b.code} className="st-book" href={ncertUrl(b.code)} target="_blank" rel="noreferrer">
-                  📘 {b.title}
-                </a>
-              ))}
-              {s.hi.map((b) => (
-                <a key={b.code} className="st-book hi" href={ncertUrl(b.code)} target="_blank" rel="noreferrer">
-                  📙 {b.title}
-                </a>
+              {s.books.map((b) => (
+                <button key={b.c} type="button" className={`st-book${open === b.c ? ' on' : ''}`} onClick={() => setOpen(open === b.c ? '' : b.c)} aria-expanded={open === b.c}>
+                  📘 {b.t}
+                  <small>{chapterCount(b.c)} ch</small>
+                </button>
               ))}
             </div>
+            {s.books
+              .filter((b) => b.c === open)
+              .map((b) => (
+                <div key={b.c} className="st-chapters">
+                  <p className="kicker">{b.t} · free chapters</p>
+                  <div className="st-chapter-grid">
+                    {ncertChapters(b.c).map((ch) => (
+                      <WebLink key={ch.url} className="st-chapter" url={ch.url} title={`${b.t} — ${ch.label}`} note="This is NCERT’s own free PDF of the chapter.">
+                        {ch.label}
+                      </WebLink>
+                    ))}
+                  </div>
+                  <WebLink className="linkish st-allch" url={ncertUrl(b.c)} title={`${b.t} on NCERT`}>
+                    see this book on ncert.nic.in →
+                  </WebLink>
+                </div>
+              ))}
           </article>
         ))}
       </div>
@@ -62,10 +102,10 @@ export function School() {
       </div>
       <p className="lb-credit">
         textbooks from{' '}
-        <a href="https://www.ncert.nic.in/textbook.php" target="_blank" rel="noreferrer">
+        <WebLink className="linkish" url="https://www.ncert.nic.in/textbook.php" title="NCERT textbooks">
           NCERT
-        </a>
-        . if a link ever 404s, NCERT has reorganised that book — their textbook page always has the current one.
+        </WebLink>
+        . if a book ever moves, NCERT’s textbook page always has the current one.
       </p>
     </>
   )

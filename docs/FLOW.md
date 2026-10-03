@@ -69,7 +69,7 @@ flowchart TD
 | **Home** `#/` | 5-minute daily flow, your pet, spotlight, plan, tools for you, Listen, Read, today's wisdom (your faith), SOS |
 | **Explore** `#/explore` | Search, need chips, quick picks, 10 areas → guides + tools |
 | **Library** `#/library` | Hub of six shelves: school, college, exams, scripture, free books, audiobooks |
-| School `#/library/school` | 239 NCERT textbooks, class 1–12, English & Hindi |
+| School `#/library/school` | 1,141 NCERT textbooks, class 1–12, 23 languages, with chapter lists |
 | College `#/library/college` | 8 streams: OpenStax, LibreTexts, MIT OCW, NPTEL, SWAYAM |
 | Exams `#/library/exams` | 28 exams + 360 practice questions across 12 subjects |
 | Scripture `#/library/faith` | Gita, Ramayana, Guru Granth Sahib, Quran, Bible, Dhammapada — your faith's book first |
@@ -81,6 +81,8 @@ flowchart TD
 | Now Playing | Opens from the mini player on any page |
 | Read `#/read` | Blog posts; `#/read/<slug>` for one post |
 | Tools `#/tools/<id>` | Any of the 60 tools, with "up next" handoffs |
+
+Every external link opens in the in-app viewer, never a new tab. Every screen outside the four tabs has a back button in the top bar.
 
 ## What gender and faith change
 

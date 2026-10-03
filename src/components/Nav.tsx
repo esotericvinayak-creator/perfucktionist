@@ -1,3 +1,4 @@
+import { ArrowLeft } from 'lucide-react'
 import { streakOf, useProgress } from '../lib/progress'
 import { Icon } from './Icon'
 
@@ -17,6 +18,31 @@ export function tabFor(route: string) {
   return '/explore'
 }
 
+const ROOTS = ['/', '/explore', '/library', '/me']
+
+/** Where "back" goes when there's no history to go back to: one level up the hash route. */
+export function parentOf(route: string) {
+  const parts = route.split('/').filter(Boolean)
+  if (parts.length <= 1) return tabFor(route) === '/' ? null : tabFor(route)
+  return '/' + parts.slice(0, -1).join('/')
+}
+
+/** Back button for every screen that isn't one of the four tabs. */
+export function BackButton({ route, className = '' }: { route: string; className?: string }) {
+  if (ROOTS.includes(route)) return null
+  const go = () => {
+    // Use real history when we have some, so back feels like the phone's own back.
+    if (window.history.length > 1) window.history.back()
+    else window.location.hash = parentOf(route) ?? '/'
+  }
+  return (
+    <button type="button" className={`back-btn ${className}`.trim()} onClick={go} aria-label="Go back">
+      <ArrowLeft size={20} />
+      <span className="back-label">back</span>
+    </button>
+  )
+}
+
 export function Logo() {
   return (
     <span className="logo-text">
@@ -30,6 +56,7 @@ export function Nav({ route }: { route: string }) {
   const tab = tabFor(route)
   return (
     <header className="nav">
+      <BackButton route={route} className="nav-back" />
       <a href="#/" className="logo" aria-label="perfucktionist — home">
         <Logo />
       </a>

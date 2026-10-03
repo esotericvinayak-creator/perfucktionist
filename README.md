@@ -22,7 +22,7 @@ Four tabs, nothing else: **Home · Explore · Library · Me**. Full flowchart: [
 
 | Shelf | What's in it | Where it comes from |
 | --- | --- | --- |
-| School `#/library/school` | 239 NCERT textbook links, class 1–12, English and Hindi editions | generated from NCERT's own textbook page — `src/data/school.ts` |
+| School `#/library/school` | All **1,141** NCERT textbooks, class 1–12, in every language NCERT publishes (English, Hindi, Urdu, Sanskrit and 19 more). Tap a book for its chapter list | generated from NCERT's own textbook page — `src/data/school.ts` |
 | College `#/library/college` | 8 streams of openly licensed textbooks + free courses | OpenStax, LibreTexts, Open Textbook Library, MIT OpenCourseWare, NPTEL, SWAYAM — `src/data/college.ts` |
 | Exams `#/library/exams` | 28 exams across 12 groups, each with its official site and free official prep, plus practice in the subjects it tests | `src/data/exams.ts` |
 | Scripture `#/library/faith` | 1,22,156 verses from 6 scriptures, quotes by theme and tradition, shlokas | `src/lib/scripture.ts`, `src/data/wisdom.ts` |
@@ -30,6 +30,16 @@ Four tabs, nothing else: **Home · Explore · Library · Me**. Full flowchart: [
 | Audiobooks `#/library/listen` | free public-domain audiobooks with chapters and 0.75×–2× speed | LibriVox, hosted by the Internet Archive |
 
 **Practice** (`src/data/questions/`) is 360 original multiple-choice questions across 12 subjects — quant, reasoning, English, computer, physics, chemistry, biology, general science, polity, history, geography and economy. Every answer was worked out twice, independently; the general-studies set sticks to settled facts and names no current office-holder, figure or scheme. Ten per round, with the reasoning shown after every answer. Scores stay on the device.
+
+### Links open inside the app
+
+Nothing opens in a surprise new tab. Every external link goes through `src/components/WebView.tsx`, a full-screen in-app viewer: the site loads in an iframe, the phone's back gesture closes it, and the hash route never changes.
+
+Some sites refuse to be embedded — they send `X-Frame-Options` or a `frame-ancestors` policy, which is their security setting and not something to work around. `NO_FRAME` in that file lists the ones checked (with a GET carrying iframe fetch headers, 2026-10-03): NCERT, UPSC, SWAYAM, the NTA exam portals, the banks, the defence boards, College Board, ETS, IELTS, DIKSHA, LibreTexts, NDLI and the music stores. For those the viewer shows a card that says plainly why, and leaving is the user's own tap.
+
+**NCERT in particular** can't be framed, so the School shelf keeps the browsing in the app: pick class → language → book → chapter list, all local, and only the chapter PDF itself opens in the phone's PDF reader. The chapter URLs are derived from NCERT's own codes (`jemh1=0-14` → `jemh101.pdf` … `jemh114.pdf`), verified against their server.
+
+**Back button:** every screen that isn't one of the four tabs shows one in the top bar (`BackButton` in `src/components/Nav.tsx`). It uses real history when there is any, else walks one level up the hash route.
 
 **On exam facts:** `src/data/exams.ts` deliberately carries no question counts, marks, dates or eligibility rules. Those change with every notification and a stale number could cost a student a year — so each exam links to its official site, and the UI says so plainly. Only the stable things (what the exam is for, the rounds, roughly when) are stored here. Every URL in the library data files returned HTTP 200 when they were written.
 

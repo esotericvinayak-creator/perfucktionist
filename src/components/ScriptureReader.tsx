@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { WebLink } from './WebView'
 import { log } from '../lib/progress'
 import { randomKey, type Scripture, type Section, type TocGroup } from '../lib/scripture'
 import { useLocalState } from '../lib/storage'
@@ -213,11 +214,7 @@ export function ScriptureReader({ book, target }: { book: Scripture; target: Rea
                     {playing === v.n ? '■ stop' : '🔊 recitation'}
                   </button>
                 )}
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => shareCard({ kicker: `${book.emoji} ${v.cite}`, original: v.original, lang: v.lang, rtl: v.rtl, text: translation })}
-                >
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => shareCard({ kicker: `${book.emoji} ${v.cite}`, original: v.original, lang: v.lang, rtl: v.rtl, text: translation })}>
                   ↗ story
                 </button>
                 <CopyButton text={`${v.original ? `${v.original}\n\n` : ''}${translation}\n— ${v.cite}`} />
@@ -239,9 +236,9 @@ export function ScriptureReader({ book, target }: { book: Scripture; target: Rea
       )}
       <p className="credit">
         Source:{' '}
-        <a href={book.credit.href} target="_blank" rel="noreferrer">
+        <WebLink className="linkish" url={book.credit.href} title={book.credit.text}>
           {book.credit.text}
-        </a>
+        </WebLink>
       </p>
     </div>
   )
