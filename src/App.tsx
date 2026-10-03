@@ -8,12 +8,12 @@ import { UpdatePrompt } from './components/UpdatePrompt'
 import { WebView } from './components/WebView'
 import { PlayerProvider } from './context/Player'
 import { zoneByPath } from './data/zones'
-import { useAuth } from './lib/auth'
+import { appHandOver, useAuth } from './lib/auth'
 import { appOnly } from './lib/install'
 import { applyStreakFreeze } from './lib/progress'
 import { useRoute } from './lib/router'
 import { useSync } from './lib/sync'
-import Auth from './pages/Auth'
+import Auth, { EmailHandOver } from './pages/Auth'
 import Brave from './pages/Brave'
 import Breathe from './pages/Breathe'
 import Bro from './pages/Bro'
@@ -81,6 +81,8 @@ export default function App() {
     applyStreakFreeze()
   }, [])
 
+  // An email link the app asked for, opened in the browser: hand it back to the app.
+  if (appHandOver) return <EmailHandOver />
   // Android visitors on the website get the landing page and the APK; the app itself is the APK.
   const download = appOnly()
   // First login on a phone: wait (a few seconds at most) for your progress to arrive from your account.

@@ -1,8 +1,11 @@
 {
   "version": "0.1.0",
-  "size": 8652212,
+  "versionCode": 2,
+  "minVersionCode": 0,
+  "notes": "Real accounts, sync between phones, and updates right inside the app.",
+  "size": 8664872,
   "built": "2026-10-03",
-  "sha256": "5f154850aa1df327eedcda499eeadff607266301f8bd5ad608a87c8a4cdbc27c",
+  "sha256": "b0112c9558f23da62078a3d1b296bb25472b29daa481fb0c6f2574c56fb4245a",
   "minAndroid": "7.0",
   "signed": "release"
 }

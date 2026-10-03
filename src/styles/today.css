@@ -823,3 +823,7 @@ body.onboarding .float-back, body.np-open .float-back { display: none; }
 .aw-actions .big-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .aw-note { text-align: center; font-size: 0.82rem; color: var(--ink-dim); }
 .aw-signed { max-width: 440px; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); background: color-mix(in srgb, var(--lime) 14%, var(--surface)); font-size: 0.92rem; line-height: 1.45; }
+.auth-notice { padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); font-size: 0.92rem; line-height: 1.45; background: color-mix(in srgb, var(--lime) 14%, var(--surface)); }
+.auth-notice.error { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); }
+.handover { text-align: center; justify-items: center; }
+.handover .big-cta { width: 100%; }

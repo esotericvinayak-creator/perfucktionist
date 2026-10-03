@@ -4,8 +4,8 @@ import { LandingMore } from '../components/Landing'
 import { Logo } from '../components/Nav'
 import { Marquee } from '../components/ui'
 import { motives } from '../data/zones'
-import { cloud, googleAvailable, logIn, logInWithGoogle, sendReset, setNewPassword, signUp, useAuth } from '../lib/auth'
-import { alreadyInstalled, appOnly, inNativeApp } from '../lib/install'
+import { APP_SCHEME, appHandOver, clearNotice, cloud, googleAvailable, logIn, logInWithGoogle, resendConfirmation, sendReset, setNewPassword, signUp, useAuth } from '../lib/auth'
+import { alreadyInstalled, appOnly, detectPlatform, inNativeApp } from '../lib/install'
 
 type Screen = 'welcome' | 'signup' | 'login' | 'forgot' | 'sent' | 'confirm'
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -49,6 +49,17 @@ function GoogleButton({ onError }: { onError: (e: string) => void }) {
         <span>or</span>
       </div>
     </>
+  )
+}
+
+/** One-off message after an email link ("✓ email confirmed", "that link expired"). */
+function NoticeBar() {
+  const { notice } = useAuth()
+  if (!notice) return null
+  return (
+    <p className={`auth-notice ${notice.tone}`} role="status">
+      {notice.text}
+    </p>
   )
 }
 
@@ -169,6 +180,8 @@ function Login({ onBack, onSignup, onForgot }: { onBack: () => void; onSignup: (
   const [pw, setPw] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [resent, setResent] = useState(false)
+  const unconfirmed = /confirm your email/i.test(error)
   return (
     <Shell onBack={onBack}>
       <form
@@ -181,14 +194,29 @@ function Login({ onBack, onSignup, onForgot }: { onBack: () => void; onSignup: (
           const r = await logIn(email, pw)
           setBusy(false)
           if (!r.ok) setError(r.error)
-          else window.location.hash = '/'
+          else (clearNotice(), (window.location.hash = '/'))
         }}
       >
+        <NoticeBar />
         <p className="act-q">welcome back 👋</p>
         <GoogleButton onError={setError} />
         <input className="act-input" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" autoComplete="email" autoFocus />
         <PasswordInput value={pw} onChange={setPw} placeholder="password" autoComplete="current-password" />
         {error && <p className="error-text">{error}</p>}
+        {unconfirmed && (
+          <button
+            type="button"
+            className="btn btn-sm"
+            disabled={resent}
+            onClick={async () => {
+              const r = await resendConfirmation(email)
+              if (r.ok) setResent(true)
+              else setError(r.error)
+            }}
+          >
+            <Mail size={16} /> {resent ? 'sent — check your inbox' : 'send the confirmation link again'}
+          </button>
+        )}
         <button type="submit" className="btn btn-primary a-lime big-cta" disabled={!EMAIL.test(email.trim()) || !pw || busy}>
           <LogIn size={18} /> {busy ? 'logging in…' : 'log in'}
         </button>
@@ -219,6 +247,7 @@ function Forgot({ onBack, onSent }: { onBack: () => void; onSent: (email: string
           else setError(r.error)
         }}
       >
+        <NoticeBar />
         <p className="act-q">reset your password</p>
         <input className="act-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your email" autoComplete="email" autoFocus />
         {error && <p className="error-text">{error}</p>}
@@ -296,6 +325,7 @@ function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => voi
           is a <span className="serif">scam.</span>
         </h1>
         <p className="lede">5 minutes a day to breathe, focus, sort your money, stay safe and grow — with wisdom from every faith. no pressure. no perfect.</p>
+        <NoticeBar />
         {download && auth.status === 'in' && (
           <p className="aw-signed">
             ✓ you’re signed in as <b>{auth.user?.email}</b>. Open the perfucktionist app and log in there to carry on.
@@ -350,6 +380,11 @@ function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => voi
 export default function Auth() {
   const auth = useAuth()
   const [screen, setScreen] = useState<Screen>('welcome')
+  // Back from an email link: go straight to logging in (or asking for a new reset link).
+  const notice = auth.notice?.text
+  useEffect(() => {
+    if (notice && !appOnly()) setScreen(/reset link/i.test(notice) ? 'forgot' : 'login')
+  }, [notice])
   const [email, setEmail] = useState('')
   useEffect(() => {
     document.body.classList.add('onboarding')
@@ -383,4 +418,57 @@ export default function Auth() {
       </Shell>
     )
   return <Welcome onSignup={() => setScreen('signup')} onLogin={() => setScreen('login')} />
+}
+
+/**
+ * An email link the app asked for, opened in a browser. Only the app can finish it (it holds
+ * the sign-in secret), so on Android this hands the code over; anywhere else it says where to go.
+ */
+export function EmailHandOver() {
+  const link = appHandOver
+  if (!link) return null
+  const android = detectPlatform() === 'android'
+  const reset = link.kind === 'reset'
+  const params = new URLSearchParams({ type: link.kind, ...(link.code ? { code: link.code } : {}), ...(link.flowId ? { sb_flow_id: link.flowId } : {}) })
+  // Chrome opens the app from an intent: link, or the fallback (the download page) if it isn't installed.
+  const fallback = encodeURIComponent(`${window.location.origin}${window.location.pathname}#/get`)
+  const open = `intent://auth?${params.toString()}#Intent;scheme=${APP_SCHEME};package=${APP_SCHEME};S.browser_fallback_url=${fallback};end`
+  return (
+    <div className="auth-shell">
+      <div className="auth-top">
+        <Logo />
+      </div>
+      <div className="auth-form handover">
+        <span className="ob-seed">{link.error ? '⏳' : reset ? '🔑' : '✅'}</span>
+        {link.error ? (
+          <>
+            <p className="act-q">that link didn’t work</p>
+            <p className="muted">
+              {link.error}. {reset ? 'Open the app and ask for a new reset link.' : 'Open the app and log in — if your email still isn’t confirmed, it can send a fresh link.'}
+            </p>
+          </>
+        ) : reset ? (
+          <>
+            <p className="act-q">choose a new password in the app</p>
+            <p className="muted">{android ? 'Tap below and the app opens, ready for your new password.' : 'Open this email on the phone that has the app — the reset finishes there.'}</p>
+          </>
+        ) : (
+          <>
+            <p className="act-q">email confirmed ✦</p>
+            <p className="muted">{android ? 'Tap below to jump back into the app — you’ll be logged in.' : 'Now open perfucktionist on your phone and log in.'}</p>
+          </>
+        )}
+        {android && !link.error && link.code && (
+          <a className="btn btn-primary a-lime big-cta" href={open}>
+            open the app
+          </a>
+        )}
+        {android && (
+          <p className="aw-note">
+            Don’t have the app yet? <a href="#/get">Download it</a>.
+          </p>
+        )}
+      </div>
+    </div>
+  )
 }

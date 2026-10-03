@@ -151,7 +151,7 @@ Only `VITE_*` values reach the browser, and anyone can read them. The build refu
    ```
 3. **Create the table:** `npm run db:push` applies `supabase/migrations/` to the project.
 4. **Auth settings** in the Supabase dashboard → *Authentication*:
-   - *URL Configuration*: Site URL = your website. Add it to the Redirect URLs, plus `http://localhost:5173` if `dev` uses this project.
+   - *URL Configuration*: **Site URL** = your website (`https://perfucktionist.vercel.app`). **Redirect URLs**: `https://perfucktionist.vercel.app/**`, plus `http://localhost:5173/**` if `dev` uses this project. Supabase ignores any return address not on this list and falls back to the Site URL, which is `http://localhost:3000` until you change it.
    - *Sign In / Providers*: Email on with "Confirm email" on, and minimum password length 8 (the app asks for 8). Google is optional and only shows on the website: Google blocks sign-in inside app web views.
 5. **Android key into Doppler:** `npm run secrets:android` copies the existing release key and passwords into `prd`. It shows names, never values. After `npm run apk` signs fine from Doppler, `android/keystore.properties` can go. Still keep an offline copy of the `.jks`.
 6. **Hosting.** `VITE_*` values are baked in at build time, so the host's build needs them. For Vercel, see below. Elsewhere, set the same two variables in the host's settings, or build locally with `npm run build` and upload `dist/`.
@@ -183,7 +183,19 @@ That's all the website needs. Leave the rest out of Vercel:
 
 **Doppler → Vercel.** Doppler's Vercel integration syncs a *whole* config. If you use it, point it at a config holding only the two public values, for example a branch config `prd_web` that references `${prd.VITE_SUPABASE_URL}`. That keeps the database password and the signing key off Vercel.
 
-**Supabase redirect URLs.** In *Authentication → URL Configuration*, add `https://<project>.vercel.app/**`, plus `https://*-<team>.vercel.app/**` for preview deployments. Without them, email links from those deployments won't work.
+**Supabase redirect URLs.** In *Authentication → URL Configuration*, set the Site URL to `https://perfucktionist.vercel.app` and add `https://perfucktionist.vercel.app/**`, plus `https://*-per-fuck-tionist.vercel.app/**` for preview deployments. Without them, email links land on `localhost:3000`.
+
+### Email links and the Android app
+
+Confirmation and password-reset emails always return to the website, as `?auth=signup|reset`, with `&app=1` when the app asked for them.
+
+- **Asked for on the website:** the website finishes it. You're logged in, or reset your password.
+- **Opened in a different browser:** "✓ Email confirmed. Log in".
+- **Asked for in the app:** only the app can finish it, because it holds the sign-in secret (PKCE). On Android, the website shows **open the app**: an `intent://` link with the `in.perfucktionist.app` scheme, which logs you in or opens "new password" inside the app. If the app isn't installed, the link goes to the download page instead. On a computer, it says to log in on your phone.
+- **Expired or used links** say so.
+- **Logging in before confirming** offers to send the link again.
+
+Google sign-in stays website-only for now, because Google blocks sign-in inside app web views.
 
 ### Local Supabase (optional, needs Docker)
 
