@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { log } from '../lib/progress'
+import { onArrival, peek, persist } from '../lib/storage'
 
 export type Track = {
   id: string
@@ -44,14 +45,7 @@ type Player = {
   toggleLike: (t: Track) => void
 }
 
-const LIKED_KEY = 'pf:liked'
-function readLiked(): Track[] {
-  try {
-    return JSON.parse(localStorage.getItem(LIKED_KEY) ?? '[]') as Track[]
-  } catch {
-    return []
-  }
-}
+const readLiked = () => peek<Track[]>('liked') ?? []
 
 const PlayerContext = createContext<Player | null>(null)
 
@@ -70,13 +64,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [liked, setLiked] = useState<Track[]>(readLiked)
   const track = queue[index] ?? null
 
+  // Only real likes get stored (an empty list on first open isn't an edit). If storage is blocked, likes live in memory.
   useEffect(() => {
-    try {
-      localStorage.setItem(LIKED_KEY, JSON.stringify(liked))
-    } catch {
-      // storage blocked — likes live in memory for this visit
-    }
+    if (liked.length || peek('liked')) persist('liked', liked)
   }, [liked])
+  // Likes synced down from your account.
+  useEffect(() => onArrival('liked', () => setLiked(readLiked())), [])
 
   if (!audio.current && typeof Audio !== 'undefined') audio.current = new Audio()
   const rateRef = useRef(1)

@@ -1,17 +1,23 @@
 // Accounts.
-// - Cloud mode: set VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY and users get real accounts
-//   (email + password, Google, password reset). Supabase is only downloaded in this mode.
+// - Cloud mode: VITE_SUPABASE_URL + VITE_SUPABASE_PUBLISHABLE_KEY (from Doppler, see README) give
+//   real accounts (email + password, Google, password reset) and sync (sync.ts). Supabase is
+//   only downloaded in this mode.
 // - Preview mode (no keys): accounts live on this device, with the password stored as a
 //   PBKDF2 hash. Good for trying the flow; nothing syncs between devices.
 import { useSyncExternalStore } from 'react'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
+import { inNativeApp } from './install'
 import { update } from './progress'
 
 export type Account = { id: string; email: string; name: string }
 type AuthState = { status: 'loading' | 'out' | 'in'; user: Account | null; recovering: boolean }
 
 const URL = import.meta.env.VITE_SUPABASE_URL
-const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+// The publishable key is meant to be public; row level security protects the data. The older
+// "anon" key works the same way. Never put the secret / service_role key here.
+const KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY
+/** The public website. The Android app runs at https://localhost, so email links must point here instead. */
+const SITE = import.meta.env.VITE_SITE_URL
 export const cloud = !!(URL && KEY)
 
 let state: AuthState = { status: 'loading', user: null, recovering: false }
@@ -28,6 +34,22 @@ const subscribe = (l: () => void) => {
   }
 }
 export const useAuth = () => useSyncExternalStore(subscribe, () => state)
+export const authNow = () => state
+/** Called on every sign-in, sign-out and account switch. */
+export const onAuthChange = subscribe
+
+// Sync hooks in here rather than auth importing sync, which would be a loop.
+const beforeLeave = new Set<() => Promise<void>>()
+/** Runs before logging out (e.g. upload unsent changes). Each gets a few seconds at most. */
+export function beforeLogOut(fn: () => Promise<void>) {
+  beforeLeave.add(fn)
+}
+const deleted = new Set<() => void>()
+/** Runs after this account is deleted. */
+export function onAccountDeleted(fn: () => void) {
+  deleted.add(fn)
+}
+const leaving = () => Promise.race([Promise.allSettled([...beforeLeave].map((fn) => fn())), new Promise((r) => setTimeout(r, 3000))])
 
 /** Give the progress store the account's name if it doesn't have one yet. */
 function adoptName(a: Account) {
@@ -36,7 +58,8 @@ function adoptName(a: Account) {
 
 // ─── cloud (Supabase) ─────────────────────────────────────────
 let sb: SupabaseClient | null = null
-async function client() {
+/** The Supabase client. Only call this in cloud mode. */
+export async function client() {
   if (!sb) {
     const { createClient } = await import('@supabase/supabase-js')
     // PKCE puts the login code in ?code=…, which keeps our #/hash routes intact.
@@ -45,7 +68,9 @@ async function client() {
   return sb
 }
 const fromUser = (u: User): Account => ({ id: u.id, email: u.email ?? '', name: (u.user_metadata?.name as string | undefined) ?? (u.user_metadata?.full_name as string | undefined) ?? '' })
-const redirectTo = () => `${window.location.origin}${window.location.pathname}`
+// Email confirmations and password resets open in the phone's browser, not in the app, so from the
+// Android app they go to the website.
+const redirectTo = () => (inNativeApp() && SITE ? SITE : `${window.location.origin}${window.location.pathname}`)
 
 // ─── preview (on-device) ──────────────────────────────────────
 type LocalAccount = Account & { salt: string; hash: string }
@@ -145,8 +170,12 @@ export async function logIn(email: string, password: string): Promise<Result> {
   return { ok: true }
 }
 
+/** Google refuses to sign in inside apps' built-in browsers, so the Android app offers email only. */
+export const googleAvailable = () => cloud && !inNativeApp()
+
 export async function logInWithGoogle(): Promise<Result> {
   if (!cloud) return { ok: false, error: 'Google sign-in turns on once accounts are connected.' }
+  if (inNativeApp()) return { ok: false, error: 'Google sign-in works on the website. In the app, use email.' }
   const c = await client()
   const { error } = await c.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectTo() } })
   return error ? { ok: false, error: friendly(error.message) } : { ok: true }
@@ -168,9 +197,34 @@ export async function setNewPassword(password: string): Promise<Result> {
 }
 
 export async function logOut() {
+  await leaving()
   if (cloud) await (await client()).auth.signOut()
   else save(SESSION, null)
   set({ status: 'out', user: null, recovering: false })
+}
+
+/**
+ * Deletes the account and everything synced to it. Things that only ever lived on this
+ * phone (journal, cycle tracker, money…) stay here; "reset my progress" clears the rest.
+ */
+export async function deleteAccount(): Promise<Result> {
+  if (cloud) {
+    const c = await client()
+    // public.delete_account() removes the login; the synced rows go with it (on delete cascade).
+    const { error } = await c.rpc('delete_account')
+    if (error) return { ok: false, error: friendly(error.message) }
+    // The session died with the account, so only clear it locally.
+    await c.auth.signOut({ scope: 'local' })
+  } else {
+    const email = state.user?.email
+    const accounts = readAccounts()
+    if (email) delete accounts[email]
+    save(ACCOUNTS, JSON.stringify(accounts))
+    save(SESSION, null)
+  }
+  deleted.forEach((fn) => fn())
+  set({ status: 'out', user: null, recovering: false })
+  return { ok: true }
 }
 
 void initAuth()

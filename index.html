@@ -38,14 +38,6 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Offline shell. Skipped in the Android app, which already has the files on device.
-      // The Capacitor bridge is injected before page scripts, so window.Capacitor tells us we're in the APK.
-      if ('serviceWorker' in navigator && !window.Capacitor) {
-        addEventListener('load', () => {
-          if (!window.Capacitor) navigator.serviceWorker.register('sw.js').catch(() => {})
-        })
-      }
-    </script>
+    <!-- The offline service worker is registered (and watched for updates) by src/lib/update.ts. -->
   </body>
 </html>

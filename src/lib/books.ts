@@ -4,6 +4,7 @@
 // - LibriVox (hosted on Internet Archive): public-domain audiobooks read by volunteers.
 import { useSyncExternalStore } from 'react'
 import type { Track } from '../context/Player'
+import { onArrival, peek, persist } from './storage'
 
 export type Book = {
   id: string
@@ -142,24 +143,18 @@ export async function chapters(book: Book): Promise<Track[]> {
   }))
 }
 
-// ─── your shelf (saved books, on this device) ─────────────────
-const KEY = 'pf:shelf'
-let shelf: Book[] = (() => {
-  try {
-    return JSON.parse(localStorage.getItem(KEY) ?? '[]') as Book[]
-  } catch {
-    return []
-  }
-})()
+// ─── your shelf (saved books — on this device, and synced to your account) ─────
+let shelf: Book[] = peek<Book[]>('shelf') ?? []
 const listeners = new Set<() => void>()
 function emit() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(shelf))
-  } catch {
-    // storage blocked: keep it for this visit
-  }
+  // If storage is blocked, the shelf lasts for this visit.
+  persist('shelf', shelf)
   listeners.forEach((l) => l())
 }
+onArrival('shelf', () => {
+  shelf = peek<Book[]>('shelf') ?? []
+  listeners.forEach((l) => l())
+})
 export const useShelf = () =>
   useSyncExternalStore(
     (l) => {

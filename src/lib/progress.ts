@@ -2,10 +2,11 @@ import { useSyncExternalStore } from 'react'
 import { journeys } from '../data/journeys'
 import { petById } from '../data/profile'
 import { isPlus } from './plus'
-import { todayKey } from './storage'
+import { onArrival, persist, todayKey } from './storage'
 import { toast } from './toast'
 
-// The glow-up engine: streaks, XP, levels, badges. Everything lives on this device.
+// The glow-up engine: streaks, XP, levels, badges. Saved on this device, and synced to
+// your account when cloud accounts are on (see sync.ts — gender and faith never leave the phone).
 
 export type Activity = 'breath' | 'verse' | 'dare' | 'gratitude' | 'pop' | 'yeet' | 'music' | 'tree' | 'journey' | 'checklist' | 'focus' | 'move' | 'journal' | 'habit' | 'tool'
 
@@ -85,22 +86,24 @@ function load(): Progress {
 
 function commit(next: Progress) {
   state = next
-  try {
-    localStorage.setItem(KEY, JSON.stringify(next))
-  } catch {
-    // storage blocked — progress lasts for this session only
-  }
+  // If storage is blocked, progress lasts for this session only.
+  persist('progress', next)
+  listeners.forEach((l) => l())
+}
+
+function reload() {
+  state = load()
   listeners.forEach((l) => l())
 }
 
 // Keep tabs in sync: another tab logging a breath shouldn't get overwritten by this one.
 if (typeof window !== 'undefined') {
   window.addEventListener('storage', (e) => {
-    if (e.key !== KEY) return
-    state = load()
-    listeners.forEach((l) => l())
+    if (e.key === KEY) reload()
   })
 }
+// …and pick up progress synced down from your account.
+onArrival('progress', reload)
 
 const subscribe = (l: () => void) => {
   listeners.add(l)

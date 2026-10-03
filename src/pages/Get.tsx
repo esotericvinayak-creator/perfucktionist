@@ -4,8 +4,10 @@
 import { useEffect, useState } from 'react'
 import { Apple, Check, Download, Monitor, Share, Shield, Smartphone, SquarePlus, Wifi } from 'lucide-react'
 import { Icon } from '../components/Icon'
-import { APK_URL, alreadyInstalled, apkMeta, detectPlatform, prettySize, promptInstall, useCanInstall, type ApkMeta, type Platform } from '../lib/install'
+import { APK_URL, alreadyInstalled, apkMeta, appOnly, detectPlatform, prettySize, promptInstall, useCanInstall, type ApkMeta, type Platform } from '../lib/install'
 import { toast } from '../lib/toast'
+import { versionLabel } from '../lib/update'
+import { CheckForUpdates } from '../components/UpdatePrompt'
 
 const LABEL: Record<Platform, string> = {
   android: 'Android',
@@ -52,7 +54,7 @@ function AndroidSteps() {
         <b>Open the file.</b> Android will ask to allow installs from your browser. Turn it on, then come back and tap <b>Install</b>.
       </li>
       <li>
-        <b>It says “unknown developer”.</b> That’s honest — this build isn’t signed by Google Play. If you’d rather not, the browser install below gives you the same app.
+        <b>It says “unknown developer”.</b> That’s honest — this build isn’t from Google Play. The check below shows the file is exactly the one we built.
       </li>
     </ol>
   )
@@ -83,7 +85,8 @@ export default function Get() {
 
   useEffect(() => {
     setPlatform(detectPlatform())
-    setInstalled(alreadyInstalled())
+    // An Android home-screen shortcut to the website isn't the app any more; the APK is.
+    setInstalled(alreadyInstalled() && !appOnly())
     void apkMeta().then((m) => {
       setApk(m)
       setChecked(true)
@@ -104,7 +107,8 @@ export default function Get() {
             <Check size={28} />
           </span>
           <h1>you’re already in the app ✦</h1>
-          <p className="muted">You opened this from your home screen. Nothing left to install.</p>
+          <p className="muted">You opened this from your home screen. Nothing left to install. You’re on version {versionLabel()}.</p>
+          <CheckForUpdates />
           <a className="btn btn-primary a-lime big-cta" href="#/">
             back to my 5 minutes
           </a>
@@ -190,26 +194,6 @@ export default function Get() {
             </p>
           )}
           <p className="get-note">APK files are Android-only, so there’s nothing to download here.</p>
-        </section>
-      )}
-
-      {/* ── The browser install is always offered as the safe route ── */}
-      {platform === 'android' && (
-        <section className="get-card a-violet">
-          <span className="ibub big">
-            <Download size={26} />
-          </span>
-          <h2>Or install from your browser</h2>
-          <p className="muted">No file, no warnings, no “unknown developer”. Same app, same icon on your home screen. This is the route we’d pick.</p>
-          {canInstall ? (
-            <button type="button" className="btn btn-primary a-lime big-cta" onClick={install}>
-              install without the APK
-            </button>
-          ) : (
-            <p className="get-note">
-              In Chrome, open the ⋮ menu and tap <b>Add to Home screen</b> → <b>Install</b>.
-            </p>
-          )}
         </section>
       )}
 

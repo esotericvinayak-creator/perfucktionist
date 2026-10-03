@@ -6,11 +6,38 @@ import { alreadyInstalled } from '../lib/install'
 import { usePlus } from '../lib/plus'
 import { pick, todayKey } from '../lib/storage'
 import { useTheme } from '../lib/theme'
-import { cloud, logOut, useAuth } from '../lib/auth'
+import { cloud, deleteAccount, logOut, useAuth } from '../lib/auth'
+import { useSync, type SyncState } from '../lib/sync'
+import { versionLabel } from '../lib/update'
+import { CheckForUpdates } from '../components/UpdatePrompt'
+import { toast } from '../lib/toast'
 import { Icon } from '../components/Icon'
 import { GOALS } from '../data/app'
 import { ACCESSORIES, FAITHS, GENDERS, PETS } from '../data/profile'
 import { PetView } from '../components/Pet'
+
+const ago = (t: number) => {
+  const s = Math.round((Date.now() - t) / 1000)
+  return s < 60 ? 'just now' : s < 3600 ? `${Math.round(s / 60)} min ago` : `${Math.round(s / 3600)} h ago`
+}
+const SYNC_LABEL: Record<SyncState, string> = {
+  off: '',
+  syncing: 'syncing…',
+  synced: 'synced',
+  offline: 'offline — syncs when you’re back',
+  error: 'couldn’t sync — we’ll try again',
+}
+
+function SyncStatus() {
+  const s = useSync()
+  if (!cloud || s.state === 'off') return <>{!cloud && ' · saved on this device'}</>
+  return (
+    <>
+      {' · '}☁ {SYNC_LABEL[s.state]}
+      {s.state === 'synced' && s.at ? ` ${ago(s.at)}` : ''}
+    </>
+  )
+}
 
 function Settings() {
   const p = useProgress()
@@ -24,12 +51,19 @@ function Settings() {
           account
           <small className="set-sub">
             {auth.user?.email}
-            {!cloud && ' · saved on this device'}
+            <SyncStatus />
           </small>
         </span>
         <button type="button" className="btn btn-sm" onClick={() => confirm('Log out of perfucktionist?') && void logOut()}>
           log out
         </button>
+      </div>
+      <div className="set-row">
+        <span>
+          app version
+          <small className="set-sub">{versionLabel()}</small>
+        </span>
+        <CheckForUpdates />
       </div>
       {!alreadyInstalled() && (
         <div className="set-row">
@@ -118,6 +152,16 @@ function Heatmap({ p }: { p: Progress }) {
       ))}
     </div>
   )
+}
+
+async function removeAccount() {
+  const typed = prompt(
+    `This deletes your account${cloud ? ' and everything synced to it — streak, XP, badges, saved books, liked songs' : ''}. It can’t be undone.\n\nAnything saved only on this phone (journal, cycle tracker, money) stays here.\n\nType delete to confirm.`,
+  )
+  if (typed?.trim().toLowerCase() !== 'delete') return
+  const r = await deleteAccount()
+  if (r.ok) toast({ icon: '👋', title: 'Account deleted', sub: 'everything in it is gone' })
+  else toast({ icon: '⚠️', title: 'Couldn’t delete your account', sub: r.error })
 }
 
 export default function Me() {
@@ -391,13 +435,27 @@ export default function Me() {
       </Section>
 
       <p className="muted me-fine">
-        All of this is saved only on this device — no account, nothing sent anywhere.{' '}
+        {cloud ? (
+          <>
+            Your streak, XP, badges, saved books, liked songs and practice scores are synced to your account, so they follow you to a new phone. Your journal, cycle tracker, money, check-ins, notes, gender
+            and faith never leave this phone.{' '}
+          </>
+        ) : (
+          'All of this is saved only on this device — no account, nothing sent anywhere. '
+        )}
         <button
           type="button"
           className="linkish"
-          onClick={() => confirm('Reset all your streaks, XP and badges? This can’t be undone.') && update(() => ({ xp: 0, days: {}, dayXp: {}, totals: {}, books: [], badges: {}, freezes: [], journeys: {} }))}
+          onClick={() =>
+            confirm(`Reset all your streaks, XP and badges?${cloud ? ' This resets them in your account too.' : ''} This can’t be undone.`) &&
+            update(() => ({ xp: 0, days: {}, dayXp: {}, totals: {}, books: [], badges: {}, freezes: [], journeys: {} }))
+          }
         >
           reset my progress
+        </button>
+        {' · '}
+        <button type="button" className="linkish" onClick={() => void removeAccount()}>
+          delete my account
         </button>
       </p>
     </div>

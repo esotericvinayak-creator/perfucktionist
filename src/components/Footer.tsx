@@ -1,4 +1,4 @@
-import { alreadyInstalled } from '../lib/install'
+import { alreadyInstalled, appOnly } from '../lib/install'
 import { Logo } from './Nav'
 
 export function Footer() {
@@ -11,7 +11,7 @@ export function Footer() {
         <p className="footer-help">
           need help now? <a href="tel:112">112</a> emergency · <a href="tel:1091">1091</a> women · <a href="tel:1098">1098</a> child · <a href="tel:1930">1930</a> cyber · <a href="tel:14416">14416</a> mental health
         </p>
-        {!alreadyInstalled() && !window.location.hash.startsWith('#/get') && (
+        {(!alreadyInstalled() || appOnly()) && !window.location.hash.startsWith('#/get') && (
           <a className="get-chip" href="#/get">
             📲 get the app
           </a>

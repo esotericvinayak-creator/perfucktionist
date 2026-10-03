@@ -1,6 +1,10 @@
 // A small service worker so the app opens instantly and the shell still works offline.
 // It caches our own files only. Scripture, books and music are fetched live and never cached here.
-const CACHE = 'pf-shell-v1'
+//
+// Updates: the build stamps BUILD (vite.config.ts), so each deploy is a new worker. A new worker
+// waits instead of taking over mid-session; the app shows "refresh", and only then do we switch.
+const BUILD = '__BUILD__'
+const CACHE = `pf-shell-${BUILD}`
 const SHELL = ['./', './index.html', './manifest.webmanifest', './favicon.svg', './icons/icon-192.png', './icons/icon-512.png']
 
 self.addEventListener('install', (e) => {
@@ -8,9 +12,15 @@ self.addEventListener('install', (e) => {
     caches
       .open(CACHE)
       .then((c) => c.addAll(SHELL))
-      .then(() => self.skipWaiting())
       .catch(() => undefined),
   )
+})
+
+self.addEventListener('message', (e) => {
+  // The app sends this when the person taps "refresh".
+  if (e.data === 'skip-waiting') self.skipWaiting()
+  // "Which build are you?" — lets a page that already loaded this build switch without asking.
+  if (e.data === 'build?') e.ports[0]?.postMessage(BUILD)
 })
 
 self.addEventListener('activate', (e) => {

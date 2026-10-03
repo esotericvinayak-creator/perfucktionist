@@ -1,6 +1,6 @@
 // The rest of the landing page: try it before you sign up, hatch a pet, see what's inside.
 // Only real numbers and real promises here — no fake reviews, no made-up user counts.
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { FAITHS, GENDERS, PETS, linesFor } from '../data/profile'
 import { PRICES } from '../lib/plus'
@@ -151,7 +151,8 @@ const FAQ = [
   ['is this therapy?', 'no — it’s daily support and tools. if things feel too heavy, please talk to someone: Tele-MANAS 14416 is free and open 24/7 in India.'],
 ] as const
 
-export function LandingMore({ onSignup, onLogin }: { onSignup: () => void; onLogin: () => void }) {
+/** `actions` replaces the sign-up buttons at the end (Android visitors get the download instead). */
+export function LandingMore({ onSignup, onLogin, actions }: { onSignup: () => void; onLogin: () => void; actions?: ReactNode }) {
   return (
     <div className="landing page">
       <div className="ld-stats">
@@ -268,14 +269,16 @@ export function LandingMore({ onSignup, onLogin }: { onSignup: () => void; onLog
         <h2 className="ld-h">
           ready to be <span className="serif">imperfect?</span>
         </h2>
-        <div className="aw-actions">
-          <button type="button" className="btn btn-primary a-lime big-cta" onClick={onSignup}>
-            create my free account <ArrowRight size={18} />
-          </button>
-          <button type="button" className="btn big-cta" onClick={onLogin}>
-            I already have one
-          </button>
-        </div>
+        {actions ?? (
+          <div className="aw-actions">
+            <button type="button" className="btn btn-primary a-lime big-cta" onClick={onSignup}>
+              create my free account <ArrowRight size={18} />
+            </button>
+            <button type="button" className="btn big-cta" onClick={onLogin}>
+              I already have one
+            </button>
+          </div>
+        )}
       </section>
     </div>
   )

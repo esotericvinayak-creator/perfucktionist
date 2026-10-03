@@ -4,7 +4,9 @@ Four tabs once you're in: **Home · Explore · Library · Me**. Everything else 
 
 ```mermaid
 flowchart TD
-    A([Open the app]) --> S{Logged in?}
+    A([Open the app or website]) --> AW{Android browser?}
+    AW -- yes --> DL[Landing + download the app<br/>APK via #/get · safety pages still open]
+    AW -- no: APK, iPhone, computer --> S{Logged in?}
     S -- no --> W[Landing<br/>hero · real numbers · try-it demo · hatch an egg<br/>how it works · what's inside · FAQ]
     W --> SU[Sign up: name → email → password → consent]
     W --> LI[Log in / forgot password]
@@ -54,7 +56,8 @@ flowchart TD
 
     subgraph ME [Me tab]
       MB[Pet: type, name, outfits] --> BD[Streak · badges · insights · Wrapped]
-      MB --> ST[Settings: account, theme, gender, faith, goals]
+      MB --> ST[Settings: account + sync status, app version + check for updates, theme, gender, faith, goals]
+      ST --> DEL[Delete my account<br/>login + synced data gone]
       MB --> PL[Plus: 4 reasons, 7-day trial]
     end
 
@@ -75,7 +78,7 @@ flowchart TD
 | Scripture `#/library/faith` | Gita, Ramayana, Guru Granth Sahib, Quran, Bible, Dhammapada — your faith's book first |
 | Free books `#/library/read` | Open Library + Project Gutenberg, read inside the app |
 | Audiobooks `#/library/listen` | LibriVox, with chapters and 0.75×–2× speed |
-| **Me** `#/me` | Pet, streak, badges, insights, settings, Plus |
+| **Me** `#/me` | Pet, streak, badges, insights, settings (with sync status), Plus, delete my account |
 | Listen `#/listen` | Hands-free mixes: quote → music → next quote |
 | Music reels `#/listen/reels` | A feed of songs that plays itself; saved songs row |
 | Now Playing | Opens from the mini player on any page |

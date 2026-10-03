@@ -802,3 +802,24 @@ body.onboarding .float-back, body.np-open .float-back { display: none; }
 .get-done { display: grid; justify-items: center; gap: 12px; padding: 50px 10px; text-align: center; }
 .get-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 2px solid var(--line); background: var(--lime); color: #0d0c12; font-weight: 800; font-size: 0.9rem; text-decoration: none; }
 .auth-get { display: flex; justify-content: center; padding: 4px 16px 10px; }
+
+/* ───────── updates (UpdatePrompt) ───────── */
+.upd-banner { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 10px; width: min(680px, calc(100% - 24px)); margin: 8px auto 0; padding: 10px 8px 10px 14px; border-radius: 18px; border: 2px solid var(--line); background: color-mix(in srgb, var(--lime) 12%, var(--surface)); box-shadow: 4px 4px 0 var(--lime); animation: toast-in 0.35s cubic-bezier(0.2, 1.5, 0.4, 1); }
+.upd-icon { font-size: 1.3rem; line-height: 1; }
+.upd-text { display: grid; gap: 2px; min-width: 0; }
+.upd-text strong { font-size: 0.95rem; }
+.upd-text small { color: var(--ink-dim); font-size: 0.8rem; overflow-wrap: anywhere; }
+.upd-banner .btn { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.upd-steps { margin-top: 4px; font-size: 0.82rem; line-height: 1.45; color: var(--ink-dim); }
+.upd-steps b { color: var(--ink); }
+@media (max-width: 420px) { .upd-banner { grid-template-columns: auto 1fr auto; } .upd-banner > .btn { grid-column: 2; justify-self: start; } .upd-banner > .icon-btn { grid-row: 1; grid-column: 3; } }
+.upd-force { position: fixed; inset: 0; z-index: 600; display: grid; align-content: center; justify-items: center; gap: 14px; padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom)); overflow-y: auto; text-align: center; background: var(--bg); color: var(--ink); }
+.upd-force h1 { font-size: clamp(1.8rem, 8vw, 2.6rem); letter-spacing: -0.04em; }
+.upd-force > p { max-width: 420px; line-height: 1.5; }
+.upd-force .big-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: min(420px, 100%); }
+.upd-notes { padding: 12px 14px; border-radius: 14px; border: 1.5px dashed color-mix(in srgb, var(--line) 40%, transparent); font-size: 0.92rem; }
+.upd-safe { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 18px; }
+.upd-safe .btn { display: inline-flex; align-items: center; gap: 6px; }
+.aw-actions .big-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.aw-note { text-align: center; font-size: 0.82rem; color: var(--ink-dim); }
+.aw-signed { max-width: 440px; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); background: color-mix(in srgb, var(--lime) 14%, var(--surface)); font-size: 0.92rem; line-height: 1.45; }

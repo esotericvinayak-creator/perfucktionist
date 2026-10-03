@@ -4,12 +4,15 @@ import { MiniPlayer } from './components/MiniPlayer'
 import { Nav } from './components/Nav'
 import { ShareHost, Toaster } from './components/Overlays'
 import { TabBar } from './components/TabBar'
+import { UpdatePrompt } from './components/UpdatePrompt'
 import { WebView } from './components/WebView'
 import { PlayerProvider } from './context/Player'
 import { zoneByPath } from './data/zones'
 import { useAuth } from './lib/auth'
+import { appOnly } from './lib/install'
 import { applyStreakFreeze } from './lib/progress'
 import { useRoute } from './lib/router'
+import { useSync } from './lib/sync'
 import Auth from './pages/Auth'
 import Brave from './pages/Brave'
 import Breathe from './pages/Breathe'
@@ -64,6 +67,7 @@ const PUBLIC = ['/shield', '/tools/panic', '/tools/safe-walk', '/get']
 export default function App() {
   const route = useRoute()
   const auth = useAuth()
+  const sync = useSync()
   // Only the first segment picks the page; the rest is for the page itself (e.g. #/library/gita/2).
   const base = `/${route.split('/')[1] ?? ''}`
   const Page = pages[base] ?? NotFound
@@ -77,7 +81,10 @@ export default function App() {
     applyStreakFreeze()
   }, [])
 
-  if (auth.status === 'loading')
+  // Android visitors on the website get the landing page and the APK; the app itself is the APK.
+  const download = appOnly()
+  // First login on a phone: wait (a few seconds at most) for your progress to arrive from your account.
+  if (auth.status === 'loading' || (auth.status === 'in' && !sync.ready && !download))
     return (
       <div className="splash" aria-busy="true">
         <span className="logo-text">
@@ -85,7 +92,14 @@ export default function App() {
         </span>
       </div>
     )
-  if ((auth.status === 'out' && !PUBLIC.includes(route)) || auth.recovering) return <Auth />
+  const safe = PUBLIC.includes(route)
+  if (((auth.status === 'out' || download) && !safe) || auth.recovering)
+    return (
+      <>
+        <UpdatePrompt safe={false} />
+        <Auth />
+      </>
+    )
 
   return (
     <PlayerProvider>
@@ -93,6 +107,7 @@ export default function App() {
         Skip to content
       </a>
       <Nav route={route} />
+      <UpdatePrompt safe={safe} />
       <main id="main" tabIndex={-1}>
         <Page key={route} />
       </main>

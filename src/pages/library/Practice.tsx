@@ -5,6 +5,7 @@ import { SUBJECTS, bank, type SubjectId } from '../../data/questions'
 import type { Q } from '../../data/questions/types'
 import { confetti } from '../../lib/confetti'
 import { log } from '../../lib/progress'
+import { cloud } from '../../lib/auth'
 import { useLocalState } from '../../lib/storage'
 
 const ROUND = 10
@@ -128,7 +129,7 @@ export function Practice({ only }: { only?: SubjectId[] }) {
 
   return (
     <>
-      <p className="lb-note">10 questions, instant answers with the reason. No timer, no leaderboard — just reps. Your score stays on this phone.</p>
+      <p className="lb-note">10 questions, instant answers with the reason. No timer, no leaderboard — just reps. {cloud ? 'Your scores are saved to your account.' : 'Your score stays on this phone.'}</p>
       <div className="pr-grid">
         {subjects.map((s) => {
           const st = stats[s.id]

@@ -1,11 +1,11 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { Eye, EyeOff, LogIn, Mail } from 'lucide-react'
+import { Download, Eye, EyeOff, LogIn, Mail } from 'lucide-react'
 import { LandingMore } from '../components/Landing'
 import { Logo } from '../components/Nav'
 import { Marquee } from '../components/ui'
 import { motives } from '../data/zones'
-import { cloud, logIn, logInWithGoogle, sendReset, setNewPassword, signUp, useAuth } from '../lib/auth'
-import { alreadyInstalled } from '../lib/install'
+import { cloud, googleAvailable, logIn, logInWithGoogle, sendReset, setNewPassword, signUp, useAuth } from '../lib/auth'
+import { alreadyInstalled, appOnly, inNativeApp } from '../lib/install'
 
 type Screen = 'welcome' | 'signup' | 'login' | 'forgot' | 'sent' | 'confirm'
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -32,7 +32,7 @@ function PasswordInput({ value, onChange, placeholder, autoComplete }: { value: 
 }
 
 function GoogleButton({ onError }: { onError: (e: string) => void }) {
-  if (!cloud) return null
+  if (!googleAvailable()) return null
   return (
     <>
       <button
@@ -255,7 +255,20 @@ export function NewPassword() {
   )
 }
 
-function Welcome({ onSignup, onLogin }: { onSignup: () => void; onLogin: () => void }) {
+/** Android visitors on the website: the app is the APK, so the landing page leads there. */
+function DownloadActions() {
+  return (
+    <div className="aw-actions">
+      <a className="btn btn-primary a-lime big-cta" href="#/get">
+        <Download size={18} /> download the app — free
+      </a>
+      <p className="aw-note">Android app · about 8 MB · no Play Store needed</p>
+    </div>
+  )
+}
+
+function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => void; onLogin: () => void; appOnly?: boolean }) {
+  const auth = useAuth()
   return (
     <div className="auth-welcome">
       <header className="aw-top">
@@ -283,14 +296,23 @@ function Welcome({ onSignup, onLogin }: { onSignup: () => void; onLogin: () => v
           is a <span className="serif">scam.</span>
         </h1>
         <p className="lede">5 minutes a day to breathe, focus, sort your money, stay safe and grow — with wisdom from every faith. no pressure. no perfect.</p>
-        <div className="aw-actions">
-          <button type="button" className="btn btn-primary a-lime big-cta" onClick={onSignup}>
-            create my free account →
-          </button>
-          <button type="button" className="btn big-cta" onClick={onLogin}>
-            I already have one
-          </button>
-        </div>
+        {download && auth.status === 'in' && (
+          <p className="aw-signed">
+            ✓ you’re signed in as <b>{auth.user?.email}</b>. Open the perfucktionist app and log in there to carry on.
+          </p>
+        )}
+        {download ? (
+          <DownloadActions />
+        ) : (
+          <div className="aw-actions">
+            <button type="button" className="btn btn-primary a-lime big-cta" onClick={onSignup}>
+              create my free account →
+            </button>
+            <button type="button" className="btn big-cta" onClick={onLogin}>
+              I already have one
+            </button>
+          </div>
+        )}
         <div className="spin-badge" aria-hidden="true">
           <svg viewBox="0 0 200 200">
             <defs>
@@ -312,15 +334,15 @@ function Welcome({ onSignup, onLogin }: { onSignup: () => void; onLogin: () => v
       <p className="auth-sos">
         need help right now? <a href="tel:112">112</a> · <a href="#/tools/panic">panic SOS</a> · <a href="tel:14416">14416 (mental health)</a>
       </p>
-      {!alreadyInstalled() && (
+      {!alreadyInstalled() && !download && (
         <p className="auth-get">
           <a className="get-chip" href="#/get">
             📲 get the app — Android, iPhone or computer
           </a>
         </p>
       )}
-      <LandingMore onSignup={onSignup} onLogin={onLogin} />
-      {!cloud && <p className="auth-preview">preview mode: accounts are saved on this device until cloud accounts are connected.</p>}
+      <LandingMore onSignup={onSignup} onLogin={onLogin} actions={download ? <DownloadActions /> : undefined} />
+      {!cloud && !download && <p className="auth-preview">preview mode: accounts are saved on this device until cloud accounts are connected.</p>}
     </div>
   )
 }
@@ -338,6 +360,9 @@ export default function Auth() {
   }, [screen])
 
   if (auth.recovering) return <NewPassword />
+  // Android on the website: landing page and download only. A password reset link from the app
+  // still lands here and works (above), since email links open in the browser.
+  if (appOnly()) return <Welcome onSignup={() => undefined} onLogin={() => undefined} appOnly />
   if (screen === 'signup') return <Signup onBack={() => setScreen('welcome')} onLogin={() => setScreen('login')} onConfirm={(e) => (setEmail(e), setScreen('confirm'))} />
   if (screen === 'login') return <Login onBack={() => setScreen('welcome')} onSignup={() => setScreen('signup')} onForgot={() => setScreen('forgot')} />
   if (screen === 'forgot') return <Forgot onBack={() => setScreen('login')} onSent={(e) => (setEmail(e), setScreen('sent'))} />
@@ -349,6 +374,7 @@ export default function Auth() {
           <p className="act-q">check your inbox</p>
           <p className="muted">
             we sent a link to <b>{email}</b>. {screen === 'confirm' ? 'tap it to confirm your account, then log in.' : 'tap it to set a new password.'}
+            {inNativeApp() && ' The link opens our website in your browser — then come back to the app.'}
           </p>
           <button type="button" className="btn btn-primary a-lime big-cta" onClick={() => setScreen('login')}>
             go to log in

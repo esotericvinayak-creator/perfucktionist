@@ -7,12 +7,18 @@
   "scripts": {
     "library": "node scripts/build-library.mjs --force",
     "predev": "node scripts/build-library.mjs",
-    "dev": "vite",
+    "dev": "node scripts/with-secrets.mjs dev vite",
     "prebuild": "node scripts/build-library.mjs",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && node scripts/with-secrets.mjs prd vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "apk": "node scripts/build-apk.mjs"
+    "apk": "node scripts/with-secrets.mjs prd node scripts/build-apk.mjs",
+    "db:start": "supabase start -x realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db",
+    "db:push": "node scripts/with-secrets.mjs prd node scripts/db-push.mjs",
+    "secrets:android": "node scripts/doppler-android.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
@@ -27,6 +33,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
+    "supabase": "^2.119.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.2"
   }

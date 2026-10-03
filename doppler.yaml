@@ -1,0 +1,5 @@
+# `doppler setup` reads this, so it needs no questions: project perfucktionist, config dev.
+# npm run build / apk / db:push switch to the prd config on their own (scripts/with-secrets.mjs).
+setup:
+  - project: perfucktionist
+    config: dev
