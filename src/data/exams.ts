@@ -138,7 +138,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'IAS, IPS, IFS and other central services. Any graduate can apply.',
     stages: ['Prelims — objective, a screening test', 'Mains — written, descriptive', 'Personality test (interview)'],
     season: 'notification early in the year; prelims around mid-year',
-    subjects: ['reasoning', 'english', 'science', 'maths'],
+    subjects: ['polity', 'history', 'geography', 'economy', 'science', 'reasoning'],
     free: [
       { label: 'UPSC previous question papers', url: 'https://upsc.gov.in/examinations/previous-question-papers' },
       { label: 'UPSC active examinations & notifications', url: 'https://upsc.gov.in/examinations/active-examinations' },
@@ -155,7 +155,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Group B and C posts across central government ministries and departments. For graduates.',
     stages: ['Tier I — objective', 'Tier II — objective, with a typing/skill test for some posts'],
     season: 'notification usually mid-year',
-    subjects: ['maths', 'reasoning', 'english', 'science'],
+    subjects: ['maths', 'reasoning', 'english', 'science', 'polity', 'geography'],
     free: [{ label: 'SSC previous year question papers', url: 'https://ssc.gov.in/candidate-portal/previous-year-question-paper' }, NCERT],
   },
   {
@@ -168,7 +168,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'LDC, JSA, DEO and similar posts — for people who have finished Class 12.',
     stages: ['Tier I — objective', 'Tier II — objective plus a typing/skill test'],
     season: 'notification usually announced with the annual SSC calendar',
-    subjects: ['maths', 'reasoning', 'english', 'computer'],
+    subjects: ['maths', 'reasoning', 'english', 'computer', 'history', 'geography'],
     free: [{ label: 'SSC previous year question papers', url: 'https://ssc.gov.in/candidate-portal/previous-year-question-paper' }],
   },
   {
@@ -181,7 +181,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Multi-tasking staff in central departments, and Havaldar in CBIC/CBN. Class 10 pass.',
     stages: ['Computer-based examination', 'Physical test for Havaldar posts'],
     season: 'see the annual SSC exam calendar',
-    subjects: ['maths', 'reasoning', 'english', 'science'],
+    subjects: ['maths', 'reasoning', 'english', 'science', 'polity'],
     free: [{ label: 'SSC previous year question papers', url: 'https://ssc.gov.in/candidate-portal/previous-year-question-paper' }],
   },
   {
@@ -194,7 +194,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Constable posts in BSF, CRPF, CISF, ITBP, SSB, Assam Rifles and more.',
     stages: ['Computer-based examination', 'Physical efficiency & standard tests', 'Medical examination'],
     season: 'see the annual SSC exam calendar',
-    subjects: ['maths', 'reasoning', 'english', 'science'],
+    subjects: ['maths', 'reasoning', 'english', 'science', 'polity'],
     free: [{ label: 'SSC previous year question papers', url: 'https://ssc.gov.in/candidate-portal/previous-year-question-paper' }],
   },
   {
@@ -207,7 +207,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Probationary officer posts across public sector banks. For graduates.',
     stages: ['Preliminary examination', 'Main examination', 'Interview'],
     season: 'notification usually in the second half of the year',
-    subjects: ['maths', 'reasoning', 'english', 'computer'],
+    subjects: ['maths', 'reasoning', 'english', 'computer', 'economy'],
     free: [{ label: 'IBPS official notifications & handouts', url: 'https://www.ibps.in' }],
   },
   {
@@ -220,7 +220,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Clerical posts across public sector banks. For graduates.',
     stages: ['Preliminary examination', 'Main examination'],
     season: 'notification usually in the second half of the year',
-    subjects: ['maths', 'reasoning', 'english', 'computer'],
+    subjects: ['maths', 'reasoning', 'english', 'computer', 'economy'],
     free: [{ label: 'IBPS official notifications & handouts', url: 'https://www.ibps.in' }],
   },
   {
@@ -233,7 +233,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Probationary officers at SBI. For graduates.',
     stages: ['Preliminary examination', 'Main examination', 'Psychometric test, group exercise & interview'],
     season: 'announced on the SBI careers page',
-    subjects: ['maths', 'reasoning', 'english', 'computer'],
+    subjects: ['maths', 'reasoning', 'english', 'computer', 'economy'],
     free: [{ label: 'SBI careers — notifications', url: 'https://sbi.co.in/web/careers' }],
   },
   {
@@ -246,7 +246,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Officers at India’s central bank — one of the most competitive banking exams.',
     stages: ['Phase I — objective', 'Phase II — objective & descriptive', 'Interview'],
     season: 'announced on the RBI opportunities page',
-    subjects: ['maths', 'reasoning', 'english'],
+    subjects: ['maths', 'reasoning', 'english', 'economy', 'polity'],
     free: [{ label: 'RBI Opportunities — notifications & papers', url: 'https://opportunities.rbi.org.in' }],
   },
   {
@@ -259,7 +259,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Army, Navy and Air Force wings of the NDA — you can apply straight after Class 12.',
     stages: ['Written examination', 'SSB interview & personality test', 'Medical examination'],
     season: 'twice a year',
-    subjects: ['maths', 'english', 'physics', 'chemistry', 'science'],
+    subjects: ['maths', 'english', 'physics', 'chemistry', 'history', 'geography'],
     free: [{ label: 'UPSC previous question papers', url: 'https://upsc.gov.in/examinations/previous-question-papers' }, NCERT],
   },
   {
@@ -272,7 +272,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'IMA, INA, Air Force Academy and Officers Training Academy. For graduates.',
     stages: ['Written examination', 'SSB interview', 'Medical examination'],
     season: 'twice a year',
-    subjects: ['maths', 'english', 'science'],
+    subjects: ['maths', 'english', 'science', 'history', 'polity', 'geography'],
     free: [{ label: 'UPSC previous question papers', url: 'https://upsc.gov.in/examinations/previous-question-papers' }],
   },
   {
@@ -285,7 +285,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Flying and ground duty (technical and non-technical) officer roles in the IAF.',
     stages: ['Online test', 'AFSB interview', 'Medical examination'],
     season: 'twice a year',
-    subjects: ['maths', 'reasoning', 'english', 'science'],
+    subjects: ['maths', 'reasoning', 'english', 'science', 'history', 'geography'],
     free: [{ label: 'Indian Air Force — careers', url: 'https://indianairforce.nic.in' }],
   },
   {
@@ -298,7 +298,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Station master, clerk, guard, ticket supervisor and similar railway posts.',
     stages: ['CBT 1', 'CBT 2', 'Skill test or typing test for some posts', 'Document verification & medical'],
     season: 'announced per recruitment cycle',
-    subjects: ['maths', 'reasoning', 'science', 'english'],
+    subjects: ['maths', 'reasoning', 'science', 'history', 'geography', 'polity'],
     free: [{ label: 'RRB official application & notices portal', url: 'https://www.rrbapply.gov.in' }],
   },
   {
@@ -311,7 +311,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Track maintainer, helper, assistant pointsman and other Level 1 railway posts.',
     stages: ['Computer-based test', 'Physical efficiency test', 'Document verification & medical'],
     season: 'announced per recruitment cycle',
-    subjects: ['maths', 'reasoning', 'science'],
+    subjects: ['maths', 'reasoning', 'science', 'geography'],
     free: [{ label: 'RRB official application & notices portal', url: 'https://www.rrbapply.gov.in' }],
   },
   {
@@ -337,7 +337,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Five-year integrated LLB and LLM seats at the National Law Universities.',
     stages: ['One test — UG or PG'],
     season: 'usually written in December',
-    subjects: ['english', 'reasoning', 'maths'],
+    subjects: ['english', 'reasoning', 'polity', 'history', 'economy'],
     free: [{ label: 'Consortium of NLUs — official sample papers & notices', url: 'https://consortiumofnlus.ac.in' }],
   },
   {
@@ -350,7 +350,7 @@ export const EXAMS: Exam[] = [
     forWhom: 'Undergraduate admission to central and many state and private universities — DU, BHU, JNU and more.',
     stages: ['One computer-based test, in the subjects your course asks for'],
     season: 'usually May',
-    subjects: ['english', 'maths', 'physics', 'chemistry', 'biology', 'science'],
+    subjects: ['english', 'maths', 'physics', 'chemistry', 'biology', 'history'],
     free: [NTA_QUIZ, NCERT],
   },
   {

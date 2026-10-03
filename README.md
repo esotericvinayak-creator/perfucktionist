@@ -12,7 +12,7 @@ Four tabs, nothing else: **Home · Explore · Library · Me**. Full flowchart: [
 2. **Sign up / log in** → then a short onboarding: name → gender (optional, 9 options incl. self-describe) → faith (optional, 15 options incl. atheist, agnostic, spiritual, every faith) → up to 3 goals → pick and name a pet → day 1.
 3. **Home** (`#/`) → "▶ start my 5 minutes" (mood → one small thing → one line of wisdom → done 🔥), your pet and how close it is to hatching/growing, a "for you first" spotlight, your plan, tools for you, Listen, Read, today's wisdom from your faith, SOS.
 4. **Explore** (`#/explore`) → search, "I'm feeling…" chips, quick picks (yours first), 10 areas.
-5. **Library** (`#/library`) → six shelves: **School** (every NCERT textbook, class 1–12), **College** (open textbooks + free university courses), **Exams** (28 competitive exams + 240 practice questions), **Scripture** (your faith's book opens first), **Free books** (millions, free to read) and **Audiobooks** (free, read aloud). Save anything to **your shelf**.
+5. **Library** (`#/library`) → six shelves: **School** (every NCERT textbook, class 1–12), **College** (open textbooks + free university courses), **Exams** (28 competitive exams + 360 practice questions), **Scripture** (your faith's book opens first), **Free books** (millions, free to read) and **Audiobooks** (free, read aloud). Save anything to **your shelf**.
 6. **Me** (`#/me`) → your pet (type, name, outfits), streak, badges, insights, settings (account, theme, gender, faith, goals).
 7. **Listen** (`#/listen`) → *quotes + music* (a mix from your own tradition when you've set one) and **music reels** (`#/listen/reels`): a feed that plays itself — swipe right to save, left to skip, tap to pause. Tapping the mini player anywhere opens **Now Playing**: big art (swipe to change), a seek bar, up next, credits, and lyrics.
 
@@ -24,12 +24,12 @@ Four tabs, nothing else: **Home · Explore · Library · Me**. Full flowchart: [
 | --- | --- | --- |
 | School `#/library/school` | 239 NCERT textbook links, class 1–12, English and Hindi editions | generated from NCERT's own textbook page — `src/data/school.ts` |
 | College `#/library/college` | 8 streams of openly licensed textbooks + free courses | OpenStax, LibreTexts, Open Textbook Library, MIT OpenCourseWare, NPTEL, SWAYAM — `src/data/college.ts` |
-| Exams `#/library/exams` | 28 exams across 12 groups, each with its official site and free official prep, plus practice | `src/data/exams.ts` |
+| Exams `#/library/exams` | 28 exams across 12 groups, each with its official site and free official prep, plus practice in the subjects it tests | `src/data/exams.ts` |
 | Scripture `#/library/faith` | 1,22,156 verses from 6 scriptures, quotes by theme and tradition, shlokas | `src/lib/scripture.ts`, `src/data/wisdom.ts` |
 | Free books `#/library/read` | search millions of free-to-read books; read scans inside the app | Open Library (Internet Archive) + Project Gutenberg |
 | Audiobooks `#/library/listen` | free public-domain audiobooks with chapters and 0.75×–2× speed | LibriVox, hosted by the Internet Archive |
 
-**Practice** (`src/data/questions/`) is 240 original multiple-choice questions across 8 subjects — quant, reasoning, English, computer, physics, chemistry, biology and general science. Ten per round, with the reasoning shown after every answer. Scores stay on the device.
+**Practice** (`src/data/questions/`) is 360 original multiple-choice questions across 12 subjects — quant, reasoning, English, computer, physics, chemistry, biology, general science, polity, history, geography and economy. Every answer was worked out twice, independently; the general-studies set sticks to settled facts and names no current office-holder, figure or scheme. Ten per round, with the reasoning shown after every answer. Scores stay on the device.
 
 **On exam facts:** `src/data/exams.ts` deliberately carries no question counts, marks, dates or eligibility rules. Those change with every notification and a stale number could cost a student a year — so each exam links to its official site, and the UI says so plainly. Only the stable things (what the exam is for, the rounds, roughly when) are stored here. Every URL in the library data files returned HTTP 200 when they were written.
 

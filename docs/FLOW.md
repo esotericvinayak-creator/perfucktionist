@@ -71,7 +71,7 @@ flowchart TD
 | **Library** `#/library` | Hub of six shelves: school, college, exams, scripture, free books, audiobooks |
 | School `#/library/school` | 239 NCERT textbooks, class 1–12, English & Hindi |
 | College `#/library/college` | 8 streams: OpenStax, LibreTexts, MIT OCW, NPTEL, SWAYAM |
-| Exams `#/library/exams` | 28 exams + 240 practice questions across 8 subjects |
+| Exams `#/library/exams` | 28 exams + 360 practice questions across 12 subjects |
 | Scripture `#/library/faith` | Gita, Ramayana, Guru Granth Sahib, Quran, Bible, Dhammapada — your faith's book first |
 | Free books `#/library/read` | Open Library + Project Gutenberg, read inside the app |
 | Audiobooks `#/library/listen` | LibriVox, with chapters and 0.75×–2× speed |
