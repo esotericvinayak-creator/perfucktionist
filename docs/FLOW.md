@@ -30,7 +30,7 @@ flowchart TD
 
     subgraph LISTEN [Listen]
       L --> LQ[Quotes + music<br/>your tradition's mix first]
-      L --> VR[Vibe room<br/>swipe right save · left skip · tap play]
+      L --> VR[Music reels<br/>autoplays · swipe right save · left skip]
     end
 
     MP[Mini player<br/>on every page] --> NP[Now Playing<br/>swipe art · seek · up next · credits · lyrics]
@@ -42,7 +42,14 @@ flowchart TD
     end
 
     subgraph LIB [Library tab]
-      LB[Your faith's scripture opens first<br/>faith picker on the page] --> RD[Reader: original + EN/हिं + audio]
+      LB[Library hub: 6 shelves] --> SC[School<br/>NCERT class 1–12]
+      LB --> CO[College<br/>open textbooks + free courses]
+      LB --> EX[Exams<br/>28 exams + practice]
+      LB --> FA[Scripture<br/>your faith opens first] --> RD[Reader: original + EN/हिं + audio]
+      LB --> FB[Free books<br/>search, read in-app]
+      LB --> AB[Audiobooks<br/>chapters, speed control] --> NP
+      LB --> SH[Your shelf<br/>saved books]
+      EX --> PR[Practice: 10 questions<br/>answer + reason]
     end
 
     subgraph ME [Me tab]
@@ -61,10 +68,16 @@ flowchart TD
 | Landing (logged out) | Hero, real numbers, no-account demo, pet egg, how it works, what's inside, promises, FAQ, sign up / log in |
 | **Home** `#/` | 5-minute daily flow, your pet, spotlight, plan, tools for you, Listen, Read, today's wisdom (your faith), SOS |
 | **Explore** `#/explore` | Search, need chips, quick picks, 10 areas → guides + tools |
-| **Library** `#/library` | Gita, Ramayana, Guru Granth Sahib, Quran, Bible, Dhammapada — your faith's book first |
+| **Library** `#/library` | Hub of six shelves: school, college, exams, scripture, free books, audiobooks |
+| School `#/library/school` | 239 NCERT textbooks, class 1–12, English & Hindi |
+| College `#/library/college` | 8 streams: OpenStax, LibreTexts, MIT OCW, NPTEL, SWAYAM |
+| Exams `#/library/exams` | 28 exams + 240 practice questions across 8 subjects |
+| Scripture `#/library/faith` | Gita, Ramayana, Guru Granth Sahib, Quran, Bible, Dhammapada — your faith's book first |
+| Free books `#/library/read` | Open Library + Project Gutenberg, read inside the app |
+| Audiobooks `#/library/listen` | LibriVox, with chapters and 0.75×–2× speed |
 | **Me** `#/me` | Pet, streak, badges, insights, settings, Plus |
 | Listen `#/listen` | Hands-free mixes: quote → music → next quote |
-| Vibe room `#/listen/vibe` | Swipe deck of songs; saved songs row |
+| Music reels `#/listen/reels` | A feed of songs that plays itself; saved songs row |
 | Now Playing | Opens from the mini player on any page |
 | Read `#/read` | Blog posts; `#/read/<slug>` for one post |
 | Tools `#/tools/<id>` | Any of the 60 tools, with "up next" handoffs |

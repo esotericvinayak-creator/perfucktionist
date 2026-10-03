@@ -88,7 +88,7 @@ export default function Music() {
   return (
     <div className="page">
       <PageHero
-        kicker="zone 06 · vibe room"
+        kicker="zone 06 · music search"
         accent="orange"
         emoji="🎧"
         title={

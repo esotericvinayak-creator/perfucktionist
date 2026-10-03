@@ -657,6 +657,16 @@ function Home({ onStart }: { onStart: () => void }) {
                 <Icon name="play" size={14} /> play
               </span>
             </a>
+            {p.goals.includes('focus') && (
+              <a className="feature-card a-lime" href="#/library/exams">
+                <span className="ibub">
+                  <Icon name="goal:focus" />
+                </span>
+                <b>study</b>
+                <small>exam prep, NCERT books & 10-question practice</small>
+                <span className="feature-go">open the library →</span>
+              </a>
+            )}
             {post && (
               <a className={`feature-card a-${post.accent}`} href={`#/read/${post.slug}`}>
                 <span className="ibub">

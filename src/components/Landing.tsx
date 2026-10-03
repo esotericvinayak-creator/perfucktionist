@@ -134,7 +134,7 @@ function Egg() {
 const INSIDE = [
   { icon: 'safety', title: 'Shield', body: 'self-defence moves, SOS, safe-walk timer, your rights. free forever, no login.', accent: 'pink' },
   { icon: 'library', title: 'Every scripture', body: `${formatIndian(totalVerses)} verses — Gita, Gurbani, Quran, Bible, Dhammapada, Ramayana.`, accent: 'sun' },
-  { icon: 'listen', title: 'Listen', body: 'quotes read aloud over lofi, plus a vibe room — swipe songs, save the ones that hit.', accent: 'violet' },
+  { icon: 'listen', title: 'Listen', body: 'quotes read aloud over lofi, plus music reels — songs that play themselves, swipe for the next.', accent: 'violet' },
   { icon: 'explore', title: `${TOOLS.length} tools`, body: 'focus timer, budget, sleep, journal, cycle tracker, breakup recovery…', accent: 'lime' },
   { icon: 'read', title: 'Read', body: 'honest posts on depression, results day, grief and getting back up.', accent: 'cyan' },
   { icon: 'faith', title: 'Real faith', body: 'spot fake babas, pastors and “pay to be blessed”. god is free.', accent: 'orange' },

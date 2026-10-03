@@ -1,8 +1,9 @@
-// Vibe room: a deck of songs. Swipe right to save, left to skip — every swipe plays the next one.
+// Music reels: a feed of songs that plays itself. Swipe right to save, left to skip, tap to pause.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronUp, Heart, Pause, Play, X } from 'lucide-react'
 import { usePlayer, type Track } from '../context/Player'
 import { moods, searchFull, searchSongs, type Mood } from '../lib/music'
+import { unlockAudio } from '../lib/sound'
 import { pick, useLocalState } from '../lib/storage'
 import { useSwipe } from './NowPlaying'
 
@@ -10,7 +11,7 @@ import { useSwipe } from './NowPlaying'
 const ROOM = [...moods.filter((m) => m.full), ...moods.filter((m) => !m.full)]
 const shuffle = <T,>(list: T[]) => [...list].sort(() => Math.random() - 0.5)
 
-export function VibeRoom() {
+export function MusicReels() {
   const pl = usePlayer()
   const [store] = useLocalState('music-store', 'IN')
   const [mood, setMood] = useState<Mood>(ROOM[0])
@@ -35,14 +36,16 @@ export function VibeRoom() {
       setDeck(list)
       setIdx(0)
       setState('ready')
-      if (autoplay) pl.play(list[0], list)
+      // Reels play themselves — opening the tab is the gesture browsers ask for.
+      if (autoplay) pl.play(list[0], list, true)
     },
     // pl.play is safe to capture: it only calls setters and the shared audio element.
     [store],
   )
 
   useEffect(() => {
-    void load(mood)
+    unlockAudio()
+    void load(mood, true)
   }, [mood, load])
 
   // The deck is the player here, so the mini player steps aside (the sheet still opens from "lyrics & player").
@@ -69,13 +72,13 @@ export function VibeRoom() {
       const n = idx + 1
       if (n >= deck.length) return void load(mood, true)
       setIdx(n)
-      pl.play(deck[n], deck)
+      pl.play(deck[n], deck, true)
     }, 260)
   }
   const playPause = () => {
     if (!card) return
     if (current) pl.toggle()
-    else pl.play(card, deck)
+    else pl.play(card, deck, true)
   }
   const swipe = useSwipe(
     () => go('left'),
@@ -84,7 +87,7 @@ export function VibeRoom() {
   )
 
   return (
-    <div className="vibe-room">
+    <div className="music-reels">
       <div className="vr-moods" role="group" aria-label="Pick a vibe">
         {ROOM.map((m) => (
           <button key={m.label} type="button" className={`chip${m === mood ? ' on' : ''}`} onClick={() => setMood(m)} aria-pressed={m === mood}>
@@ -157,7 +160,7 @@ export function VibeRoom() {
         </button>
       </div>
       <p className="vr-hint">
-        swipe right to save ♥ · left to skip · tap to play
+        plays by itself · swipe right to save ♥ · left to skip · tap to pause
         {current && (
           <>
             {' · '}
@@ -173,7 +176,7 @@ export function VibeRoom() {
           <p className="kicker">your saved songs · {pl.liked.length}</p>
           <div className="vr-liked-row">
             {pl.liked.map((t) => (
-              <button key={t.id} type="button" className={pl.track?.id === t.id ? 'on' : ''} onClick={() => pl.play(t, pl.liked)} aria-label={`Play ${t.title}`}>
+              <button key={t.id} type="button" className={pl.track?.id === t.id ? 'on' : ''} onClick={() => pl.play(t, pl.liked, true)} aria-label={`Play ${t.title}`}>
                 {t.art ? <img src={t.art} alt="" width={84} height={84} loading="lazy" /> : <span>🎵</span>}
                 <small>{t.title}</small>
               </button>

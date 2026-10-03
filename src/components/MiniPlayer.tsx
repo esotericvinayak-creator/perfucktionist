@@ -13,10 +13,12 @@ export function MiniPlayer() {
           {track.art ? <img className={`mp-art${playing ? ' spinning' : ''}`} src={track.art} alt="" width={52} height={52} /> : <span className="mp-art">🎵</span>}
           <span className="mp-meta">
             <strong>
-              <span className={`len-badge ${track.kind}`}>{track.kind === 'full' ? 'FULL' : '30s'}</span> {track.title}
+              {track.source === 'LibriVox' ? '📖' : <span className={`len-badge ${track.kind}`}>{track.kind === 'full' ? 'FULL' : '30s'}</span>} {track.title}
             </strong>
             <span>{track.artist}</span>
-            <span className="mp-links">{track.kind === 'full' ? `full song · on ${track.source}` : 'preview courtesy of iTunes · tap for full song & lyrics'}</span>
+            <span className="mp-links">
+              {track.source === 'LibriVox' ? 'audiobook · LibriVox · tap for chapters & speed' : track.kind === 'full' ? `full song · on ${track.source}` : 'preview courtesy of iTunes · tap for full song & lyrics'}
+            </span>
           </span>
           <ChevronUp className="mp-up" size={18} aria-hidden="true" />
         </button>

@@ -47,7 +47,12 @@ function Lyrics({ track, playing }: { track: Track; playing: boolean }) {
           <i key={i} style={{ animationDelay: `${(i * 137) % 900}ms`, animationDuration: `${700 + ((i * 53) % 500)}ms` }} />
         ))}
       </div>
-      {track.kind === 'full' ? (
+      {track.source === 'LibriVox' ? (
+        <>
+          <p className="np-lyric-big">📖 {track.title}</p>
+          <p className="muted">an audiobook chapter — close your eyes and listen. the next chapter starts on its own.</p>
+        </>
+      ) : track.kind === 'full' ? (
         <>
           <p className="np-lyric-big">♪ instrumental ♪</p>
           <p className="muted">no words — just vibes. breathe with the beat.</p>
@@ -105,7 +110,7 @@ export function NowPlaying() {
           <ChevronDown size={24} />
         </button>
         <span className="np-from">
-          {track.kind === 'full' ? 'full song · Audius' : '30s preview · iTunes'}
+          {track.source === 'LibriVox' ? 'audiobook · LibriVox' : track.kind === 'full' ? 'full song · Audius' : '30s preview · iTunes'}
           <small>
             {index + 1} / {queue.length}
           </small>
@@ -128,7 +133,7 @@ export function NowPlaying() {
 
       <div className="np-meta">
         <h2>
-          <span className={`len-badge ${track.kind}`}>{track.kind === 'full' ? 'FULL' : '30s'}</span> {track.title}
+          {track.source !== 'LibriVox' && <span className={`len-badge ${track.kind}`}>{track.kind === 'full' ? 'FULL' : '30s'}</span>} {track.title}
         </h2>
         <p>{track.artist}</p>
       </div>
@@ -170,10 +175,20 @@ export function NowPlaying() {
         </button>
       </div>
 
+      {track.source === 'LibriVox' && (
+        <div className="np-speed" role="group" aria-label="Speed">
+          {[0.75, 1, 1.25, 1.5, 2].map((r) => (
+            <button key={r} type="button" className={pl.rate === r ? 'on' : ''} onClick={() => pl.setRate(r)} aria-pressed={pl.rate === r}>
+              {r}×
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="np-tabs" role="tablist">
         {(
           [
-            ['lyrics', <Mic2 key="i" size={16} />, 'lyrics'],
+            ['lyrics', <Mic2 key="i" size={16} />, track.source === 'LibriVox' ? 'chapter' : 'lyrics'],
             ['next', <ListMusic key="i" size={16} />, 'up next'],
             ['about', <Info key="i" size={16} />, 'credits'],
           ] as const
@@ -195,7 +210,7 @@ export function NowPlaying() {
                   <span className="grow">
                     <b>{t.title}</b>
                     <small>
-                      {t.kind === 'full' ? 'FULL' : '30s'} · {t.artist}
+                      {t.source === 'LibriVox' ? `chapter ${i + 1}` : t.kind === 'full' ? 'FULL' : '30s'} · {t.artist}
                     </small>
                   </span>
                   {i === index && playing && (
@@ -212,7 +227,16 @@ export function NowPlaying() {
         )}
         {tab === 'about' && (
           <div className="np-about">
-            {track.kind === 'full' ? (
+            {track.source === 'LibriVox' ? (
+              <>
+                <p>
+                  A public-domain recording by <b>LibriVox</b> volunteers, hosted by the Internet Archive. Free for everyone, forever.
+                </p>
+                <a className="btn btn-sm" href={track.link} target="_blank" rel="noreferrer">
+                  <ExternalLink size={14} /> this audiobook on the Internet Archive
+                </a>
+              </>
+            ) : track.kind === 'full' ? (
               <>
                 <p>
                   A full track by an independent artist, streamed from <b>Audius</b>. Show them some love:

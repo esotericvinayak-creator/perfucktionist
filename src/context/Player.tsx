@@ -13,7 +13,7 @@ export type Track = {
   kind: 'preview' | 'full'
   /** Where the song lives (Apple Music page, Audius page) — shown as attribution. */
   link?: string
-  source: 'Apple Music' | 'Audius'
+  source: 'Apple Music' | 'Audius' | 'LibriVox'
 }
 
 type Player = {
@@ -25,13 +25,17 @@ type Player = {
   duration: number
   queue: Track[]
   index: number
-  play: (track: Track, queue?: Track[]) => void
+  /** `chain` keeps the feed rolling: when a track ends, the next one starts (music reels, audiobooks). */
+  play: (track: Track, queue?: Track[], chain?: boolean) => void
   toggle: () => void
   next: () => void
   prev: () => void
   jump: (index: number) => void
   seek: (seconds: number) => void
   close: () => void
+  /** Playback speed (handy for audiobooks). */
+  rate: number
+  setRate: (r: number) => void
   /** The full-screen Now Playing sheet. */
   sheet: boolean
   setSheet: (open: boolean) => void
@@ -61,6 +65,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [time, setTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [sheet, setSheet] = useState(false)
+  const [chain, setChain] = useState(false)
+  const [rate, setRateState] = useState(1)
   const [liked, setLiked] = useState<Track[]>(readLiked)
   const track = queue[index] ?? null
 
@@ -73,11 +79,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }, [liked])
 
   if (!audio.current && typeof Audio !== 'undefined') audio.current = new Audio()
+  const rateRef = useRef(1)
 
   const load = useCallback((t: Track) => {
     const el = audio.current
     if (!el) return
     el.src = t.src
+    // Songs always play at normal speed; audiobooks keep the speed you picked.
+    el.playbackRate = t.source === 'LibriVox' ? rateRef.current : 1
     setProgress(0)
     setTime(0)
     setDuration(0)
@@ -105,9 +114,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       setTime(el.currentTime)
       setDuration(d)
     }
-    // Apple's preview rules: previews are samples, not a radio — only full tracks auto-advance.
+    // A full song or a chained feed (music reels, audiobook chapters) rolls on to the next track.
+    // A lone 30-second preview stops, so the site is never a background radio of previews.
     const onEnd = () => {
-      if (track?.kind === 'full') step(1)
+      if (track?.kind === 'full' || chain) step(1)
     }
     el.addEventListener('play', onPlay)
     el.addEventListener('pause', onPause)
@@ -121,7 +131,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       el.removeEventListener('loadedmetadata', onTime)
       el.removeEventListener('ended', onEnd)
     }
-  }, [step, track])
+  }, [step, track, chain])
 
   const value = useMemo<Player>(
     () => ({
@@ -132,8 +142,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       duration,
       queue,
       index,
-      play: (t, list) => {
+      play: (t, list, keepGoing = false) => {
         const q = list?.length ? list : [t]
+        setChain(keepGoing)
         setQueue(q)
         setIndex(
           Math.max(
@@ -172,13 +183,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setIndex(-1)
         setSheet(false)
       },
+      rate,
+      setRate: (r) => {
+        rateRef.current = r
+        setRateState(r)
+        if (audio.current) audio.current.playbackRate = r
+      },
       sheet,
       setSheet,
       liked,
       isLiked: (t) => liked.some((x) => x.id === t.id),
       toggleLike: (t) => setLiked((l) => (l.some((x) => x.id === t.id) ? l.filter((x) => x.id !== t.id) : [t, ...l].slice(0, 100))),
     }),
-    [track, playing, progress, time, duration, queue, index, load, step, sheet, liked],
+    [track, playing, progress, time, duration, queue, index, load, step, sheet, liked, rate, chain],
   )
 
   return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>

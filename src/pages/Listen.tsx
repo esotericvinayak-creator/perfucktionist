@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { shareCard } from '../components/Overlays'
-import { VibeRoom } from '../components/VibeRoom'
+import { MusicReels } from '../components/MusicReels'
 import { faithById, linesFor } from '../data/profile'
 import { shlokas } from '../data/shlokas'
 import { traditions, wisdom, type Theme } from '../data/wisdom'
@@ -60,10 +60,11 @@ function speak(text: string, onEnd: () => void) {
 export default function Listen() {
   const p = useProgress()
   const mixes = useMemo(() => [...(mineFor(p.faith) ? [mineFor(p.faith)!] : []), ...MIXES], [p.faith])
-  const [tab, setTab] = useState<'quotes' | 'vibe'>(() => (window.location.hash.startsWith('#/listen/vibe') ? 'vibe' : 'quotes'))
-  const switchTab = (t: 'quotes' | 'vibe') => {
+  // #/listen/reels (and the old #/listen/vibe) open the reels straight away.
+  const [tab, setTab] = useState<'quotes' | 'reels'>(() => (/^#\/listen\/(reels|vibe)/.test(window.location.hash) ? 'reels' : 'quotes'))
+  const switchTab = (t: 'quotes' | 'reels') => {
     setTab(t)
-    history.replaceState(null, '', t === 'vibe' ? '#/listen/vibe' : '#/listen')
+    history.replaceState(null, '', t === 'reels' ? '#/listen/reels' : '#/listen')
   }
   const [mix, setMix] = useState<Mix | null>(null)
   const [queue, setQueue] = useState<Item[]>([])
@@ -172,19 +173,21 @@ export default function Listen() {
           </span>
           <h1>listen</h1>
           <p className="muted">
-            {tab === 'quotes' ? 'quotes from every faith, read to you, with music in between. hands-free — like a podcast you don’t have to think about.' : 'swipe through songs. save the ones that hit.'}
+            {tab === 'quotes'
+              ? 'quotes from every faith, read to you, with music in between. hands-free — like a podcast you don’t have to think about.'
+              : 'songs that play themselves. swipe for the next one, save the ones that hit.'}
           </p>
         </header>
         <div className="listen-tabs" role="tablist" aria-label="Listen">
           <button type="button" role="tab" aria-selected={tab === 'quotes'} className={tab === 'quotes' ? 'on' : ''} onClick={() => switchTab('quotes')}>
             <Icon name="listen" size={16} /> quotes + music
           </button>
-          <button type="button" role="tab" aria-selected={tab === 'vibe'} className={tab === 'vibe' ? 'on' : ''} onClick={() => switchTab('vibe')}>
-            <Icon name="play" size={16} /> vibe room
+          <button type="button" role="tab" aria-selected={tab === 'reels'} className={tab === 'reels' ? 'on' : ''} onClick={() => switchTab('reels')}>
+            <Icon name="play" size={16} /> music reels
           </button>
         </div>
-        {tab === 'vibe' ? (
-          <VibeRoom />
+        {tab === 'reels' ? (
+          <MusicReels />
         ) : (
           <>
             <div className="mix-grid">

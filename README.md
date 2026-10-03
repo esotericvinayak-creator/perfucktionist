@@ -12,11 +12,26 @@ Four tabs, nothing else: **Home · Explore · Library · Me**. Full flowchart: [
 2. **Sign up / log in** → then a short onboarding: name → gender (optional, 9 options incl. self-describe) → faith (optional, 15 options incl. atheist, agnostic, spiritual, every faith) → up to 3 goals → pick and name a pet → day 1.
 3. **Home** (`#/`) → "▶ start my 5 minutes" (mood → one small thing → one line of wisdom → done 🔥), your pet and how close it is to hatching/growing, a "for you first" spotlight, your plan, tools for you, Listen, Read, today's wisdom from your faith, SOS.
 4. **Explore** (`#/explore`) → search, "I'm feeling…" chips, quick picks (yours first), 10 areas.
-5. **Library** (`#/library`) → your faith's scripture opens first; change your faith right on the page.
+5. **Library** (`#/library`) → six shelves: **School** (every NCERT textbook, class 1–12), **College** (open textbooks + free university courses), **Exams** (28 competitive exams + 240 practice questions), **Scripture** (your faith's book opens first), **Free books** (millions, free to read) and **Audiobooks** (free, read aloud). Save anything to **your shelf**.
 6. **Me** (`#/me`) → your pet (type, name, outfits), streak, badges, insights, settings (account, theme, gender, faith, goals).
-7. **Listen** (`#/listen`) → *quotes + music* (a mix from your own tradition when you've set one) and the **vibe room** (`#/listen/vibe`): a swipe deck — right saves, left skips, tap plays. Tapping the mini player anywhere opens **Now Playing**: big art (swipe to change), a seek bar, up next, credits, and lyrics.
+7. **Listen** (`#/listen`) → *quotes + music* (a mix from your own tradition when you've set one) and **music reels** (`#/listen/reels`): a feed that plays itself — swipe right to save, left to skip, tap to pause. Tapping the mini player anywhere opens **Now Playing**: big art (swipe to change), a seek bar, up next, credits, and lyrics.
 
 **Gender and faith only change order and defaults — nothing is hidden from anyone.** Gender picks the spotlight and the first quick tools (`priorities()` in `src/data/profile.ts`); faith picks which quotes, Listen mix and scripture come first (`linesFor()`, `FAITHS`). Atheist and agnostic get philosophy (Stoic, Taoist, Confucian) instead of scripture on Home. Both are stored on the device only; if you ever sync them to accounts, treat them as sensitive (religion is special-category data under GDPR): keep them optional and ask for explicit consent.
+
+### The library
+
+| Shelf | What's in it | Where it comes from |
+| --- | --- | --- |
+| School `#/library/school` | 239 NCERT textbook links, class 1–12, English and Hindi editions | generated from NCERT's own textbook page — `src/data/school.ts` |
+| College `#/library/college` | 8 streams of openly licensed textbooks + free courses | OpenStax, LibreTexts, Open Textbook Library, MIT OpenCourseWare, NPTEL, SWAYAM — `src/data/college.ts` |
+| Exams `#/library/exams` | 28 exams across 12 groups, each with its official site and free official prep, plus practice | `src/data/exams.ts` |
+| Scripture `#/library/faith` | 1,22,156 verses from 6 scriptures, quotes by theme and tradition, shlokas | `src/lib/scripture.ts`, `src/data/wisdom.ts` |
+| Free books `#/library/read` | search millions of free-to-read books; read scans inside the app | Open Library (Internet Archive) + Project Gutenberg |
+| Audiobooks `#/library/listen` | free public-domain audiobooks with chapters and 0.75×–2× speed | LibriVox, hosted by the Internet Archive |
+
+**Practice** (`src/data/questions/`) is 240 original multiple-choice questions across 8 subjects — quant, reasoning, English, computer, physics, chemistry, biology and general science. Ten per round, with the reasoning shown after every answer. Scores stay on the device.
+
+**On exam facts:** `src/data/exams.ts` deliberately carries no question counts, marks, dates or eligibility rules. Those change with every notification and a stale number could cost a student a year — so each exam links to its official site, and the UI says so plainly. Only the stable things (what the exam is for, the rounds, roughly when) are stored here. Every URL in the library data files returned HTTP 200 when they were written.
 
 **Your pet** starts as an egg, hatches at 60 XP (a day or two of showing up) and grows through 10 levels. It's happy when you've shown up today and just sleepy when you haven't — it never dies or runs away. 12 animals; outfits (bow and cap free, 5 more with Plus).
 
@@ -31,9 +46,9 @@ Original intro: Eleven zones, a 1.2-lakh-verse library of every major faith, and
 | 🫠 **Unlearn Perfect** `#/unperfect` | Perfection-o-meter quiz, 8 rules, inner-critic flip cards, imperfection dares |
 | 🛡️ **Shield** `#/shield` | India helplines (tap to call), **fake call**, **panic siren**, **send-my-location**, 7 self-defence moves, street & online safety, legal rights after an assault |
 | 🔱 **Bro Code** `#/bro` | Consent, mental health, respect, a daily checklist that resets at midnight, warrior shlokas |
-| 📚 **Sacred Library** `#/library` | **1,22,156 verses** from 6 complete scriptures (table below) in the original script + English (+ Hindi for Gita, Quran, Gurbani), Gita audio recitations, "surprise me" across all faiths, the Golden Rule in 11 traditions, 60+ hand-picked cross-faith quotes, and the Sanskrit shloka stack. Deep links: `#/library/gita/2`, `#/library/bible/JHN/3` |
+| 📚 **Library** `#/library` | **1,22,156 verses** from 6 complete scriptures (table below) in the original script + English (+ Hindi for Gita, Quran, Gurbani), Gita audio recitations, "surprise me" across all faiths, the Golden Rule in 11 traditions, 60+ hand-picked cross-faith quotes, and the Sanskrit shloka stack. Deep links: `#/library/gita/2`, `#/library/bible/JHN/3` |
 | 🫁 **Breathe** `#/breathe` | Animated breathing orb (box, physiological sigh, 4-7-8, Anulom Vilom, Bhramari, power hold), meditation timer with bells |
-| 🎧 **Music search** `#/music` | Search any song on earth (Apple's catalogue, 30s previews; full songs for Lofi from Audius), 16 genre/mood chips, 18 Spotify playlists, Lofi Girl 24/7 radio. The swipe-deck vibe room lives in Listen (`#/listen/vibe`). A mini player follows you across the site and opens Now Playing |
+| 🎧 **Music search** `#/music` | Search any song on earth (Apple's catalogue, 30s previews; full songs for Lofi from Audius), 16 genre/mood chips, 18 Spotify playlists, Lofi Girl 24/7 radio. Music reels live in Listen (`#/listen/reels`). A mini player follows you across the site and opens Now Playing |
 | 🫧 **Happy Zone** `#/happy` | Dopamine button, bubble wrap, stress yeeter, gratitude jar, instant dance break |
 | 🦁 **Be Brave** `#/brave` | 5-second launch countdown, brave dares, goal smasher, the 5 D's of bystander intervention, desi legends |
 | 🏠 **No Secrets Club** `#/fam` | What to always tell your parents, copy-paste conversation starters, a tab for parents, help if home isn't safe |

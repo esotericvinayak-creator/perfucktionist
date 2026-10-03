@@ -12,10 +12,16 @@ import { NEEDS, TOOLS, toolById, type Need, type ToolMeta } from '../tools/regis
 // Long-form guide pages, named for people (not for the codebase).
 const GUIDES: Record<string, { icon: string; title: string; blurb: string }> = {
   '/journeys': { icon: 'explore', title: 'Guided journeys', blurb: '5 minutes a day programs' },
-  '/library': { icon: 'library', title: 'Sacred library', blurb: 'Gita, Gurbani, Quran, Bible & more' },
+  '/library': { icon: 'library', title: 'The library', blurb: 'school, college, exams, scripture, free books' },
+  '/library/school': { icon: 'library', title: 'School books', blurb: 'every NCERT textbook, class 1–12, free' },
+  '/library/college': { icon: 'explore', title: 'College & beyond', blurb: 'open textbooks + free university courses' },
+  '/library/exams': { icon: 'goal:focus', title: 'Exam prep', blurb: 'JEE, NEET, UPSC, SSC, banking + practice' },
+  '/library/listen': { icon: 'listen', title: 'Audiobooks', blurb: 'free, read aloud by real people' },
+  '/library/faith': { icon: 'faith', title: 'Scripture', blurb: 'Gita, Gurbani, Quran, Bible & more' },
   '/read': { icon: 'read', title: 'Read', blurb: 'honest pieces on depression & adversity' },
   '/listen': { icon: 'listen', title: 'Listen', blurb: 'quotes read aloud with music' },
-  '/music': { icon: 'listen', title: 'Vibe room', blurb: 'full songs, previews, playlists, lofi radio' },
+  '/music': { icon: 'listen', title: 'Music search', blurb: 'any song: full tracks, previews, playlists, radio' },
+  '/listen/reels': { icon: 'play', title: 'Music reels', blurb: 'songs that play themselves — swipe for the next' },
   '/breathe': { icon: 'calm', title: 'Breathe', blurb: 'guided pranayama & meditation timer' },
   '/unperfect': { icon: 'mind', title: 'Unlearn perfect', blurb: 'quiz, rules & daily imperfection dares' },
   '/happy': { icon: 'bored', title: 'Happy zone', blurb: 'bubble wrap, yeet box, gratitude jar' },
