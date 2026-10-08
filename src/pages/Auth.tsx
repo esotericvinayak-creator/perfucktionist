@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Download, Eye, EyeOff, LogIn, Mail } from 'lucide-react'
-import { LandingMore } from '../components/Landing'
+import { HeroPreview, LandingMore } from '../components/Landing'
 import { Logo } from '../components/Nav'
 import { APP_SCHEME, appHandOver, clearNotice, cloud, googleAvailable, logIn, logInWithGoogle, resendConfirmation, sendReset, setNewPassword, signUp, useAuth } from '../lib/auth'
 import { alreadyInstalled, appOnly, detectPlatform, inNativeApp } from '../lib/install'
@@ -306,6 +306,7 @@ function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => voi
         </a>
       </header>
       <section className="home-hero page aw-hero">
+        <div className="aw-copy">
         <p className="kicker">for gen z & gen alpha</p>
         <h1 className="mega">
           <span className="strike">
@@ -336,18 +337,20 @@ function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => voi
             </button>
           </div>
         )}
-      </section>
-      <p className="auth-sos">
-        need help right now? <a href="tel:112">112</a> · <a href="#/tools/panic">panic SOS</a> · <a href="tel:14416">14416 (mental health)</a>
-      </p>
-      {!alreadyInstalled() && !download && (
-        <p className="auth-get">
-          <a className="get-chip" href="#/get">
-            📲 get the app — Android, iPhone or computer
-          </a>
+        <p className="auth-sos">
+          need help right now? <a href="tel:112">112</a> · <a href="#/tools/panic">panic SOS</a> · <a href="tel:14416">14416 (mental health)</a>
+          {!alreadyInstalled() && !download && (
+            <>
+              {' · '}
+              <a href="#/get">get the app</a>
+            </>
+          )}
         </p>
-      )}
-      <LandingMore onSignup={onSignup} onLogin={onLogin} actions={download ? <DownloadActions /> : undefined} />
+        </div>
+        <HeroPreview />
+      </section>
+      {/* Android visitors came to get the app: the hero and the download button are the whole page. */}
+      {!download && <LandingMore onSignup={onSignup} onLogin={onLogin} />}
       {!cloud && !download && <p className="auth-preview">preview mode: accounts are saved on this device until cloud accounts are connected.</p>}
     </div>
   )

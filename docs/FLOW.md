@@ -60,7 +60,17 @@ flowchart TD
       MB[Pet: type, name, outfits] --> BD[Streak · badges · insights · Wrapped]
       MB --> ST[Settings: account + sync status, app version + check for updates, theme, gender, faith, goals]
       ST --> DEL[Delete my account<br/>login + synced data gone]
-      MB --> PL[Plus: 4 reasons, 7-day trial]
+      MB --> PL[Plus: price first]
+    end
+
+    subgraph PLUS [Plus: free trial or UPI]
+      PL --> TR[Free trial: 7 days, once per device, no payment]
+      PL --> PAY[Pay ₹399 / ₹49 on UPI<br/>QR code, UPI ID, or open-my-UPI-app link]
+      PAY --> REF[Paste the 12-digit reference from the receipt]
+      REF --> DB[(payments: pending)]
+      DB --> VER[You match it in PhonePe history<br/>npm run pay -- verify ref]
+      VER --> MEM[(memberships: until date)]
+      MEM --> ON[App unlocks Plus on next open]
     end
 
     H -. tab bar .-> E

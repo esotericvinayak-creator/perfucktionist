@@ -453,7 +453,7 @@ function MakeItYours() {
         <>
           <p className="h2-q">your faith?</p>
           <p className="muted">we’ll put your scripture and quotes first. every faith stays open to everyone.</p>
-          <div className="row gap-sm wrap">
+          <div className="chip-scroll">
             {FAITHS.map((f) => (
               <button key={f.id} type="button" className="chip" onClick={() => pick({ faith: f.id })}>
                 {f.emoji} {f.label}
@@ -466,7 +466,7 @@ function MakeItYours() {
         <>
           <p className="h2-q">how do you identify?</p>
           <p className="muted">it only changes what we suggest first, never what you can see.</p>
-          <div className="row gap-sm wrap">
+          <div className="chip-scroll">
             {GENDERS.filter((g) => g.id !== 'self').map((g) => (
               <button key={g.id} type="button" className="chip" onClick={() => pick({ gender: g.id })}>
                 {g.label}
@@ -512,11 +512,13 @@ function Home({ onStart }: { onStart: () => void }) {
 
       <section className={`h2-card h2-main${done ? ' done' : ''}`}>
         <a className="h2-pet" href="#/me" aria-label={`${p.pet || 'Your pet'} — open Me`}>
-          <PetView p={p} size={96} />
-          <span className="h2-pet-name">
-            <b>{p.pet || 'your pet'}</b> · lvl {lvl.level}
+          <PetView p={p} size={64} />
+          <span className="h2-pet-text">
+            <span className="h2-pet-name">
+              <b>{p.pet || 'your pet'}</b> · lvl {lvl.level}
+            </span>
+            <span className="h2-pet-line">{petLine}</span>
           </span>
-          <span className="h2-pet-line">{petLine}</span>
           <span className="home-pet-bar" aria-hidden="true">
             <i style={{ width: `${Math.round(lvl.progress * 100)}%` }} />
           </span>
@@ -569,22 +571,27 @@ function Home({ onStart }: { onStart: () => void }) {
       <article className="h2-card h2-line">
         <p className="kicker">{faith?.secular ? 'today’s philosophy' : faith && faith.traditions !== 'all' ? `today’s line · ${faith.label}` : 'today’s line'}</p>
         <span className="trad-chip">{line.badge}</span>
-        {line.original && (
-          <p className={`orig lang-${line.lang}`} lang={line.lang} dir={line.rtl ? 'rtl' : undefined}>
-            {line.original}
-          </p>
-        )}
         <p className="wisdom-text">“{line.text}”</p>
         {line.extra && <p className="wis-extra">💬 {line.extra}</p>}
-        <a className="linkish" href="#/library/faith">
-          more in the library →
-        </a>
+        <div className="h2-line-foot">
+          {line.original && (
+            <details className="h2-orig">
+              <summary>original</summary>
+              <p className={`orig lang-${line.lang}`} lang={line.lang} dir={line.rtl ? 'rtl' : undefined}>
+                {line.original}
+              </p>
+            </details>
+          )}
+          <a className="linkish" href="#/library/faith">
+            more →
+          </a>
+        </div>
       </article>
 
       {Object.values(flows).some(Boolean) && <MakeItYours />}
 
       <section className="h2-help" aria-label="Need help right now?">
-        <p className="kicker">need help right now?</p>
+        <span className="h2-help-l">need help?</span>
         <div className="help-row">
           <a href="#/tools/panic">
             <Icon name="panic" size={16} /> panic
@@ -593,15 +600,14 @@ function Home({ onStart }: { onStart: () => void }) {
             <Icon name="safe-walk" size={16} /> safe walk
           </a>
           <a href="#/shield">
-            <Icon name="safety" size={16} /> SOS tools
+            <Icon name="safety" size={16} /> SOS
           </a>
           <a href="tel:14416">
-            <Icon name="people" size={16} /> talk · 14416
+            <Icon name="people" size={16} /> 14416
           </a>
         </div>
       </section>
 
-      <p className="h2-sign">perfection is a <span className="serif">scam.</span></p>
     </div>
   )
 }

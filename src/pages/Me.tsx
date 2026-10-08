@@ -1,6 +1,5 @@
-import { useMemo } from 'react'
-import { PlusBadge, PlusWall, shareCard } from '../components/Overlays'
-import { Section } from '../components/ui'
+import { useMemo, type ReactNode } from 'react'
+import { PlusBadge, shareCard } from '../components/Overlays'
 import { BADGES, RITUAL, dayKey, levelOf, monthStats, ritualToday, showedUp, streakOf, update, useProgress, type Progress } from '../lib/progress'
 import { alreadyInstalled } from '../lib/install'
 import { usePlus } from '../lib/plus'
@@ -39,11 +38,26 @@ function SyncStatus() {
   )
 }
 
+/** A closed-by-default row: title, a hint of what's inside, and the content when you open it. */
+function Fold({ title, hint, children, open }: { title: string; hint?: ReactNode; children: ReactNode; open?: boolean }) {
+  return (
+    <details className="fold" open={open}>
+      <summary>
+        <span>{title}</span>
+        {hint && <small>{hint}</small>}
+      </summary>
+      <div className="fold-body">{children}</div>
+    </details>
+  )
+}
+
 function Settings() {
   const p = useProgress()
   const [theme, setTheme] = useTheme()
   const auth = useAuth()
   const toggle = (id: string) => update((x) => ({ goals: x.goals.includes(id) ? x.goals.filter((g) => g !== id) : x.goals.length < 3 ? [...x.goals, id] : x.goals }))
+  const gender = GENDERS.find((g) => g.id === p.gender)
+  const faith = FAITHS.find((f) => f.id === p.faith)
   return (
     <div className="settings">
       <div className="set-row">
@@ -59,24 +73,6 @@ function Settings() {
         </button>
       </div>
       <div className="set-row">
-        <span>
-          app version
-          <small className="set-sub">{versionLabel()}</small>
-        </span>
-        <CheckForUpdates />
-      </div>
-      {!alreadyInstalled() && (
-        <div className="set-row">
-          <span>
-            the app
-            <small className="set-sub">home-screen icon, opens offline</small>
-          </span>
-          <a className="btn btn-sm" href="#/get">
-            📲 get it
-          </a>
-        </div>
-      )}
-      <div className="set-row">
         <span>theme</span>
         <div className="row gap-sm">
           <button type="button" className={`chip${theme === 'dark' ? ' on' : ''}`} onClick={() => setTheme('dark')}>
@@ -87,10 +83,27 @@ function Settings() {
           </button>
         </div>
       </div>
-      <div className="set-row col">
-        <span>
-          gender <small className="set-sub">optional · changes what we suggest first, never what you can see</small>
-        </span>
+      <Fold title="I want help with" hint={p.goals.map((g) => GOALS.find((x) => x.id === g)?.label).filter(Boolean).join(', ') || 'pick up to 3'}>
+        <div className="row gap-sm wrap">
+          {GOALS.map((g) => (
+            <button key={g.id} type="button" className={`chip${p.goals.includes(g.id) ? ' on' : ''}`} onClick={() => toggle(g.id)}>
+              <Icon name={`goal:${g.id}`} size={14} /> {g.label}
+            </button>
+          ))}
+        </div>
+      </Fold>
+      <Fold title="faith" hint={faith ? `${faith.emoji} ${faith.label}` : 'optional'}>
+        <p className="set-sub">picks your scripture, daily line and Listen quotes. nothing is hidden from anyone.</p>
+        <div className="row gap-sm wrap">
+          {FAITHS.map((f) => (
+            <button key={f.id} type="button" className={`chip${p.faith === f.id ? ' on' : ''}`} onClick={() => update(() => ({ faith: f.id }))}>
+              {f.emoji} {f.label}
+            </button>
+          ))}
+        </div>
+      </Fold>
+      <Fold title="gender" hint={p.gender === 'self' ? p.genderSelf || 'in your words' : gender?.label ?? 'optional'}>
+        <p className="set-sub">changes what we suggest first, never what you can see.</p>
         <div className="row gap-sm wrap">
           {GENDERS.map((g) => (
             <button key={g.id} type="button" className={`chip${p.gender === g.id ? ' on' : ''}`} onClick={() => update(() => ({ gender: g.id }))}>
@@ -99,27 +112,19 @@ function Settings() {
           ))}
         </div>
         {p.gender === 'self' && <input value={p.genderSelf ?? ''} maxLength={30} placeholder="in your words" onChange={(e) => update(() => ({ genderSelf: e.target.value }))} aria-label="Your gender, in your words" />}
-      </div>
-      <div className="set-row col">
+      </Fold>
+      <div className="set-row">
         <span>
-          faith <small className="set-sub">optional · picks your scripture, daily line and Listen quotes</small>
+          app version
+          <small className="set-sub">{versionLabel()}</small>
         </span>
-        <div className="row gap-sm wrap">
-          {FAITHS.map((f) => (
-            <button key={f.id} type="button" className={`chip${p.faith === f.id ? ' on' : ''}`} onClick={() => update(() => ({ faith: f.id }))}>
-              {f.emoji} {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="set-row col">
-        <span>I want help with (up to 3)</span>
-        <div className="row gap-sm wrap">
-          {GOALS.map((g) => (
-            <button key={g.id} type="button" className={`chip${p.goals.includes(g.id) ? ' on' : ''}`} onClick={() => toggle(g.id)}>
-              <Icon name={`goal:${g.id}`} size={14} /> {g.label}
-            </button>
-          ))}
+        <div className="row gap-sm">
+          {!alreadyInstalled() && (
+            <a className="btn btn-sm" href="#/get">
+              📲 get the app
+            </a>
+          )}
+          <CheckForUpdates />
         </div>
       </div>
     </div>
@@ -174,198 +179,160 @@ export default function Me() {
   const line = useMemo(() => pick(happy ? PET_LINES.happy : PET_LINES.waiting), [happy])
   const month = monthStats(p)
   const monthName = new Date().toLocaleString('en-IN', { month: 'long' })
+  const earned = BADGES.filter((b) => p.badges[b.id])
 
   return (
-    <div className="page">
-      <header className="me-hero">
-        <div className="me-id">
-          <span className="sticker a-lime">your glow-up</span>
-          <h1 className="display">
+    <div className="page me2">
+      <header className="me2-head card">
+        <PetView p={p} size={72} />
+        <div className="me2-id">
+          <h1 className="me2-name">
             hey <input className="name-input" value={p.name} placeholder="you" maxLength={16} aria-label="Your name" onChange={(e) => update(() => ({ name: e.target.value }))} size={Math.max(3, p.name.length || 3)} />
             <span className="serif">.</span>
           </h1>
-          <p className="lede">Nobody’s grading this. It’s just proof that you keep showing up.</p>
-          <div className="row gap-sm wrap">
-            {plus.active ? (
-              <span className="plus-status">
-                <PlusBadge /> {plus.daysLeft} {plus.daysLeft === 1 ? 'day' : 'days'} left in your trial
-              </span>
-            ) : (
-              <a className="btn btn-sm btn-primary a-violet" href="#/plus">
-                ✦ get Plus
-              </a>
-            )}
-            <button
-              type="button"
-              className="btn btn-sm"
-              onClick={() =>
-                shareCard({
-                  kicker: `${p.name || 'my'} streak`,
-                  hero: `🔥${streak}`,
-                  text: streak === 1 ? 'day one. showing up > being perfect.' : `${streak} days of showing up. not perfect — just consistent.`,
-                  footer: `level ${lvl.level} · ${lvl.name}`,
-                })
-              }
-            >
-              ↗ share my streak
-            </button>
-          </div>
-        </div>
-        <div className="me-stats">
-          <div className="stat-tile a-orange">
-            <span className="stat-num">🔥 {streak}</span>
-            <span className="stat-label">day streak</span>
-          </div>
-          <div className="stat-tile a-lime">
-            <span className="stat-num">{p.xp.toLocaleString('en-IN')}</span>
-            <span className="stat-label">XP</span>
-          </div>
-          <div className="stat-tile a-violet stat-wide">
-            <span className="stat-label">
-              level {lvl.level} · {lvl.name}
-              {lvl.next && ` → ${lvl.next.name}`}
-            </span>
-            <div className="meter-bar">
-              <div className="meter-fill" style={{ width: `${lvl.progress * 100}%` }} />
-            </div>
-            <span className="muted">{lvl.next ? `${lvl.next.xp - p.xp} XP to go` : 'max level. you are the forest now.'}</span>
+          <p className="muted">
+            level {lvl.level} · {lvl.name}
+            {lvl.next && ` · ${lvl.next.xp - p.xp} XP to ${lvl.next.name}`}
+          </p>
+          <div className="meter-bar sm">
+            <div className="meter-fill" style={{ width: `${lvl.progress * 100}%` }} />
           </div>
         </div>
       </header>
 
-      <Section
-        kicker="today’s ritual · ~5 minutes"
-        title={
-          <>
-            any <span className="serif">one</span> keeps your streak.
-          </>
-        }
-        intro="All four = a “full send” day. One = still a win."
-      >
-        <div className="row gap-sm wrap me-quick">
-          <a className="btn btn-sm btn-primary a-violet" href="#/tools/checkin">
-            🌡️ 3-tap check-in
-          </a>
-          <a className="btn btn-sm" href="#/tools/mood-insights">
-            📈 mood insights
-          </a>
-          <a className="btn btn-sm" href="#/tools/habits">
-            📅 my habits
-          </a>
+      <div className="me2-stats">
+        <div>
+          <b>🔥 {streak}</b>
+          <span>day streak</span>
         </div>
-        <div className="ritual-grid">
+        <div>
+          <b>{p.xp.toLocaleString('en-IN')}</b>
+          <span>XP</span>
+        </div>
+        <div>
+          <b>
+            {earned.length}/{BADGES.length}
+          </b>
+          <span>badges</span>
+        </div>
+        <button
+          type="button"
+          className="btn btn-sm"
+          onClick={() =>
+            shareCard({
+              kicker: `${p.name || 'my'} streak`,
+              hero: `🔥${streak}`,
+              text: streak === 1 ? 'day one. showing up > being perfect.' : `${streak} days of showing up. not perfect — just consistent.`,
+              footer: `level ${lvl.level} · ${lvl.name}`,
+            })
+          }
+        >
+          ↗ share
+        </button>
+      </div>
+
+      {plus.active ? (
+        <a className="me2-plus on" href="#/plus">
+          <PlusBadge /> <span>{plus.daysLeft} {plus.daysLeft === 1 ? 'day' : 'days'} left in your free trial</span>
+        </a>
+      ) : (
+        <a className="me2-plus" href="#/plus">
+          <span className="me2-plus-ic">🧊</span>
+          <span className="grow">
+            <b>{streak >= 3 ? `protect your ${streak}-day streak` : 'try Plus free for 7 days'}</b>
+            <small>streak freezes, full journeys, pet outfits</small>
+          </span>
+          <span className="plan-go">→</span>
+        </a>
+      )}
+
+      <section className="me2-sec">
+        <p className="kicker">today</p>
+        <div className="me2-chips">
           {RITUAL.map((r) => {
             const done = doneToday.includes(r.kind)
             return (
-              <a key={r.kind} href={`#${r.path}`} className={`ritual${done ? ' done' : ''}`}>
-                <span className="ritual-emoji">{done ? '✅' : r.emoji}</span>
-                <strong>{r.label}</strong>
-                <span>{done ? 'done today' : r.how}</span>
+              <a key={r.kind} href={`#${r.path}`} className={`me2-chip${done ? ' done' : ''}`} title={r.how}>
+                {done ? '✅' : r.emoji} {r.label}
               </a>
             )
           })}
         </div>
-      </Section>
-
-      <Section
-        kicker="your pet"
-        title={
-          <>
-            {p.pet ? (
-              <>
-                say hi to <span className="serif">{p.pet}</span>
-              </>
-            ) : (
-              <>
-                your <span className="serif">pet</span>
-              </>
-            )}
-          </>
-        }
-        intro="It hatches at 60 XP (a day or two of showing up) and grows with every bit after. Show up and it’s happy; skip a day and it gets a little sleepy — it never runs away."
-      >
-        <div className="pet-card card a-lime">
-          <div className="pet-stage">
-            <PetView p={p} size={Math.round(84 + Math.min(lvl.index, 6) * 10)} interactive />
-            <span className="pet-ground" />
-            <span className="pet-mood">{happy ? '😊 fed & happy' : '🥺 a little hungry'}</span>
-          </div>
-          <div className="pet-side">
-            <p className="pet-bubble">“{line}”</p>
-            <label className="field">
-              <span>pet name</span>
-              <input value={p.pet} maxLength={16} placeholder="name your pet" onChange={(e) => update(() => ({ pet: e.target.value }))} />
-            </label>
-            <div>
-              <p className="kicker">pet</p>
-              <div className="row gap-sm wrap skins">
-                {PETS.map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    className={`skin${(p.petType || 'cat') === t.id ? ' on' : ''}`}
-                    title={t.name}
-                    aria-label={t.name}
-                    aria-pressed={(p.petType || 'cat') === t.id}
-                    onClick={() => update(() => ({ petType: t.id }))}
-                  >
-                    {t.emoji}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="kicker">wear {!plus.active && <PlusBadge small />}</p>
-              <div className="row gap-sm wrap skins">
-                {ACCESSORIES.map((a) => {
-                  const locked = a.plus && !plus.active
-                  return (
-                    <button
-                      key={a.id}
-                      type="button"
-                      className={`skin${p.petHat === a.id ? ' on' : ''}`}
-                      title={locked ? `${a.name} — Plus` : a.name}
-                      aria-label={`${a.name}${locked ? ' (Plus)' : ''}`}
-                      disabled={locked}
-                      onClick={() => update(() => ({ petHat: a.id }))}
-                    >
-                      {a.emoji || '∅'}
-                      {locked && <span className="lock">🔒</span>}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
+        <div className="me2-chips">
+          <a className="me2-chip ghost" href="#/tools/checkin">
+            🌡️ check-in
+          </a>
+          <a className="me2-chip ghost" href="#/tools/mood-insights">
+            📈 mood insights
+          </a>
+          <a className="me2-chip ghost" href="#/tools/habits">
+            📅 habits
+          </a>
         </div>
-      </Section>
+      </section>
 
-      <Section
-        kicker="last 16 weeks"
-        title={
-          <>
-            your <span className="serif">glow-up</span> map
-          </>
-        }
-      >
+      <section className="me2-sec">
+        <p className="kicker">last 16 weeks</p>
         <div className="card heat-card a-cyan">
           <Heatmap p={p} />
           <div className="row gap-sm wrap muted heat-legend">
-            less <span className="hm hm-0" /> <span className="hm hm-1" /> <span className="hm hm-2" /> <span className="hm hm-3" /> <span className="hm hm-4" /> more · <span className="hm hm-f" /> streak freeze
+            less <span className="hm hm-0" /> <span className="hm hm-1" /> <span className="hm hm-2" /> <span className="hm hm-3" /> <span className="hm hm-4" /> more · <span className="hm hm-f" /> freeze
           </div>
         </div>
-      </Section>
+      </section>
 
-      <Section
-        kicker={`${monthName} wrapped`}
-        title={
-          <>
-            your month, <span className="serif">wrapped</span>
-          </>
-        }
-      >
+      <Fold title={`${p.pet || 'your pet'}`} hint={happy ? '😊 fed & happy' : '🥺 a little hungry'}>
+        <div className="me2-pet">
+          <div className="pet-stage sm">
+            <PetView p={p} size={Math.round(70 + Math.min(lvl.index, 6) * 8)} interactive />
+          </div>
+          <p className="pet-bubble">“{line}”</p>
+        </div>
+        <label className="field">
+          <span>name</span>
+          <input value={p.pet} maxLength={16} placeholder="name your pet" onChange={(e) => update(() => ({ pet: e.target.value }))} />
+        </label>
+        <p className="kicker">pet</p>
+        <div className="row gap-sm wrap skins">
+          {PETS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={`skin${(p.petType || 'cat') === t.id ? ' on' : ''}`}
+              title={t.name}
+              aria-label={t.name}
+              aria-pressed={(p.petType || 'cat') === t.id}
+              onClick={() => update(() => ({ petType: t.id }))}
+            >
+              {t.emoji}
+            </button>
+          ))}
+        </div>
+        <p className="kicker">wear {!plus.active && <PlusBadge small />}</p>
+        <div className="row gap-sm wrap skins">
+          {ACCESSORIES.map((a) => {
+            const locked = a.plus && !plus.active
+            return (
+              <button
+                key={a.id}
+                type="button"
+                className={`skin${p.petHat === a.id ? ' on' : ''}`}
+                title={locked ? `${a.name} — Plus` : a.name}
+                aria-label={`${a.name}${locked ? ' (Plus)' : ''}`}
+                disabled={locked}
+                onClick={() => update(() => ({ petHat: a.id }))}
+              >
+                {a.emoji || '∅'}
+                {locked && <span className="lock">🔒</span>}
+              </button>
+            )
+          })}
+        </div>
+      </Fold>
+
+      <Fold title={`${monthName} wrapped`} hint={plus.active ? `${month.activeDays} ${month.activeDays === 1 ? 'day' : 'days'} showed up` : 'Plus'}>
         {plus.active ? (
-          <div className="card wrapped a-pink">
+          <div className="wrapped">
             <div className="wrapped-grid">
               <div>
                 <b>{month.activeDays}</b>
@@ -411,12 +378,20 @@ export default function Me() {
             </button>
           </div>
         ) : (
-          <PlusWall title="Your monthly Wrapped">Every month: how many days you showed up, your top ritual, your brave count — as a story card made for posting.</PlusWall>
+          <>
+            <p className="muted">how many days you showed up, your top ritual, your brave count — as a story card made for posting.</p>
+            <a className="btn btn-sm btn-primary a-violet" href="#/plus">
+              ✦ try Plus free
+            </a>
+          </>
         )}
-      </Section>
+      </Fold>
 
-      <Section kicker={`${Object.keys(p.badges).length}/${BADGES.length} unlocked`} title={<>badges</>}>
-        <div className="badge-grid">
+      <Fold
+        title="badges"
+        hint={earned.length ? earned.slice(0, 8).map((b) => b.emoji).join(' ') : `${BADGES.length} to unlock`}
+      >
+        <div className="badge-grid sm">
           {BADGES.map((b) => {
             const got = p.badges[b.id]
             return (
@@ -428,21 +403,14 @@ export default function Me() {
             )
           })}
         </div>
-      </Section>
+      </Fold>
 
-      <Section kicker="settings" title={<>your way</>}>
+      <Fold title="settings" hint="account, theme, faith, goals">
         <Settings />
-      </Section>
+      </Fold>
 
       <p className="muted me-fine">
-        {cloud ? (
-          <>
-            Your streak, XP, badges, saved books, liked songs and practice scores are synced to your account, so they follow you to a new phone. Your journal, cycle tracker, money, check-ins, notes, gender
-            and faith never leave this phone.{' '}
-          </>
-        ) : (
-          'All of this is saved only on this device — no account, nothing sent anywhere. '
-        )}
+        {cloud ? 'Your streak, XP, badges, saved books and liked songs sync to your account. Your journal, cycle tracker, money, check-ins, gender and faith never leave this phone. ' : 'Saved only on this device — no account, nothing sent anywhere. '}
         <button
           type="button"
           className="linkish"

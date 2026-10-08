@@ -18,7 +18,9 @@
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
     "db:push": "node scripts/with-secrets.mjs prd node scripts/db-push.mjs",
-    "secrets:android": "node scripts/doppler-android.mjs"
+    "secrets:android": "node scripts/doppler-android.mjs",
+    "db:check": "node scripts/with-secrets.mjs prd node scripts/db-check.mjs",
+    "pay": "node scripts/with-secrets.mjs prd node scripts/pay.mjs"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",

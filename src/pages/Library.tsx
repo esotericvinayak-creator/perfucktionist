@@ -29,11 +29,10 @@ function Hub({ go }: { go: (id: SectionId) => void }) {
   return (
     <>
       <header className="lb-hero">
-        <span className="sticker a-sun">the library · all free</span>
         <h1 className="display">
           every book you need. <span className="serif">zero rupees.</span>
         </h1>
-        <p className="lede">school textbooks, college material, exam prep, scripture, novels and audiobooks — legally free, no sign-up walls, no pirated PDFs.</p>
+        <p className="muted">legally free. no sign-up walls, no pirated PDFs.</p>
       </header>
 
       <div className="lb-sections">

@@ -95,6 +95,8 @@ export default function App() {
       </div>
     )
   const safe = PUBLIC.includes(route)
+  // A visitor on a safety or download page isn't in the app yet: no tabs, no streak, just the page, back and SOS.
+  const bare = safe && (auth.status === 'out' || download)
   if (((auth.status === 'out' || download) && !safe) || auth.recovering)
     return (
       <>
@@ -108,14 +110,14 @@ export default function App() {
       <a className="skip-link" href="#main" onClick={(e) => (e.preventDefault(), document.getElementById('main')?.focus())}>
         Skip to content
       </a>
-      <Nav route={route} />
+      <Nav route={route} bare={bare} />
       <UpdatePrompt safe={safe} />
       <main id="main" tabIndex={-1}>
         <Page key={route} />
       </main>
       <Footer />
       <MiniPlayer />
-      <TabBar route={route} />
+      {!bare && <TabBar route={route} />}
       <Toaster />
       <ShareHost />
       <WebView />

@@ -49,7 +49,7 @@ export function Logo() {
   )
 }
 
-export function Nav({ route }: { route: string }) {
+export function Nav({ route, bare = false }: { route: string; bare?: boolean }) {
   const streak = streakOf(useProgress())
   const tab = tabFor(route)
   return (
@@ -58,17 +58,21 @@ export function Nav({ route }: { route: string }) {
       <a href="#/" className="logo" aria-label="perfucktionist — home">
         <Logo />
       </a>
-      <nav className="nav-tabs" aria-label="Main">
-        {TABS.map((t) => (
-          <a key={t.path} href={`#${t.path}`} className={tab === t.path ? 'on' : ''} aria-current={tab === t.path ? 'page' : undefined}>
-            <Icon name={t.icon} size={16} /> {t.label}
-          </a>
-        ))}
-      </nav>
+      {!bare && (
+        <nav className="nav-tabs" aria-label="Main">
+          {TABS.map((t) => (
+            <a key={t.path} href={`#${t.path}`} className={tab === t.path ? 'on' : ''} aria-current={tab === t.path ? 'page' : undefined}>
+              <Icon name={t.icon} size={16} /> {t.label}
+            </a>
+          ))}
+        </nav>
+      )}
       <div className="nav-actions">
-        <a className={`streak-chip${streak ? ' lit' : ''}`} href="#/me" title="Your streak">
-          🔥 <span>{streak}</span>
-        </a>
+        {!bare && (
+          <a className={`streak-chip${streak ? ' lit' : ''}`} href="#/me" title="Your streak">
+            🔥 <span>{streak}</span>
+          </a>
+        )}
         <a className="sos-chip" href="tel:112" title="Call 112 — India emergency">
           <span className="sos-dot" aria-hidden="true" />
           <span className="sos-label">SOS </span>112

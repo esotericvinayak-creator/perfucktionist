@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { PETS, linesFor } from '../data/profile'
-import { PRICES } from '../lib/plus'
+import { PRICES, TRIAL_DAYS } from '../lib/plus'
 import { pop } from '../lib/sound'
 import { TOOLS } from '../tools/registry'
 
@@ -16,6 +16,40 @@ const MOODS = [
 ] as const
 
 const BOX = ['breathe in', 'hold', 'breathe out', 'hold']
+
+/** A picture of the app's one screen, drawn in markup — not a screenshot, and not a real person. */
+export function HeroPreview() {
+  return (
+    <div className="ld-phone" aria-hidden="true">
+      <div className="ld-phone-bar">
+        <b>hey you 👋</b>
+        <span>🔥 12</span>
+      </div>
+      <div className="ld-phone-card">
+        <div className="ld-phone-pet">
+          <span>🐣</span>
+          <div>
+            <b>Mochi · lvl 3</b>
+            <small>hungry · your 5 minutes feed them</small>
+          </div>
+        </div>
+        <i />
+        <div className="ld-phone-cta">▶ start my 5 minutes</div>
+        <small>how you feel → one small thing → one line of wisdom</small>
+      </div>
+      <div className="ld-phone-line">
+        <small>TODAY’S LINE</small>
+        <p>“You have the right to the work, but never to its fruits.”</p>
+      </div>
+      <div className="ld-phone-help">
+        <span>panic</span>
+        <span>safe walk</span>
+        <span>SOS</span>
+        <span>14416</span>
+      </div>
+    </div>
+  )
+}
 
 function BoxBreath() {
   const [n, setN] = useState(0)
@@ -132,7 +166,7 @@ function Egg() {
 const FAQ = [
   [
     'is it free?',
-    `yes. the daily 5 minutes, every scripture, all safety tools and most of the ${TOOLS.length} tools are free, always. Plus (₹${PRICES.monthly}/month or ₹${PRICES.yearly}/year) adds streak freezes, full journeys, insights and outfits for your pet.`,
+    `yes. the daily 5 minutes, every scripture, all safety tools and most of the ${TOOLS.length} tools are free, always. Plus (₹${PRICES.monthly}/month or ₹${PRICES.yearly}/year, paid by UPI, no auto-renew) adds streak freezes, full journeys, insights and outfits for your pet. the first ${TRIAL_DAYS} days are free.`,
   ],
   ['do I have to be religious?', 'nope. tell us your faith, pick “every faith”, or say you’re atheist or agnostic — then you get philosophy instead. or never answer at all.'],
   ['do you ask my gender or faith?', 'only later, and only if you want to answer. they just decide what shows up first (your scripture, safety tools). nothing is ever hidden from anyone.'],
@@ -179,6 +213,25 @@ export function LandingMore({ onSignup, onLogin, actions }: { onSignup: () => vo
           a tiny friend that <span className="serif">grows with you.</span>
         </h2>
         <Egg />
+      </section>
+
+      <section className="ld-section">
+        <p className="kicker">free, and a little extra</p>
+        <h2 className="ld-h">
+          the good stuff is <span className="serif">free.</span>
+        </h2>
+        <div className="ld-plans">
+          <div className="ld-plan">
+            <b>free, always</b>
+            <small>daily 5 minutes, your pet, every scripture, all safety tools, 56 of 60 tools</small>
+          </div>
+          <div className="ld-plan plus">
+            <b>
+              Plus · ₹{Math.round(PRICES.yearly / 12)}/month <em>{TRIAL_DAYS} days free</em>
+            </b>
+            <small>streak freezes, full programs, mood patterns, pet outfits. pay by UPI, no card, no auto-renew</small>
+          </div>
+        </div>
       </section>
 
       <section className="ld-section">

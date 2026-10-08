@@ -2,8 +2,7 @@
 // Android gets the real APK. iOS can't install APKs at all, so it gets Add to Home Screen.
 // Everything else installs straight from the browser.
 import { useEffect, useState } from 'react'
-import { Apple, Check, Download, Monitor, Share, Shield, Smartphone, SquarePlus, Wifi } from 'lucide-react'
-import { Icon } from '../components/Icon'
+import { Apple, Check, Download, Monitor, Share, Smartphone, SquarePlus } from 'lucide-react'
 import { APK_URL, alreadyInstalled, apkMeta, appOnly, detectPlatform, prettySize, promptInstall, useCanInstall, type ApkMeta, type Platform } from '../lib/install'
 import { toast } from '../lib/toast'
 import { versionLabel } from '../lib/update'
@@ -18,43 +17,18 @@ const LABEL: Record<Platform, string> = {
   other: 'this device',
 }
 
-function Perks() {
-  return (
-    <ul className="get-perks">
-      <li>
-        <span className="ibub">
-          <Icon name="home" size={18} />
-        </span>
-        Its own icon on your home screen — no browser bar.
-      </li>
-      <li>
-        <span className="ibub">
-          <Wifi size={18} />
-        </span>
-        Opens instantly, and the app still loads without signal.
-      </li>
-      <li>
-        <span className="ibub">
-          <Shield size={18} />
-        </span>
-        Panic SOS and the 112 button are always one tap away.
-      </li>
-    </ul>
-  )
-}
-
 /** Installing from outside the Play Store needs one permission; say so plainly. */
 function AndroidSteps() {
   return (
     <ol className="get-steps">
       <li>
-        <b>Tap download.</b> Your browser may warn you that this kind of file can harm your device — that warning shows for every APK, including this one. Choose <b>Download anyway</b>.
+        Tap download. If your browser warns about the file, choose <b>Download anyway</b>.
       </li>
       <li>
-        <b>Open the file.</b> Android will ask to allow installs from your browser. Turn it on, then come back and tap <b>Install</b>.
+        Open it and allow installs from your browser when Android asks.
       </li>
       <li>
-        <b>It says “unknown developer”.</b> That’s honest — this build isn’t from Google Play. The check below shows the file is exactly the one we built.
+        Tap <b>Install</b>. “Unknown developer” just means it isn’t from Google Play.
       </li>
     </ol>
   )
@@ -119,13 +93,10 @@ export default function Get() {
   return (
     <div className="page get-page">
       <header className="get-hero">
-        <span className="sticker a-lime">free · no store · no ads</span>
         <h1 className="display">
-          put it on your <span className="serif">home screen.</span>
+          get the <span className="serif">app.</span>
         </h1>
-        <p className="lede">
-          We spotted <b>{LABEL[platform]}</b>. Here’s the way that works for it.
-        </p>
+        <p className="lede">Free, no ads. Here’s the way that works for {LABEL[platform]}.</p>
       </header>
 
       {/* ── Android: the real APK ───────────────────────────── */}
@@ -145,8 +116,11 @@ export default function Get() {
               </a>
               <AndroidSteps />
               <details className="get-sha">
-                <summary>check the file is really ours</summary>
-                <p className="muted">SHA-256 of this build — compare it after downloading if you want to be sure nothing changed in transit:</p>
+                <summary>is it safe?</summary>
+                <p className="muted">
+                  It’s the same website, wrapped so Android can run it. It only asks for internet access, has no ads and no trackers. Not being on Google Play is why Android shows a warning. To check the file is exactly ours,
+                  compare its SHA-256 after downloading:
+                </p>
                 <code>{apk.sha256}</code>
                 <p className="muted">Built {apk.built}.</p>
               </details>
@@ -196,33 +170,6 @@ export default function Get() {
           <p className="get-note">APK files are Android-only, so there’s nothing to download here.</p>
         </section>
       )}
-
-      <Perks />
-
-      <section className="get-card">
-        <h2>Straight answers</h2>
-        <details>
-          <summary>Is the APK safe?</summary>
-          <p className="muted">
-            It’s the same website, wrapped so Android can run it. The only permission it asks for is internet access. It has no ads, and we add no trackers. Because it isn’t distributed through Play, Android shows an
-            “unknown developer” warning, which is Android doing its job. The SHA-256 on the Android card lets you check the file is exactly the one we built.
-          </p>
-        </details>
-        <details>
-          <summary>Why isn’t it on the Play Store or App Store?</summary>
-          <p className="muted">Both need a paid developer account and a review process. Until that’s set up, the APK and the browser install are the honest ways to get it.</p>
-        </details>
-        <details>
-          <summary>Will it work offline?</summary>
-          <p className="muted">
-            The app itself opens offline, along with anything you’ve already saved on your phone — journal, cycle tracker, money notes, streak. Scripture, books, music and the web viewer all need a connection.
-          </p>
-        </details>
-        <details>
-          <summary>Does it cost anything?</summary>
-          <p className="muted">No. Same free app either way. Plus is optional and never touches safety tools or scripture.</p>
-        </details>
-      </section>
     </div>
   )
 }

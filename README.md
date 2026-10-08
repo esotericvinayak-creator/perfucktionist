@@ -8,14 +8,15 @@ A Gen Z toolkit for living, not polishing.
 
 Three tabs, nothing else: **Today · Discover · Me**. Full flowchart: [docs/FLOW.md](docs/FLOW.md). The idea: *show up for 5 minutes, feel okay, nothing to be perfect at.*
 
-**Where the app runs:** on **Android** the app *is* the APK. Android visitors on the website get only the landing page, with **download the app** buttons, plus the safety pages (Panic SOS, safe-walk, Shield) and `#/get`. Every other link shows the landing page (`appOnly()` in `src/lib/install.ts`). **iPhone and computers** can't install an APK, so they keep the full web app (sign up in the browser, or Add to Home Screen). Email links still work on Android: password resets open in the browser and are completed there.
+**Where the app runs:** on **Android** the app *is* the APK. Android visitors on the website get only the landing hero with one **download the app** button, plus the safety pages (Panic SOS, safe-walk, Shield) and `#/get`. Every other link shows the landing page (`appOnly()` in `src/lib/install.ts`). **iPhone and computers** can't install an APK, so they keep the full web app (sign up in the browser, or Add to Home Screen). Email links still work on Android: password resets open in the browser and are completed there.
 
 1. **Landing** → hero, a no-account demo (pick a mood → box breathing, a line of wisdom or a tiny dare), how it works in 3 steps, tap-to-hatch pet egg, promises, FAQ. Panic SOS, safe-walk and Shield work without an account.
 2. **Sign up / log in** → then a 2-step onboarding: what you want help with (up to 3 goals) → pick and name a pet → straight into day 1.
 3. **Today** (`#/`) → one screen: your pet and streak, one big "▶ start my 5 minutes" button (mood → one small thing → one line of wisdom → done 🔥, with an optional "and now, how are you?"), today's line from your faith, your plan (only once you've started one) and "need help right now?" (panic, safe walk, SOS, 14416). After your first finished day, one optional question at a time asks your name, faith and gender (`MakeItYours` in `src/pages/Today.tsx`), each skippable.
 4. **Discover** (`#/explore`) → search, "I'm feeling…" chips and five cards: **Feel better**, **Study**, **Listen**, **Read**, **Books & scripture** (plus Shield or Bro code first, if you set a gender). Quick tools below, and "everything else" opens the 10 areas and all 60 tools. The Library lives under here.
 5. **Library** (`#/library`, reached from Discover) → six shelves: **School** (every NCERT textbook, class 1–12), **College** (open textbooks + free university courses), **Exams** (28 competitive exams + 360 practice questions), **Scripture** (your faith's book opens first), **Free books** (millions, free to read) and **Audiobooks** (free, read aloud). Save anything to **your shelf**.
-6. **Me** (`#/me`) → your pet (type, name, outfits), streak, badges, insights, settings (account, theme, gender, faith, goals).
+6. **Me** (`#/me`) → one compact screen: pet, level, streak, XP, a Plus row, today's four rituals, the 16-week map. Pet, monthly Wrapped, badges and settings (account, theme, goals, faith, gender) are closed rows that open in place.
+   **Plus** (`#/plus`) → price first: yearly (₹33/month) or monthly (₹49), "try free for 7 days", then four one-line perks and a closed "always free" list. Payments aren't live yet, so the trial unlocks Plus on this device only (`src/lib/plus.ts`); swap `startTrial()` for a real checkout before charging anyone.
 7. **Listen** (`#/listen`) → *quotes + music* (a mix from your own tradition when you've set one) and **music reels** (`#/listen/reels`): a feed that plays itself — swipe right to save, left to skip, tap to pause. Tapping the mini player anywhere opens **Now Playing**: big art (swipe to change), a seek bar, up next, credits, and lyrics.
 
 **Gender and faith only change order and defaults — nothing is hidden from anyone.** Gender picks the spotlight and the first quick tools (`priorities()` in `src/data/profile.ts`); faith picks which quotes, Listen mix and scripture come first (`linesFor()`, `FAITHS`). Atheist and agnostic get philosophy (Stoic, Taoist, Confucian) instead of scripture on Home. Both stay on the device even with cloud accounts: sync strips them before upload. If you ever do sync them, treat them as sensitive (religion is special-category data under GDPR): keep them optional and ask for explicit consent.
@@ -196,6 +197,18 @@ Confirmation and password-reset emails always return to the website, as `?auth=s
 - **Logging in before confirming** offers to send the link again.
 
 Google sign-in stays website-only for now, because Google blocks sign-in inside app web views.
+
+### Plus payments (UPI) and the database check
+
+Plus is paid by UPI to `techievinayak.wallet@phonepe` (QR in `public/pay/phonepe-qr.png`; the ID and plan prices are in `src/lib/payments.ts` and `src/lib/plus.ts`). There is no payment provider, so you confirm each payment yourself:
+
+1. Someone pays, then pastes the 12-digit UPI reference from their receipt on **Plus**. It's saved in `public.payments` as `pending` (the database checks the amount against the plan and refuses a reused reference).
+2. `npm run pay` lists what's waiting. Find the same reference and amount in your PhonePe history, then `npm run pay -- verify <reference>` (or `reject`). Verifying writes `public.memberships`, and the app unlocks Plus the next time they open it. 31 days for monthly, 366 for yearly, added on top of any time left.
+3. People can add and read their own payments only. They can't verify one or edit `memberships`, so nobody can unlock Plus themselves. `npm run db:test` proves it.
+
+The free trial (7 days) is separate: one per device, no payment, kept on the phone.
+
+**Is Supabase connected and are entries arriving?** `npm run db:check` (Doppler `prd`) prints, without showing anyone's data: whether the project answers with the public key; whether `user_state`, `payments` and `memberships` exist and are closed to logged-out visitors; how many accounts there are and whether they confirmed their email; how many have synced progress, with the last write per key; payments by status and active Plus members. Add `-- --local` for the local stack. The two new tables arrive with `npm run db:push`, which applies `supabase/migrations/20261008000000_plus_payments.sql`.
 
 ### Local Supabase (optional, needs Docker)
 
