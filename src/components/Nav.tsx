@@ -3,22 +3,20 @@ import { streakOf, useProgress } from '../lib/progress'
 import { Icon } from './Icon'
 
 export const TABS = [
-  { path: '/', emoji: '🏠', label: 'Home' },
-  { path: '/explore', emoji: '🧭', label: 'Explore' },
-  { path: '/library', emoji: '📚', label: 'Library' },
-  { path: '/me', emoji: '🔥', label: 'Me' },
+  { path: '/', icon: 'today', label: 'Today' },
+  { path: '/explore', icon: 'discover', label: 'Discover' },
+  { path: '/me', icon: 'me', label: 'Me' },
 ]
 
-/** Which of the 4 tabs a route belongs to. Everything that isn't Today, Library or Me lives under Explore. */
+/** Which of the 3 tabs a route belongs to. Everything that isn't Today or Me (tools, library, listen, read, guides) lives under Discover. */
 export function tabFor(route: string) {
   const base = `/${route.split('/')[1] ?? ''}`
   if (base === '/') return '/'
-  if (base === '/library' || base === '/shlokas') return '/library'
   if (base === '/me' || base === '/plus') return '/me'
   return '/explore'
 }
 
-const ROOTS = ['/', '/explore', '/library', '/me']
+const ROOTS = ['/', '/explore', '/me']
 
 /** Where "back" goes when there's no history to go back to: one level up the hash route. */
 export function parentOf(route: string) {
@@ -27,7 +25,7 @@ export function parentOf(route: string) {
   return '/' + parts.slice(0, -1).join('/')
 }
 
-/** Back button for every screen that isn't one of the four tabs. */
+/** Back button for every screen that isn't one of the three tabs. */
 export function BackButton({ route, className = '' }: { route: string; className?: string }) {
   if (ROOTS.includes(route)) return null
   const go = () => {
@@ -63,7 +61,7 @@ export function Nav({ route }: { route: string }) {
       <nav className="nav-tabs" aria-label="Main">
         {TABS.map((t) => (
           <a key={t.path} href={`#${t.path}`} className={tab === t.path ? 'on' : ''} aria-current={tab === t.path ? 'page' : undefined}>
-            <Icon name={t.label.toLowerCase()} size={16} /> {t.label}
+            <Icon name={t.icon} size={16} /> {t.label}
           </a>
         ))}
       </nav>

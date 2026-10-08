@@ -39,6 +39,15 @@ const guide = (path: string) =>
     return z ? { icon: 'explore', title: z.title, blurb: z.blurb } : null
   })()
 
+// The few places most people start from. Everything else is search, a feeling chip or "everything else".
+const HUBS: { path: string; icon: string; title: string; line: string; accent: string }[] = [
+  { path: '/explore/calm', icon: 'calm', title: 'Feel better', line: 'stress, low days, overthinking', accent: 'violet' },
+  { path: '/explore/focus', icon: 'goal:focus', title: 'Study', line: 'NCERT books, exams, focus', accent: 'lime' },
+  { path: '/listen', icon: 'listen', title: 'Listen', line: 'quotes and music, hands-free', accent: 'cyan' },
+  { path: '/read', icon: 'read', title: 'Read', line: 'honest pieces on hard stuff', accent: 'orange' },
+  { path: '/library', icon: 'library', title: 'Books & scripture', line: 'free books, audiobooks, every faith', accent: 'sun' },
+]
+
 const QUICK = ['panic', 'focus', 'journal', 'sleep-calc', 'expenses', 'safe-walk']
 const iconFor = (id: string) => (id === 'focus' ? 'focus-timer' : id)
 const needIcon = (id: string) => (id === 'focus' ? 'need:focus' : id === 'money' ? 'need:money' : id)
@@ -142,12 +151,10 @@ export default function Explore() {
 
   if (area) return <AreaPage area={area} plus={plus} />
 
+  const spot = priorities(gender).spotlight
   return (
-    <div className="page explore2">
+    <div className="page explore2 disc">
       <header className="ex-hero">
-        <span className="sticker a-lime">
-          explore · {TOOLS.length} tools · {AREAS.length} areas
-        </span>
         <h1 className="display">
           what do you <span className="serif">need</span> today?
         </h1>
@@ -188,8 +195,29 @@ export default function Explore() {
         </section>
       ) : (
         <>
+          <div className="disc-cards">
+            {spot && (
+              <a className="disc-card first" style={{ ['--a' as string]: 'var(--pink)' }} href={`#${spot.path}`}>
+                <span className="ibub">
+                  <Icon name={spot.icon} />
+                </span>
+                <b>{spot.title}</b>
+                <small>for you first · {spot.why}</small>
+              </a>
+            )}
+            {HUBS.map((h) => (
+              <a key={h.path} className="disc-card" style={{ ['--a' as string]: `var(--${h.accent})` }} href={`#${h.path}`}>
+                <span className="ibub" style={{ ['--a' as string]: `var(--${h.accent})` }}>
+                  <Icon name={h.icon} />
+                </span>
+                <b>{h.title}</b>
+                <small>{h.line}</small>
+              </a>
+            ))}
+          </div>
+
           <section className="ex-section">
-            <p className="kicker">{gender && priorities(gender).tools.length ? 'quick picks · for you' : 'quick picks'}</p>
+            <p className="kicker">{gender && priorities(gender).tools.length ? 'quick tools · for you' : 'quick tools'}</p>
             <div className="quick-row">
               {quick.map((id) => {
                 const t = toolById(id)!
@@ -205,29 +233,18 @@ export default function Explore() {
             </div>
           </section>
 
-          <section className="ex-section">
-            <p className="kicker">everything, sorted</p>
-            <div className="bento">
-              {AREAS.map((a, i) => {
-                const n = toolsIn(a).length
-                return (
-                  <a key={a.id} className={`bento-card a-${a.accent}${i < 2 ? ' wide' : ''}`} href={`#/explore/${a.id}`}>
-                    <span className="bento-icon">
-                      <Icon name={a.id} size={26} />
-                    </span>
-                    <b>{a.name}</b>
-                    <small>{a.line}</small>
-                    <span className="bento-foot">
-                      {n > 0 ? `${n} tools` : `${a.guides.length} guide${a.guides.length > 1 ? 's' : ''}`} <ArrowRight size={14} />
-                    </span>
-                    <span className="bento-mark" aria-hidden="true">
-                      <Icon name={a.id} size={110} />
-                    </span>
-                  </a>
-                )
-              })}
+          <details className="disc-more">
+            <summary>
+              everything else · {TOOLS.length} tools in {AREAS.length} areas
+            </summary>
+            <div className="disc-links">
+              {AREAS.map((a) => (
+                <a key={a.id} href={`#/explore/${a.id}`}>
+                  {a.name}
+                </a>
+              ))}
             </div>
-          </section>
+          </details>
         </>
       )}
     </div>

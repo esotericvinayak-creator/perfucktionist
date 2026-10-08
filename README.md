@@ -6,15 +6,15 @@ A Gen Z toolkit for living, not polishing.
 
 ## How the app flows
 
-Four tabs, nothing else: **Home · Explore · Library · Me**. Full flowchart: [docs/FLOW.md](docs/FLOW.md).
+Three tabs, nothing else: **Today · Discover · Me**. Full flowchart: [docs/FLOW.md](docs/FLOW.md). The idea: *show up for 5 minutes, feel okay, nothing to be perfect at.*
 
 **Where the app runs:** on **Android** the app *is* the APK. Android visitors on the website get only the landing page, with **download the app** buttons, plus the safety pages (Panic SOS, safe-walk, Shield) and `#/get`. Every other link shows the landing page (`appOnly()` in `src/lib/install.ts`). **iPhone and computers** can't install an APK, so they keep the full web app (sign up in the browser, or Add to Home Screen). Email links still work on Android: password resets open in the browser and are completed there.
 
-1. **Landing** → hero, real numbers (60 tools · 1,22,156 verses · 6 scriptures · ₹0), a no-account demo (pick a mood → box breathing, a line of wisdom or a tiny dare), tap-to-hatch pet egg, how it works, what's inside, "made for everyone", promises, FAQ. Panic SOS, safe-walk and Shield work without an account.
-2. **Sign up / log in** → then a short onboarding: name → gender (optional, 9 options incl. self-describe) → faith (optional, 15 options incl. atheist, agnostic, spiritual, every faith) → up to 3 goals → pick and name a pet → day 1.
-3. **Home** (`#/`) → "▶ start my 5 minutes" (mood → one small thing → one line of wisdom → done 🔥), your pet and how close it is to hatching/growing, a "for you first" spotlight, your plan, tools for you, Listen, Read, today's wisdom from your faith, SOS.
-4. **Explore** (`#/explore`) → search, "I'm feeling…" chips, quick picks (yours first), 10 areas.
-5. **Library** (`#/library`) → six shelves: **School** (every NCERT textbook, class 1–12), **College** (open textbooks + free university courses), **Exams** (28 competitive exams + 360 practice questions), **Scripture** (your faith's book opens first), **Free books** (millions, free to read) and **Audiobooks** (free, read aloud). Save anything to **your shelf**.
+1. **Landing** → hero, a no-account demo (pick a mood → box breathing, a line of wisdom or a tiny dare), how it works in 3 steps, tap-to-hatch pet egg, promises, FAQ. Panic SOS, safe-walk and Shield work without an account.
+2. **Sign up / log in** → then a 2-step onboarding: what you want help with (up to 3 goals) → pick and name a pet → straight into day 1.
+3. **Today** (`#/`) → one screen: your pet and streak, one big "▶ start my 5 minutes" button (mood → one small thing → one line of wisdom → done 🔥, with an optional "and now, how are you?"), today's line from your faith, your plan (only once you've started one) and "need help right now?" (panic, safe walk, SOS, 14416). After your first finished day, one optional question at a time asks your name, faith and gender (`MakeItYours` in `src/pages/Today.tsx`), each skippable.
+4. **Discover** (`#/explore`) → search, "I'm feeling…" chips and five cards: **Feel better**, **Study**, **Listen**, **Read**, **Books & scripture** (plus Shield or Bro code first, if you set a gender). Quick tools below, and "everything else" opens the 10 areas and all 60 tools. The Library lives under here.
+5. **Library** (`#/library`, reached from Discover) → six shelves: **School** (every NCERT textbook, class 1–12), **College** (open textbooks + free university courses), **Exams** (28 competitive exams + 360 practice questions), **Scripture** (your faith's book opens first), **Free books** (millions, free to read) and **Audiobooks** (free, read aloud). Save anything to **your shelf**.
 6. **Me** (`#/me`) → your pet (type, name, outfits), streak, badges, insights, settings (account, theme, gender, faith, goals).
 7. **Listen** (`#/listen`) → *quotes + music* (a mix from your own tradition when you've set one) and **music reels** (`#/listen/reels`): a feed that plays itself — swipe right to save, left to skip, tap to pause. Tapping the mini player anywhere opens **Now Playing**: big art (swipe to change), a seek bar, up next, credits, and lyrics.
 
@@ -41,7 +41,7 @@ Some sites refuse to be embedded — they send `X-Frame-Options` or a `frame-anc
 
 **NCERT in particular** can't be framed, so the School shelf keeps the browsing in the app: pick class → language → book → chapter list, all local, and only the chapter PDF itself opens in the phone's PDF reader. The chapter URLs are derived from NCERT's own codes (`jemh1=0-14` → `jemh101.pdf` … `jemh114.pdf`), verified against their server.
 
-**Back button:** every screen that isn't one of the four tabs shows one in the top bar (`BackButton` in `src/components/Nav.tsx`). It uses real history when there is any, else walks one level up the hash route.
+**Back button:** every screen that isn't one of the three tabs shows one in the top bar (`BackButton` in `src/components/Nav.tsx`). It uses real history when there is any, else walks one level up the hash route.
 
 **On exam facts:** `src/data/exams.ts` deliberately carries no question counts, marks, dates or eligibility rules. Those change with every notification and a stale number could cost a student a year — so each exam links to its official site, and the UI says so plainly. Only the stable things (what the exam is for, the rounds, roughly when) are stored here. Every URL in the library data files returned HTTP 200 when they were written.
 

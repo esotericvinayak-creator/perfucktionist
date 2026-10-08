@@ -10,7 +10,7 @@ import {
 
 export const ICONS = {
   // tabs
-  today: Sun, home: House, explore: Compass, library: BookOpen, me: Flame,
+  today: Sun, home: House, explore: Compass, discover: Compass, library: BookOpen, me: Flame,
   // areas / categories
   calm: Wind, focus: Target, body: Dumbbell, money: Wallet, safety: Shield, people: Heart, grow: Sprout, faith: HandHeart, read: Newspaper, listen: Headphones, mind: Brain,
   // goals

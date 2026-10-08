@@ -1,0 +1,61 @@
+/* ═════════════════════════ simple home (one column, one action) ═════════════════════════ */
+.home2 { max-width: 560px; display: grid; gap: 16px; padding-top: clamp(20px, 5vw, 44px); padding-bottom: 24px; }
+.h2-top { display: grid; gap: 4px; }
+.h2-greet { font-size: clamp(2.2rem, 9vw, 3.2rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+
+.h2-card { display: grid; gap: 14px; padding: clamp(18px, 5vw, 26px); border-radius: 26px; border: var(--border) solid var(--line); background: var(--surface); }
+.h2-main { justify-items: stretch; box-shadow: 6px 6px 0 var(--lime); }
+.h2-main.done { background: color-mix(in srgb, var(--lime) 16%, var(--surface)); }
+.h2-pet { position: relative; display: grid; justify-items: center; gap: 4px; padding: 6px 0 14px; text-decoration: none; color: var(--ink-dim); text-align: center; overflow: hidden; border-radius: 18px; }
+.h2-pet-name { color: var(--ink); font-size: 1.05rem; }
+.h2-pet-line { font-size: 0.9rem; }
+.h2-pet .home-pet-bar { border-radius: 2px; }
+.h2-hint { text-align: center; color: var(--ink-faint); font-size: 0.85rem; }
+.h2-done { display: grid; gap: 4px; text-align: center; }
+.h2-done b { font-size: 1.25rem; letter-spacing: -0.02em; }
+.h2-done span { color: var(--ink-dim); }
+
+.h2-plan { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 20px; border: 2px solid color-mix(in srgb, var(--line) 30%, transparent); background: var(--surface); text-decoration: none; }
+.h2-plan:hover { border-color: var(--line); }
+.h2-plan .grow { display: grid; gap: 1px; min-width: 0; }
+.h2-plan small { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint); }
+.h2-plan b { font-size: 1.05rem; }
+
+.h2-line { gap: 10px; background: color-mix(in srgb, var(--sun) 12%, var(--surface)); border-color: color-mix(in srgb, var(--line) 35%, transparent); }
+.h2-line .trad-chip { justify-self: start; }
+.h2-line .linkish { justify-self: start; color: var(--ink-dim); font-size: 0.9rem; }
+
+.h2-yours { border-style: dashed; border-color: var(--violet); background: color-mix(in srgb, var(--violet) 8%, var(--surface)); }
+.h2-yours .linkish { justify-self: start; font-size: 0.9rem; }
+.h2-q { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.03em; }
+.h2-inline { display: flex; gap: 8px; }
+.h2-inline .act-input { flex: 1; min-width: 0; }
+
+.h2-help { display: grid; gap: 8px; margin-top: 4px; }
+.h2-sign { text-align: center; color: var(--ink-faint); margin-top: 8px; }
+.h2-sign .serif { font-size: 1.15em; color: var(--ink-dim); }
+
+/* "and now?" after the 5 minutes */
+.after { display: grid; gap: 8px; justify-items: center; margin-top: 6px; }
+.mood-pick.sm button { width: 46px; height: 46px; font-size: 1.5rem; }
+
+/* ═════════════════════════ discover ═════════════════════════ */
+.disc { max-width: 720px; display: grid; gap: 22px; }
+.disc-hero { display: grid; gap: 14px; }
+.disc-hero .act-q { text-align: left; }
+.disc-cards { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 420px) { .disc-card { padding: 14px; } .disc-card b { font-size: 1.05rem; } .disc-card small { font-size: 0.85rem; } }
+.disc-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.disc-card { position: relative; display: grid; gap: 4px; align-content: start; padding: 18px; border-radius: 22px; border: var(--border) solid var(--line); background: var(--surface); box-shadow: 4px 4px 0 var(--a, var(--lime)); text-decoration: none; transition: transform 0.12s, box-shadow 0.12s; }
+.disc-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--a, var(--lime)); }
+.disc-card .ibub { margin-bottom: 6px; }
+.disc-card b { font-size: 1.2rem; letter-spacing: -0.02em; }
+.disc-card small { color: var(--ink-dim); line-height: 1.35; }
+.disc-card.first { grid-column: 1 / -1; }
+.disc-more { border-radius: 18px; border: 2px dashed color-mix(in srgb, var(--line) 30%, transparent); padding: 4px 16px; }
+.disc-more > summary { cursor: pointer; padding: 12px 0; font-weight: 700; }
+.disc-more[open] > summary { border-bottom: 1.5px solid color-mix(in srgb, var(--line) 15%, transparent); margin-bottom: 12px; }
+.disc-more .guides, .disc-more .quick-row { margin-bottom: 14px; }
+.disc-links { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 14px; }
+.disc-links a { padding: 9px 14px; border-radius: 999px; border: 2px solid color-mix(in srgb, var(--line) 28%, transparent); text-decoration: none; font-weight: 700; font-size: 0.9rem; }
+.disc-links a:hover { border-color: var(--line); }

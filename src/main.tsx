@@ -7,6 +7,7 @@ import './styles/pages.css'
 import './styles/glow.css'
 import './styles/tools.css'
 import './styles/today.css'
+import './styles/home.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

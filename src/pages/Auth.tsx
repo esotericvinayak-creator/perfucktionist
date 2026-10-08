@@ -2,8 +2,6 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Download, Eye, EyeOff, LogIn, Mail } from 'lucide-react'
 import { LandingMore } from '../components/Landing'
 import { Logo } from '../components/Nav'
-import { Marquee } from '../components/ui'
-import { motives } from '../data/zones'
 import { APP_SCHEME, appHandOver, clearNotice, cloud, googleAvailable, logIn, logInWithGoogle, resendConfirmation, sendReset, setNewPassword, signUp, useAuth } from '../lib/auth'
 import { alreadyInstalled, appOnly, detectPlatform, inNativeApp } from '../lib/install'
 
@@ -308,11 +306,6 @@ function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => voi
         </a>
       </header>
       <section className="home-hero page aw-hero">
-        <div className="hero-stickers" aria-hidden="true">
-          <span className="sticker a-pink s1">no filter ✶</span>
-          <span className="sticker a-cyan s2">100% human</span>
-          <span className="sticker a-sun s3">made in india 🇮🇳</span>
-        </div>
         <p className="kicker">for gen z & gen alpha</p>
         <h1 className="mega">
           <span className="strike">
@@ -324,7 +317,7 @@ function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => voi
           <br />
           is a <span className="serif">scam.</span>
         </h1>
-        <p className="lede">5 minutes a day to breathe, focus, sort your money, stay safe and grow — with wisdom from every faith. no pressure. no perfect.</p>
+        <p className="lede">5 minutes a day to feel okay and keep showing up. a mood, one small thing, one line of wisdom, and a pet that grows with you. no pressure. no perfect.</p>
         <NoticeBar />
         {download && auth.status === 'in' && (
           <p className="aw-signed">
@@ -343,24 +336,7 @@ function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => voi
             </button>
           </div>
         )}
-        <div className="spin-badge" aria-hidden="true">
-          <svg viewBox="0 0 200 200">
-            <defs>
-              <path id="aw-circle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
-            </defs>
-            <text>
-              <textPath href="#aw-circle" textLength="486" lengthAdjust="spacing">
-                give zero f*cks about perfect ✶
-              </textPath>
-            </text>
-          </svg>
-          <span>✶</span>
-        </div>
       </section>
-      <div className="marquee-cross">
-        <Marquee items={motives} accent="lime" tilt={-2.5} />
-        <Marquee items={motives.slice().reverse()} accent="pink" tilt={2} reverse />
-      </div>
       <p className="auth-sos">
         need help right now? <a href="tel:112">112</a> · <a href="#/tools/panic">panic SOS</a> · <a href="tel:14416">14416 (mental health)</a>
       </p>

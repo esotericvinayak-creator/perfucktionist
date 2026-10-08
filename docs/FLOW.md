@@ -1,32 +1,30 @@
 # App flow
 
-Four tabs once you're in: **Home · Explore · Library · Me**. Everything else is one or two taps from one of them.
+Three tabs once you're in: **Today · Discover · Me**. The Library and Listen/Read live under Discover. Everything else is one or two taps from one of them.
 
 ```mermaid
 flowchart TD
     A([Open the app or website]) --> AW{Android browser?}
     AW -- yes --> DL[Landing + download the app<br/>APK via #/get · safety pages still open]
     AW -- no: APK, iPhone, computer --> S{Logged in?}
-    S -- no --> W[Landing<br/>hero · real numbers · try-it demo · hatch an egg<br/>how it works · what's inside · FAQ]
+    S -- no --> W[Landing<br/>hero · try-it demo · how it works · hatch an egg<br/>promises · FAQ]
     W --> SU[Sign up: name → email → password → consent]
     W --> LI[Log in / forgot password]
     W -. no account needed .-> PUB[Panic SOS · safe-walk · Shield]
     SU --> O1
     LI --> H
     S -- yes --> NEW{Onboarded?}
-    NEW -- no --> O1[Name] --> O2[Gender · optional<br/>9 options] --> O3[Faith · optional<br/>15 options] --> O4[Up to 3 goals] --> O5[Pick + name your pet 🥚] --> F1
-    NEW -- yes --> H[Home]
+    NEW -- no --> O1[Up to 3 goals] --> O2[Pick + name your pet 🥚] --> F1
+    NEW -- yes --> H[Today]
 
-    subgraph HOME [Home tab]
+    subgraph HOME [Today tab]
       H --> F1[▶ Your 5 minutes]
-      F1 --> F2[Mood: 1 tap] --> F3[One small thing<br/>from mood + goals] --> F4[Today's line<br/>from your faith] --> F5[Done 🔥 pet fed, XP up]
+      F1 --> F2[Mood: 1 tap] --> F3[One small thing<br/>from mood + goals] --> F4[Today's line<br/>from your faith] --> F5[Done 🔥 pet fed, XP up<br/>optional: how are you now?]
       F5 --> H
       H --> PET[Your pet · XP to hatch / grow]
-      H --> SP[For you first<br/>spotlight by gender]
-      H --> P[Your plan: journey day N]
-      H --> FY[Tools for you<br/>gender priorities + goals]
-      H --> L[Listen]
-      H --> R[Read: 10 posts]
+      H --> P[Your plan, once started]
+      H --> TL1[Today's line]
+      H --> MY[After day 1, one optional question at a time:<br/>name · faith · gender]
       H --> SOS[Need help now?]
     end
 
@@ -38,12 +36,16 @@ flowchart TD
     MP[Mini player<br/>on every page] --> NP[Now Playing<br/>swipe art · seek · up next · credits · lyrics]
     VR --> NP
 
-    subgraph EXPLORE [Explore tab]
-      E[Search + I'm feeling… chips] --> Q[Quick picks, yours first]
-      E --> AR[10 areas] --> G[Guides] & TL[60 tools]
+    subgraph EXPLORE [Discover tab]
+      E[Search + I'm feeling… chips] --> HB[Feel better · Study · Listen · Read · Books & scripture]
+      E --> Q[Quick tools, yours first]
+      E --> AR[Everything else: 10 areas] --> G[Guides] & TL[60 tools]
+      HB --> L[Listen]
+      HB --> R[Read: 10 posts]
+      HB --> LB
     end
 
-    subgraph LIB [Library tab]
+    subgraph LIB [Library, under Discover]
       LB[Library hub: 6 shelves] --> SC[School<br/>NCERT class 1–12]
       LB --> CO[College<br/>open textbooks + free courses]
       LB --> EX[Exams<br/>28 exams + practice]
@@ -62,16 +64,15 @@ flowchart TD
     end
 
     H -. tab bar .-> E
-    H -. tab bar .-> LB
     H -. tab bar .-> MB
 ```
 
 | Where | What lives there |
 |---|---|
-| Landing (logged out) | Hero, real numbers, no-account demo, pet egg, how it works, what's inside, promises, FAQ, sign up / log in |
-| **Home** `#/` | 5-minute daily flow, your pet, spotlight, plan, tools for you, Listen, Read, today's wisdom (your faith), SOS |
-| **Explore** `#/explore` | Search, need chips, quick picks, 10 areas → guides + tools |
-| **Library** `#/library` | Hub of six shelves: school, college, exams, scripture, free books, audiobooks |
+| Landing (logged out) | Hero, no-account demo, how it works, pet egg, promises, FAQ, sign up / log in |
+| **Today** `#/` | Your pet, the 5-minute daily flow, today's line (your faith), your plan once started, SOS |
+| **Discover** `#/explore` | Search, need chips, five hub cards (Feel better, Study, Listen, Read, Books & scripture), quick tools, 10 areas → guides + tools |
+| Library `#/library` (under Discover) | Hub of six shelves: school, college, exams, scripture, free books, audiobooks |
 | School `#/library/school` | 1,141 NCERT textbooks, class 1–12, 23 languages, with chapter lists |
 | College `#/library/college` | 8 streams: OpenStax, LibreTexts, MIT OCW, NPTEL, SWAYAM |
 | Exams `#/library/exams` | 28 exams + 360 practice questions across 12 subjects |
@@ -85,7 +86,7 @@ flowchart TD
 | Read `#/read` | Blog posts; `#/read/<slug>` for one post |
 | Tools `#/tools/<id>` | Any of the 60 tools, with "up next" handoffs |
 
-Every external link opens in the in-app viewer, never a new tab. Every screen outside the four tabs has a back button in the top bar.
+Every external link opens in the in-app viewer, never a new tab. Every screen outside the three tabs has a back button in the top bar.
 
 ## What gender and faith change
 
