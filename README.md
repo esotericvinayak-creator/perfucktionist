@@ -62,38 +62,47 @@ Original intro: Eleven zones, a 1.2-lakh-verse library of every major faith, and
 | 📚 **Library** `#/library` | **1,22,156 verses** from 6 complete scriptures (table below) in the original script + English (+ Hindi for Gita, Quran, Gurbani), Gita audio recitations, "surprise me" across all faiths, the Golden Rule in 11 traditions, 60+ hand-picked cross-faith quotes, and the Sanskrit shloka stack. Deep links: `#/library/gita/2`, `#/library/bible/JHN/3` |
 | 🫁 **Breathe** `#/breathe` | Animated breathing orb (box, physiological sigh, 4-7-8, Anulom Vilom, Bhramari, power hold), meditation timer with bells |
 | 🎧 **Music search** `#/music` | Search any song on earth (Apple's catalogue, 30s previews; full songs for Lofi from Audius), 16 genre/mood chips, 18 Spotify playlists, Lofi Girl 24/7 radio. Music reels live in Listen (`#/listen/reels`). A mini player follows you across the site and opens Now Playing |
-| 🫧 **Happy Zone** `#/happy` | Dopamine button, bubble wrap, stress yeeter, gratitude jar, instant dance break |
 | 🦁 **Be Brave** `#/brave` | 5-second launch countdown, brave dares, goal smasher, the 5 D's of bystander intervention, desi legends |
 | 🏠 **No Secrets Club** `#/fam` | What to always tell your parents, copy-paste conversation starters, a tab for parents, help if home isn't safe |
-| 🙏 **Real Faith** `#/faith` | Baba-meter red-flag quiz, common religious scams, real vs fake guru, Kabir's dohas |
+| 🙏 **Real Faith** `#/faith` | Yes/No polls on 25 curated statements about faith and exploitation (never named people). Results are what people in the app say, shown only after you answer and once 20+ have answered; a collapsed "how to spot exploitation" guide and helplines. Votes in `public.faith_votes`, totals via `faith_tally()` |
 | 🌳 **Save Trees** `#/green` | Grow a virtual forest, why trees matter, Bishnoi & Chipko history, a 10-habit green pledge |
 
 Every zone also has an **"every faith agrees"** row — the same idea (courage, parents, respecting women, protecting the earth, no religious middlemen…) from Hindu, Sikh, Muslim, Christian, Jewish, Buddhist, Jain, Taoist, Confucian, Stoic, Zoroastrian and Baháʼí sources.
 
-## Toolkit — 60 tools (`#/tools`)
+## Toolkit (`#/tools`)
 
-An app-style hub: search, "what do you need?" chips (anxious, low, can't focus, exams, can't sleep, broke, heartbroken, unsafe, stuck, bored), a dock of pinned + recent tools, and a phone tab bar. Every tool is one focused screen, mostly step-by-step, and hands off to the next useful tool ("up next"). Deep links: `#/tools/focus`, `#/tools/for/anxious`.
+44 tools, some of them **collections**: related experiences on one page as tabs, instead of separate tools. Every tool has a one-line "what it does" (on its tile, so you know before opening) and a "what it's for" note on its page, plus real usage numbers once there are any (`public.tool_usage`: "N people have used this" appears from 10 people; you also see how often you've opened it). The footer suggests tools that go well with it (`related` in the registry), never its own tabs. Deep links: `#/tools/focus`, `#/tools/one-line` (opens the Journal on that tab), `#/tools/for/anxious`. Links to removed tools redirect (`REMOVED` in `src/tools/registry.ts`).
 
 | | Tools |
 | --- | --- |
-| 🧠 Mind | daily check-in · mood insights ✦ · panic SOS · safety plan · thought flipper (CBT) · worry box · journal (prompt packs, PIN) · one line a day · hype file · bad-day kit · affirmations · urge surfer |
-| 🎯 Focus | focus timer · focus stats ✦ · ambient sound mixer · brain dump → priority sort · done list · 5-minute starter · countdowns · flashcards (spaced repetition) · study timetable ✦ · 20-20-20 eyes · phone-down mode |
-| 💪 Body | 7-minute workout · desk stretches · water · sleep-cycle calculator · wind-down + sleep log · cycle tracker · caffeine cutoff |
-| 💸 Money | expense tracker · 50/30/20 · split the bill (UPI links) · subscriptions · savings goal · SIP calculator · CTC → in-hand · "is it worth it?" · EMI & credit-card truth · scam detector |
-| 🛡️ Safety | safe-walk timer · emergency lock-screen card · password breach check · privacy checkup · relationship check |
-| 💗 People | boundary scripts · breakup recovery · friend check-ins · kindness dares · conversation starters |
-| 🌱 Grow | habit tracker · quit tracker · time capsule · bucket list · wallpaper maker · dopamine menu · career compass (RIASEC) · interview prep (STAR) · decision maker · speaking coach ✦ |
+| 🧠 Mind | **Mood check-in** (check in · patterns ✦) · panic SOS · crisis plan · worry box · **Journal** (write with titles and prompts · one line a day · hype file) · bad-day kit · affirmations · sound mixer |
+| 🎯 Focus | **Focus timer** (timer · stats ✦) · brain dump · done list · 5-minute starter · countdowns · flashcards · study timetable ✦ · 20-20-20 eyes · phone-down mode · screen time |
+| 💪 Body | **Move** (7-minute workout · desk stretches) · water · **Sleep** (bedtime · wind-down · caffeine cut-off, with a nightly sleep promise) · cycle tracker |
+| 💸 Money | **Spending** (expenses · subscriptions · savings goal) · 50/30/20 · split the bill · SIP calculator · CTC → in-hand · is it worth it? · ROI & growth · quick maths |
+| 🛡️ Safety | safe-walk timer · emergency card · privacy checkup |
+| 💗 People | breakup recovery · friend check-ins · kindness dares · conversation starters |
+| 🌱 Grow | habit tracker · quit tracker · time capsule · bucket list (goals with sub-lists) · wallpaper maker · interview prep · speaking coach ✦ |
 
-✦ = Plus. Free limits elsewhere: 3 habits, 1 flashcard deck, 2 layered sounds, 2 journal packs. Code lives in `src/tools/` (one file per category, each lazy-loaded); metadata in `src/tools/registry.ts`.
+**More** (an area in Discover) gathers utilities: sound mixer (also under Calm), quick maths, countdowns, wallpaper, time capsule, 20-20-20.
 
-Notes: the password check sends only the first 5 characters of the SHA-1 hash to Have I Been Pwned (k-anonymity). CTC → in-hand uses FY 2025-26 new-regime slabs — update `newRegimeTax()` when budgets change. Timers/alarms (safe-walk, 20-20-20) only run while the page is open.
+**Removed on purpose** (Oct 2026): thought flipper, boundary scripts, decision maker and career compass (useful only with an LLM that understands the person's situation), scam detector (same), urge surfer (addiction needs more care than a generic tool), relationship check, password check, dopamine menu, EMI & card truth (too narrow; ROI & growth replaces it), and the Happy Zone page.
+
+**Sleep promise.** Wind-down and caffeine cut-off don't just record: you set a bedtime and one if-then plan, answer "last night, did you?" each morning, kept nights earn XP and a sleep streak shown on Me, and three misses in a week reset the streak and suggest a smaller step (`src/lib/sleep.ts`).
+
+**Screen time is self-reported.** A web app can't read other apps' usage. Reading real per-app numbers needs a native Android plugin (UsageStatsManager with the special usage-access permission), not built yet.
+
+**Moods.** Each tool page has a mood (`Mood` in the registry, default per category) that switches typeface, palette, corners and tone for that page only, via CSS variables in `src/styles/moods.css` (the typography and colour rules are written at the top of that file): calm (pastel, Nunito + Lora), journal (paper, Lora), precise (Inter, tabular numbers), plain (Inter), playful (the brand's Bricolage).
+
+✦ = Plus. Free limits elsewhere: 3 habits, 1 flashcard deck, 2 layered sounds, 2 journal packs. Code lives in `src/tools/` (one file per category, each lazy-loaded); metadata in `src/tools/registry.ts`. A new tool also needs its id seeded in `tool_usage` with a new migration.
+
+Notes: CTC → in-hand uses FY 2025-26 new-regime slabs — update `newRegimeTax()` when budgets change. Quick maths uses the 5/18/40% GST slabs (Sept 2025). Timers/alarms (safe-walk, 20-20-20) only run while the page is open. **Listen** has a voice picker (any voice installed on the device, plus speed), stored on the device only (`src/lib/voice.ts`).
 
 ## Glow-up mode & perfucktionist+
 
 | | Free | Plus (₹49/mo · ₹399/yr) |
 | --- | --- | --- |
 | `#/me` daily ritual (breathe · read · dare · gratitude — any one keeps the streak), XP, 10 levels, 13 badges, 16-week heatmap, a pet that hatches and grows | ✓ | ✓ |
-| `#/tools` 60-tool toolkit | 56 tools | all 60 |
+| `#/tools` toolkit | all but 4 extras | everything |
 | `#/journeys` 5 guided programs (21 days unperfect, 7 days calm, 14 days brave, 18 days of the Gita, every faith in 12 days), one step unlocks per day | first 3 days each | all days |
 | Streak freezes | — | 2 a month, automatic |
 | Story cards (1080×1920 PNG for IG/WhatsApp/Snap) from any verse, streak or month | 2 styles + watermark | 5 styles, no watermark |

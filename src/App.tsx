@@ -21,7 +21,6 @@ import Faith from './pages/Faith'
 import Get from './pages/Get'
 import Fam from './pages/Fam'
 import Green from './pages/Green'
-import Happy from './pages/Happy'
 import Explore from './pages/Explore'
 import Journeys from './pages/Journeys'
 import Library from './pages/Library'
@@ -49,7 +48,6 @@ const pages: Record<string, ComponentType> = {
   '/shlokas': Library,
   '/breathe': Breathe,
   '/music': Music,
-  '/happy': Happy,
   '/brave': Brave,
   '/fam': Fam,
   '/faith': Faith,

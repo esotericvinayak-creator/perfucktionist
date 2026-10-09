@@ -191,20 +191,70 @@ export function LandingMore({ onSignup, onLogin, actions }: { onSignup: () => vo
         <h2 className="ld-h">
           three steps. <span className="serif">zero pressure.</span>
         </h2>
-        <ol className="ld-steps">
+        <ol className="ld-steps ill">
           <li>
+            <span className="ld-ill i1" aria-hidden="true">
+              <i>😌</i>
+              <i>🎯</i>
+              <i>😴</i>
+            </span>
             <b>pick what you need</b>
-            <span>up to 3 goals, and a pet to show up for. that’s the whole setup.</span>
+            <span>3 goals and a pet. done.</span>
           </li>
           <li>
+            <span className="ld-ill i2" aria-hidden="true">
+              <i />
+            </span>
             <b>do your 5 minutes</b>
-            <span>how you feel → one small action → one line of wisdom. done.</span>
+            <span>feel → one small thing → one line.</span>
           </li>
           <li>
-            <b>watch things grow</b>
-            <span>your pet, your streak, and honestly, you.</span>
+            <span className="ld-ill i3" aria-hidden="true">
+              <i>🥚</i>
+              <i>🐣</i>
+              <i>🐥</i>
+            </span>
+            <b>watch it grow</b>
+            <span>your pet, your streak, you.</span>
           </li>
         </ol>
+      </section>
+
+
+      <section className="ld-section">
+        <p className="kicker">inside the app</p>
+        <h2 className="ld-h">
+          tools that <span className="serif">feel right.</span>
+        </h2>
+        <div className="ld-show" aria-label="Three tools from the app">
+          <figure className="ld-mini journal" aria-hidden="true">
+            <div className="ld-mini-screen">
+              <small>JOURNAL</small>
+              <b>Tuesday</b>
+              <p>finally finished the essay. felt lighter than I expected.</p>
+              <span className="ld-mini-btn">🏆 turn into hype file</span>
+            </div>
+            <figcaption>write it out</figcaption>
+          </figure>
+          <figure className="ld-mini calm" aria-hidden="true">
+            <div className="ld-mini-screen">
+              <small>WORRY BOX</small>
+              <b>“what if I fail maths”</b>
+              <p>can you do anything about it?</p>
+              <span className="ld-mini-btn">10 questions tonight ✓</span>
+            </div>
+            <figcaption>sort a worry</figcaption>
+          </figure>
+          <figure className="ld-mini precise" aria-hidden="true">
+            <div className="ld-mini-screen">
+              <small>QUICK MATHS</small>
+              <b>₹1,020</b>
+              <p>₹1,200 − 15% · you save ₹180</p>
+              <span className="ld-mini-btn">GST · tip · split</span>
+            </div>
+            <figcaption>do the maths</figcaption>
+          </figure>
+        </div>
       </section>
 
       <section className="ld-section">
@@ -223,7 +273,7 @@ export function LandingMore({ onSignup, onLogin, actions }: { onSignup: () => vo
         <div className="ld-plans">
           <div className="ld-plan">
             <b>free, always</b>
-            <small>daily 5 minutes, your pet, every scripture, all safety tools, 56 of 60 tools</small>
+            <small>daily 5 minutes, your pet, every scripture, all safety tools, almost every tool</small>
           </div>
           <div className="ld-plan plus">
             <b>

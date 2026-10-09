@@ -2,18 +2,15 @@ import { useEffect, useState } from 'react'
 import type { Shloka } from '../data/shlokas'
 import type { Accent } from '../data/zones'
 import { log } from '../lib/progress'
+import { makeUtterance } from '../lib/voice'
 import { shareCard } from './Overlays'
 import { CopyButton } from './ui'
 
 function speak(text: string) {
   const synth = window.speechSynthesis
   synth.cancel()
-  const u = new SpeechSynthesisUtterance(text)
-  // No browser ships a Sanskrit voice; Hindi reads Devanagari well enough.
-  const voice = synth.getVoices().find((v) => v.lang.startsWith('hi')) ?? synth.getVoices().find((v) => v.lang.endsWith('-IN'))
-  if (voice) u.voice = voice
-  u.lang = voice?.lang ?? 'hi-IN'
-  u.rate = 0.75
+  // Hindi reads Devanagari; if you picked a voice that can't, pickVoice falls back to one that can.
+  const u = makeUtterance(text, { lang: 'hi', baseRate: 0.75 })
   synth.speak(u)
   return u
 }

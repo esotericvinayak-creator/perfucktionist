@@ -3,7 +3,6 @@ import { shareCard } from '../components/Overlays'
 import { log } from '../lib/progress'
 import { startSiren, unlockAudio } from '../lib/sound'
 import { Card, Choice, Done, Meter, Text, mmss, useCountdown, useTool } from './kit'
-import { ToolChips } from './links'
 
 // ─── Safe-walk timer ──────────────────────────────────────────
 type Contact = { name: string; phone: string }
@@ -156,85 +155,6 @@ export function IceCard() {
   )
 }
 
-// ─── Password check (Have I Been Pwned, k-anonymity) ──────────
-async function sha1(s: string) {
-  const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(s))
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('').toUpperCase()
-}
-
-function strength(p: string) {
-  let s = 0
-  if (p.length >= 8) s++
-  if (p.length >= 12) s++
-  if (p.length >= 16) s++
-  if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++
-  if (/\d/.test(p)) s++
-  if (/[^A-Za-z0-9]/.test(p)) s++
-  if (/(password|1234|qwerty|abcd|iloveyou|india|admin|0000)/i.test(p) || /(19|20)\d\d$/.test(p)) s -= 2
-  return Math.max(0, Math.min(5, s))
-}
-
-export function Password() {
-  const [pw, setPw] = useState('')
-  const [show, setShow] = useState(false)
-  const [result, setResult] = useState<{ count: number } | 'error' | 'loading' | null>(null)
-  const s = strength(pw)
-  const label = ['very weak', 'weak', 'okay', 'good', 'strong', 'very strong'][s]
-  const check = async () => {
-    setResult('loading')
-    try {
-      const h = await sha1(pw)
-      const res = await fetch(`https://api.pwnedpasswords.com/range/${h.slice(0, 5)}`, { headers: { 'Add-Padding': 'true' } })
-      const text = await res.text()
-      const line = text.split('\n').find((l) => l.startsWith(h.slice(5)))
-      setResult({ count: line ? Number(line.split(':')[1]) : 0 })
-      log('tool')
-    } catch {
-      setResult('error')
-    }
-  }
-  return (
-    <div className="stack">
-      <div className="row gap-sm">
-        <input
-          className="grow"
-          type={show ? 'text' : 'password'}
-          value={pw}
-          onChange={(e) => {
-            setPw(e.target.value)
-            setResult(null)
-          }}
-          placeholder="type a password to test"
-          autoComplete="off"
-          aria-label="Password"
-        />
-        <button type="button" className="btn btn-sm" onClick={() => setShow(!show)}>
-          {show ? '🙈' : '👁️'}
-        </button>
-      </div>
-      {pw && (
-        <>
-          <Meter value={s} max={5} tone={s <= 1 ? 'bad' : s <= 3 ? 'warn' : 'ok'} />
-          <p className="muted">strength: {label}</p>
-          <button type="button" className="btn btn-primary a-pink" onClick={check} disabled={result === 'loading'}>
-            {result === 'loading' ? 'checking…' : '🔍 has it been leaked?'}
-          </button>
-        </>
-      )}
-      {result && typeof result === 'object' && (
-        <div className={`verdict ${result.count ? 'bad' : 'ok'}`}>
-          <b>{result.count ? `seen ${result.count.toLocaleString('en-IN')} times` : 'not found in known leaks'}</b>
-          <span>{result.count ? 'in real data breaches. change it everywhere you use it.' : 'nice. still: one password per app.'}</span>
-        </div>
-      )}
-      {result === 'error' && <p className="error-text">Couldn’t reach the breach database. Try again.</p>}
-      <Card className="soft">
-        🔒 Your password never leaves this device — only the first 5 characters of its SHA-1 hash are sent (k-anonymity, via Have I Been Pwned). Best setup: long passphrase + password manager + 2-step verification.
-      </Card>
-    </div>
-  )
-}
-
 // ─── Privacy checkup ──────────────────────────────────────────
 const PRIVACY: Record<string, { emoji: string; steps: [string, string][] }> = {
   Instagram: {
@@ -316,89 +236,6 @@ export function Privacy() {
         })}
       </ul>
       {n === steps.length && <Done emoji="🔏" title={`${app}: locked down.`} />}
-    </div>
-  )
-}
-
-// ─── Relationship check ───────────────────────────────────────
-const RQ: [string, number][] = [
-  ['Checks your phone or demands your passwords', 1],
-  ['Gets angry when you see your friends or family', 1],
-  ['Tells you what to wear or who to talk to', 1],
-  ['You feel scared to say no to them', 2],
-  ['Pressures you for pics or sex', 2],
-  ['Threatens to hurt you, themselves, or leak things if you leave', 3],
-  ['Puts you down, then says “just joking”', 1],
-  ['Blames you for their moods or anger', 1],
-  ['Tracks your location without asking', 1],
-  ['Uses silent treatment to punish you', 1],
-  ['Makes you feel “crazy” or “too much” for reacting', 1],
-  ['Has pushed, grabbed, slapped or hit you', 3],
-]
-
-export function RedFlags() {
-  const [i, setI] = useState(0)
-  const [score, setScore] = useState(0)
-  const [serious, setSerious] = useState(false)
-  const answer = (yes: boolean) => {
-    if (yes) {
-      setScore(score + RQ[i][1])
-      if (RQ[i][1] >= 3) setSerious(true)
-    }
-    setI(i + 1)
-  }
-  if (i < RQ.length)
-    return (
-      <div className="stack center-stack">
-        <p className="kicker">
-          {i + 1} / {RQ.length} · does your partner…
-        </p>
-        <p className="big-q">{RQ[i][0]}</p>
-        <div className="row gap-sm">
-          <button type="button" className="btn big-cta" onClick={() => answer(false)}>
-            no
-          </button>
-          <button type="button" className="btn btn-primary a-pink big-cta" onClick={() => answer(true)}>
-            yes / sometimes
-          </button>
-        </div>
-      </div>
-    )
-  const level = serious || score >= 5 ? 'bad' : score >= 2 ? 'warn' : 'ok'
-  return (
-    <div className="stack">
-      <div className={`verdict ${level}`}>
-        <b>{level === 'ok' ? '💚 mostly healthy' : level === 'warn' ? '🟠 some red flags' : '🔴 this is not okay'}</b>
-        <span>{level === 'ok' ? 'keep talking openly. healthy love feels safe.' : level === 'warn' ? 'talk about it. if it doesn’t change, that’s your answer.' : 'control, threats and violence are abuse — not love. it is not your fault.'}</span>
-      </div>
-      {level !== 'ok' && (
-        <Card className="soft">
-          <p className="kicker">talk to someone</p>
-          <div className="row gap-sm wrap">
-            <a className="btn btn-sm btn-primary a-pink" href="tel:181">
-              181 women helpline
-            </a>
-            <a className="btn btn-sm" href="tel:1091">
-              1091 police
-            </a>
-            <a className="btn btn-sm" href="tel:14416">
-              14416 Tele-MANAS
-            </a>
-          </div>
-        </Card>
-      )}
-      <ToolChips ids={['boundaries', 'safe-walk']} />
-      <button
-        type="button"
-        className="btn btn-sm btn-ghost"
-        onClick={() => {
-          setI(0)
-          setScore(0)
-          setSerious(false)
-        }}
-      >
-        retake
-      </button>
     </div>
   )
 }

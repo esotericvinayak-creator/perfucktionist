@@ -6,24 +6,24 @@ export type ActionKind = 'breathe' | 'gratitude' | 'dare' | 'intent' | 'spend' |
 export type Goal = { id: string; emoji: string; label: string; tools: string[]; journey: string | null; action: ActionKind }
 
 export const GOALS: Goal[] = [
-  { id: 'calm', emoji: '😌', label: 'less stress', tools: ['panic', 'thought-flip', 'sounds', 'worry-box'], journey: 'calm-7', action: 'breathe' },
+  { id: 'calm', emoji: '😌', label: 'less stress', tools: ['panic', 'worry-box', 'sounds', 'checkin'], journey: 'calm-7', action: 'breathe' },
   { id: 'focus', emoji: '🎯', label: 'focus & study', tools: ['focus', 'flashcards', 'brain-dump', 'starter'], journey: 'unperfect-21', action: 'intent' },
-  { id: 'sleep', emoji: '😴', label: 'better sleep', tools: ['wind-down', 'sleep-calc', 'sounds', 'caffeine'], journey: 'calm-7', action: 'breathe' },
-  { id: 'confidence', emoji: '🦁', label: 'confidence', tools: ['affirm', 'hype-file', 'interview', 'speak'], journey: 'brave-14', action: 'dare' },
+  { id: 'sleep', emoji: '😴', label: 'better sleep', tools: ['sleep-calc', 'sounds', 'checkin'], journey: 'calm-7', action: 'breathe' },
+  { id: 'confidence', emoji: '🦁', label: 'confidence', tools: ['affirm', 'interview', 'speak', 'wallpaper'], journey: 'brave-14', action: 'dare' },
   { id: 'money', emoji: '💸', label: 'money', tools: ['expenses', 'budget', 'split', 'sip'], journey: null, action: 'spend' },
-  { id: 'safety', emoji: '🛡️', label: 'feel safe', tools: ['safe-walk', 'ice', 'scam-check', 'privacy'], journey: null, action: 'gratitude' },
-  { id: 'people', emoji: '💗', label: 'friends & family', tools: ['friends', 'boundaries', 'convo', 'kindness'], journey: null, action: 'kind' },
-  { id: 'faith', emoji: '🙏', label: 'faith & meaning', tools: ['journal', 'one-line', 'affirm', 'checkin'], journey: 'faiths-12', action: 'gratitude' },
+  { id: 'safety', emoji: '🛡️', label: 'feel safe', tools: ['safe-walk', 'ice', 'privacy', 'safety-plan'], journey: null, action: 'gratitude' },
+  { id: 'people', emoji: '💗', label: 'friends & family', tools: ['friends', 'convo', 'kindness', 'breakup'], journey: null, action: 'kind' },
+  { id: 'faith', emoji: '🙏', label: 'faith & meaning', tools: ['journal', 'affirm', 'checkin'], journey: 'faiths-12', action: 'gratitude' },
   { id: 'habits', emoji: '🌱', label: 'good habits', tools: ['habits', 'quit', 'done-list', 'water'], journey: 'unperfect-21', action: 'intent' },
 ]
 
 export const goalById = (id: string) => GOALS.find((g) => g.id === id)
 
-export type Area = { id: string; emoji: string; name: string; line: string; accent: Accent; guides: string[]; toolCats: string[] }
+export type Area = { id: string; emoji: string; name: string; line: string; accent: Accent; guides: string[]; toolCats: string[]; tools?: string[] }
 
 /** Everything in the app, grouped into 8 places. Guides are the long-form pages; tools come from the registry. */
 export const AREAS: Area[] = [
-  { id: 'calm', emoji: '😌', name: 'Calm', line: 'stress, overthinking, low days', accent: 'violet', guides: ['/breathe', '/unperfect', '/happy'], toolCats: ['mind'] },
+  { id: 'calm', emoji: '😌', name: 'Calm', line: 'stress, overthinking, low days', accent: 'violet', guides: ['/breathe', '/unperfect'], toolCats: ['mind'] },
   { id: 'focus', emoji: '🎯', name: 'Focus & study', line: 'exams, textbooks, procrastination', accent: 'lime', guides: ['/library/exams', '/library/school', '/library/college'], toolCats: ['focus'] },
   { id: 'body', emoji: '💪', name: 'Body', line: 'move, sleep, water, cycle', accent: 'orange', guides: [], toolCats: ['body'] },
   { id: 'money', emoji: '💸', name: 'Money', line: 'budget, UPI, salary, scams', accent: 'sun', guides: [], toolCats: ['money'] },
@@ -33,6 +33,8 @@ export const AREAS: Area[] = [
   { id: 'faith', emoji: '🙏', name: 'Faith', line: 'every scripture, no fake babas', accent: 'sun', guides: ['/library/faith', '/faith'], toolCats: [] },
   { id: 'read', emoji: '📖', name: 'Read', line: 'depression, pressure, starting over', accent: 'cyan', guides: ['/read'], toolCats: [] },
   { id: 'listen', emoji: '🎧', name: 'Listen', line: 'quotes + music, hands-free', accent: 'violet', guides: ['/listen', '/music'], toolCats: [] },
+  // Handy utilities that don't belong to one need. Sound mixer lives in Calm too.
+  { id: 'more', emoji: '🧰', name: 'More', line: 'sounds, quick maths, countdowns, wallpapers', accent: 'cyan', guides: [], toolCats: [], tools: ['sounds', 'maths', 'countdowns', 'wallpaper', 'capsule', 'eye-care'] },
 ]
 
 export const DARES = [

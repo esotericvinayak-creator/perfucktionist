@@ -761,7 +761,7 @@ export function PhoneDown() {
   return (
     <div className="stack">
       <Done emoji={slips ? '🙂' : '🏆'} title={slips ? `${mins} min done, ${slips} slip${slips > 1 ? 's' : ''}` : `${mins} min. zero slips. legend.`} />
-      <ToolChips ids={['dopamine', 'workout']} title="now do something real" />
+      <ToolChips ids={['workout', 'kindness']} title="now do something real" />
       <button type="button" className="btn btn-sm" onClick={() => setPhase('set')}>
         again
       </button>

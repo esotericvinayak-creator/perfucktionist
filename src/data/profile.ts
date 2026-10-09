@@ -22,18 +22,18 @@ type Spotlight = { path: string; icon: string; title: string; why: string }
 export function priorities(gender?: string): { tools: string[]; spotlight: Spotlight | null } {
   switch (gender) {
     case 'woman':
-      return { tools: ['safe-walk', 'period', 'ice', 'red-flags'], spotlight: { path: '/shield', icon: 'safety', title: 'Shield', why: 'self-defence moves, SOS tools and your legal rights' } }
+      return { tools: ['safe-walk', 'period', 'ice', 'privacy'], spotlight: { path: '/shield', icon: 'safety', title: 'Shield', why: 'self-defence moves, SOS tools and your legal rights' } }
     case 'trans-woman':
-      return { tools: ['safe-walk', 'ice', 'red-flags', 'boundaries'], spotlight: { path: '/shield', icon: 'safety', title: 'Shield', why: 'self-defence moves, SOS tools and your rights' } }
+      return { tools: ['safe-walk', 'ice', 'privacy', 'friends'], spotlight: { path: '/shield', icon: 'safety', title: 'Shield', why: 'self-defence moves, SOS tools and your rights' } }
     case 'man':
-      return { tools: ['workout', 'boundaries', 'friends', 'urge'], spotlight: { path: '/bro', icon: 'people', title: 'Bro code', why: 'respect, real feelings, discipline' } }
+      return { tools: ['workout', 'friends', 'habits', 'focus'], spotlight: { path: '/bro', icon: 'people', title: 'Bro code', why: 'respect, real feelings, discipline' } }
     case 'trans-man':
-      return { tools: ['workout', 'period', 'safe-walk', 'boundaries'], spotlight: { path: '/bro', icon: 'people', title: 'Bro code', why: 'respect, real feelings, discipline' } }
+      return { tools: ['workout', 'period', 'safe-walk', 'friends'], spotlight: { path: '/bro', icon: 'people', title: 'Bro code', why: 'respect, real feelings, discipline' } }
     case 'non-binary':
     case 'transgender':
     case 'genderfluid':
     case 'self':
-      return { tools: ['safe-walk', 'ice', 'journal', 'boundaries'], spotlight: { path: '/shield', icon: 'safety', title: 'Safety, your way', why: 'SOS tools, self-defence and your rights — for everyone' } }
+      return { tools: ['safe-walk', 'ice', 'journal', 'friends'], spotlight: { path: '/shield', icon: 'safety', title: 'Safety, your way', why: 'SOS tools, self-defence and your rights — for everyone' } }
     default:
       return { tools: [], spotlight: null }
   }

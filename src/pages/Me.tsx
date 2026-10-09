@@ -3,7 +3,7 @@ import { PlusBadge, shareCard } from '../components/Overlays'
 import { BADGES, RITUAL, dayKey, levelOf, monthStats, ritualToday, showedUp, streakOf, update, useProgress, type Progress } from '../lib/progress'
 import { alreadyInstalled } from '../lib/install'
 import { usePlus } from '../lib/plus'
-import { pick, todayKey } from '../lib/storage'
+import { pick, todayKey, useLocalState } from '../lib/storage'
 import { useTheme } from '../lib/theme'
 import { cloud, deleteAccount, logOut, useAuth } from '../lib/auth'
 import { useSync, type SyncState } from '../lib/sync'
@@ -14,6 +14,7 @@ import { Icon } from '../components/Icon'
 import { GOALS } from '../data/app'
 import { ACCESSORIES, FAITHS, GENDERS, PETS } from '../data/profile'
 import { PetView } from '../components/Pet'
+import { sleepWeek, type SleepNight } from '../lib/sleep'
 
 const ago = (t: number) => {
   const s = Math.round((Date.now() - t) / 1000)
@@ -180,6 +181,8 @@ export default function Me() {
   const month = monthStats(p)
   const monthName = new Date().toLocaleString('en-IN', { month: 'long' })
   const earned = BADGES.filter((b) => p.badges[b.id])
+  const [nights] = useLocalState<Record<string, SleepNight>>('tool:sleep-promise', {})
+  const sleep = sleepWeek(nights)
 
   return (
     <div className="page me2">
@@ -268,6 +271,13 @@ export default function Me() {
           <a className="me2-chip ghost" href="#/tools/habits">
             📅 habits
           </a>
+          {sleep.answered > 0 && (
+            <a className={`me2-chip ghost${sleep.missed >= 3 ? ' warn' : ''}`} href="#/tools/wind-down">
+              🌙 sleep promise {sleep.kept}/{sleep.answered}
+              {sleep.streak > 1 ? ` · ${sleep.streak} in a row` : ''}
+              {sleep.missed >= 3 ? ' · slipping' : ''}
+            </a>
+          )}
         </div>
       </section>
 

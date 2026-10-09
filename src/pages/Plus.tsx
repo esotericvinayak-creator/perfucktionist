@@ -16,7 +16,7 @@ const PERKS = [
   { emoji: '✨', title: 'make it yours', body: 'pet outfits, story cards with no watermark, unlimited habits, decks and sounds.' },
 ]
 
-const FREE = ['the daily 5 minutes, streaks and your pet', 'every scripture', 'all safety and SOS tools', '56 of 60 tools', 'music, breathing, everything else']
+const FREE = ['the daily 5 minutes, streaks and your pet', 'every scripture', 'all safety and SOS tools', 'almost every tool', 'music, breathing, everything else']
 
 const dateOf = (t: number) => new Date(t).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 

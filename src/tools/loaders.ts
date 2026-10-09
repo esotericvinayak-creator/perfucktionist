@@ -8,6 +8,9 @@ const money = () => import('./money')
 const safety = () => import('./safety')
 const people = () => import('./people')
 const grow = () => import('./grow')
+const calc = () => import('./calc')
+const wallpaper = () => import('./wallpaper')
+const bucket = () => import('./bucket')
 
 type Loader<M> = () => Promise<M>
 const pickFrom = <M,>(load: Loader<M>, get: (m: M) => ComponentType) => lazy(() => load().then((m) => ({ default: get(m) })))
@@ -17,14 +20,12 @@ export const TOOL_COMPONENTS: Record<string, LazyExoticComponent<ComponentType>>
   'mood-insights': pickFrom(mind, (m) => m.MoodInsights),
   panic: pickFrom(mind, (m) => m.Panic),
   'safety-plan': pickFrom(mind, (m) => m.SafetyPlan),
-  'thought-flip': pickFrom(mind, (m) => m.ThoughtFlip),
   'worry-box': pickFrom(mind, (m) => m.WorryBox),
   journal: pickFrom(mind, (m) => m.Journal),
   'one-line': pickFrom(mind, (m) => m.OneLine),
   'hype-file': pickFrom(mind, (m) => m.HypeFile),
   'bad-day': pickFrom(mind, (m) => m.BadDay),
   affirm: pickFrom(mind, (m) => m.Affirm),
-  urge: pickFrom(mind, (m) => m.Urge),
 
   focus: pickFrom(focus, (m) => m.FocusTimer),
   'focus-stats': pickFrom(focus, (m) => m.FocusStats),
@@ -54,16 +55,11 @@ export const TOOL_COMPONENTS: Record<string, LazyExoticComponent<ComponentType>>
   sip: pickFrom(money, (m) => m.Sip),
   salary: pickFrom(money, (m) => m.Salary),
   'worth-it': pickFrom(money, (m) => m.WorthIt),
-  emi: pickFrom(money, (m) => m.Emi),
-  'scam-check': pickFrom(money, (m) => m.ScamCheck),
 
   'safe-walk': pickFrom(safety, (m) => m.SafeWalk),
   ice: pickFrom(safety, (m) => m.IceCard),
-  password: pickFrom(safety, (m) => m.Password),
   privacy: pickFrom(safety, (m) => m.Privacy),
-  'red-flags': pickFrom(safety, (m) => m.RedFlags),
 
-  boundaries: pickFrom(people, (m) => m.Boundaries),
   breakup: pickFrom(people, (m) => m.Breakup),
   friends: pickFrom(people, (m) => m.Friends),
   kindness: pickFrom(people, (m) => m.Kindness),
@@ -72,11 +68,12 @@ export const TOOL_COMPONENTS: Record<string, LazyExoticComponent<ComponentType>>
   habits: pickFrom(grow, (m) => m.Habits),
   quit: pickFrom(grow, (m) => m.QuitTool),
   capsule: pickFrom(grow, (m) => m.Capsule),
-  bucket: pickFrom(grow, (m) => m.BucketList),
-  wallpaper: pickFrom(grow, (m) => m.Wallpaper),
-  dopamine: pickFrom(grow, (m) => m.Dopamine),
-  career: pickFrom(grow, (m) => m.Career),
+  bucket: pickFrom(bucket, (m) => m.BucketList),
+  wallpaper: pickFrom(wallpaper, (m) => m.Wallpaper),
   interview: pickFrom(grow, (m) => m.Interview),
-  decide: pickFrom(grow, (m) => m.Decide),
   speak: pickFrom(grow, (m) => m.Speak),
+
+  maths: pickFrom(calc, (m) => m.QuickMaths),
+  roi: pickFrom(calc, (m) => m.Roi),
+  'screen-time': pickFrom(calc, (m) => m.ScreenTime),
 }

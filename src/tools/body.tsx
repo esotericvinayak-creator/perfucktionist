@@ -4,6 +4,7 @@ import { log } from '../lib/progress'
 import { bell, chime, unlockAudio } from '../lib/sound'
 import { Card, Choice, Columns, Done, Ring, Stat, Stats, addDays, daysBetween, lastDays, shortDate, today, useCountdown, useTool } from './kit'
 import { ToolChips } from './links'
+import { sleepWeek, type SleepNight } from '../lib/sleep'
 
 const say = (text: string) => {
   if (!('speechSynthesis' in window)) return
@@ -209,6 +210,104 @@ export function SleepCalc() {
   )
 }
 
+// ─── Sleep promise: the discipline part of Wind-down and Caffeine cut-off ───
+// A tool that only records "did you?" doesn't build the habit. This one:
+//  1. asks for one if-then plan ("when it's 11pm, phone goes on the charger outside my bed"),
+//  2. checks in every morning about last night, honestly, in one tap each,
+//  3. makes the result count: kept nights earn XP and a sleep streak shown on Me; three misses
+//     in a week resets the streak and suggests a smaller, easier step instead of more guilt.
+const PLANS = [
+  'phone goes on the charger, away from my bed',
+  'lights dim and I switch to something on paper',
+  'I put on rain sounds and close my eyes',
+  'last chai or coffee, then only water',
+]
+
+function SleepPromise({ focus }: { focus: 'wind' | 'caf' }) {
+  const [nights, setNights] = useTool<Record<string, SleepNight>>('sleep-promise', {})
+  const [plan, setPlan] = useTool<string>('sleep-plan', '')
+  const [bed, setBed] = useTool('bedtime', '23:30')
+  const last = addDays(today(), -1)
+  const night = nights[last] ?? {}
+  const week = sleepWeek(nights)
+  const answer = (k: keyof SleepNight, v: boolean) => {
+    const next = { ...nights, [last]: { ...night, [k]: v } }
+    setNights(next)
+    // XP only when the night is fully kept, and only once.
+    const n = next[last]
+    if (v && n.wind !== false && n.caf !== false && !(night.wind === true || night.caf === true)) log('tool')
+  }
+  const windAt = fmt12(toMin(bed) - 30)
+
+  return (
+    <Card className="sp-card">
+      <p className="kicker">your sleep promise</p>
+      <div className="row gap-sm wrap sp-bed">
+        <label className="field">
+          <span>bedtime</span>
+          <input type="time" value={bed} onChange={(e) => setBed(e.target.value)} />
+        </label>
+        <p className="sp-if">
+          When it’s <b>{windAt}</b>, {plan ? <b>{plan}</b> : 'I…'}
+        </p>
+      </div>
+      {!plan && (
+        <div className="row gap-sm wrap">
+          {PLANS.map((p) => (
+            <button key={p} type="button" className="chip" onClick={() => setPlan(p)}>
+              {p}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="sp-check">
+        <b>Last night</b>
+        {(focus === 'wind' ? (['wind', 'caf'] as const) : (['caf', 'wind'] as const)).map((k) => (
+          <div key={k} className="sp-q">
+            <span>{k === 'wind' ? `wound down by ${windAt}?` : 'no caffeine after your cut-off?'}</span>
+            <div className="row gap-sm">
+              <button type="button" className={`chip${night[k] === true ? ' on' : ''}`} onClick={() => answer(k, true)}>
+                yes
+              </button>
+              <button type="button" className={`chip${night[k] === false ? ' on' : ''}`} onClick={() => answer(k, false)}>
+                no
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <p className="sp-week">
+        {week.answered ? (
+          <>
+            kept <b>{week.kept}</b> of {week.answered} nights this week · sleep streak <b>🌙 {week.streak}</b>
+          </>
+        ) : (
+          'Answer each morning. Kept nights earn XP and a sleep streak on your Me page.'
+        )}
+      </p>
+      {week.missed >= 3 ? (
+        <p className="sp-advice">
+          Three misses this week reset your streak. That usually means the step is too big, not that you’re lazy. Try a smaller one: move bedtime 30 minutes later for now, or keep just the phone part.{' '}
+          {plan && (
+            <button type="button" className="linkish" onClick={() => setPlan('')}>
+              change my plan
+            </button>
+          )}
+        </p>
+      ) : (
+        night.wind === false && <p className="sp-advice">Missed one. It happens. The streak only resets after 3 misses in a week, so tonight still counts.</p>
+      )}
+      {plan && week.missed < 3 && (
+        <button type="button" className="linkish muted" onClick={() => setPlan('')}>
+          change my plan
+        </button>
+      )}
+    </Card>
+  )
+}
+
 // ─── Wind-down + sleep log ────────────────────────────────────
 function Breather({ rounds, onDone }: { rounds: number; onDone: () => void }) {
   const phases = [
@@ -260,11 +359,13 @@ export function WindDown() {
   const avg = week.length ? week.reduce((a, d) => a + hours(logs[d].bed, logs[d].wake), 0) / week.length : 0
   const CHECKS = ['📵 phone on Do Not Disturb', '💡 lights dimmed', '⏰ alarm set', '🌡️ room a little cool']
 
+  const [, setNights] = useTool<Record<string, SleepNight>>('sleep-promise', {})
   return (
     <div className="stack">
+      <SleepPromise focus="wind" />
       {step === 0 && (
         <>
-          <p className="big-q">set the scene</p>
+          <p className="big-q">tonight: set the scene</p>
           <div className="choice-big">
             {CHECKS.map((c) => (
               <button key={c} type="button" className={`pick${checks.includes(c) ? ' on' : ''}`} onClick={() => setChecks(checks.includes(c) ? checks.filter((x) => x !== c) : [...checks, c])}>
@@ -280,7 +381,15 @@ export function WindDown() {
       {step === 1 && (
         <>
           <p className="big-q">4 · 7 · 8, four times</p>
-          <Breather rounds={4} onDone={() => (log('breath'), setStep(2))} />
+          <Breather
+            rounds={4}
+            onDone={() => {
+              log('breath')
+              // Doing the routine tonight answers tomorrow's question for you.
+              setNights((n) => ({ ...n, [today()]: { ...n[today()], wind: true } }))
+              setStep(2)
+            }}
+          />
         </>
       )}
       {step === 2 && (
@@ -303,7 +412,7 @@ export function WindDown() {
           </button>
         </div>
       )}
-      {step === 3 && <Done emoji="🌙" title="goodnight. phone down now." />}
+      {step === 3 && <Done emoji="🌙" title="goodnight. phone down now.">Tomorrow morning, tell it how it went.</Done>}
 
       <details className="sleep-log">
         <summary className="kicker">📝 log last night {avg > 0 && `· avg ${avg.toFixed(1)}h this week`}</summary>
@@ -443,7 +552,7 @@ const DRINKS = [
 ]
 
 export function Caffeine() {
-  const [bed, setBed] = useTool('bedtime', '23:30')
+  const [bed] = useTool('bedtime', '23:30')
   const [had, setHad] = useState<{ id: string; time: string }[]>([])
   const [time, setTime] = useState(() => `${String(new Date().getHours()).padStart(2, '0')}:00`)
   const bedMin = toMin(bed)
@@ -456,10 +565,7 @@ export function Caffeine() {
   const tone = remaining < 50 ? 'ok' : remaining < 100 ? 'warn' : 'bad'
   return (
     <div className="stack">
-      <label className="field">
-        <span>bedtime</span>
-        <input type="time" value={bed} onChange={(e) => setBed(e.target.value)} />
-      </label>
+      <SleepPromise focus="caf" />
       <p className="kicker">what did you drink today?</p>
       <div className="row gap-sm wrap">
         <input type="time" value={time} onChange={(e) => setTime(e.target.value)} aria-label="Time" style={{ width: 'auto' }} />

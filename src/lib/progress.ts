@@ -15,7 +15,7 @@ export const RITUAL: { kind: Activity; emoji: string; label: string; how: string
   { kind: 'breath', emoji: '🫁', label: 'Breathe', how: 'one round with the orb', path: '/breathe' },
   { kind: 'verse', emoji: '📖', label: 'Read', how: 'one verse, any faith', path: '/library' },
   { kind: 'dare', emoji: '🦁', label: 'Be brave', how: 'do one dare', path: '/brave' },
-  { kind: 'gratitude', emoji: '🙏', label: 'Be grateful', how: 'one note in the jar', path: '/happy' },
+  { kind: 'gratitude', emoji: '🙏', label: 'Be grateful', how: 'one good line about today', path: '/tools/one-line' },
 ]
 
 const XP: Record<Activity, { xp: number; dailyCap: number; label: string }> = {

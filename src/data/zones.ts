@@ -16,7 +16,6 @@ export const zones: Zone[] = [
   { path: '/library', emoji: '📚', title: 'Sacred Library', tag: 'every faith', blurb: '1.2 lakh+ verses — Gita, Ramayana, Gurbani, Quran, Bible, Dhammapada', accent: 'sun' },
   { path: '/breathe', emoji: '🫁', title: 'Breathe', blurb: 'hold your breath, find your calm — guided pranayama & meditation', accent: 'violet' },
   { path: '/music', emoji: '🎧', title: 'Vibe Room', blurb: 'any song on earth. bollywood, hollywood, k-pop, bhajans, lofi', accent: 'orange' },
-  { path: '/happy', emoji: '🫧', title: 'Happy Zone', blurb: 'pop bubbles, yeet your stress, fill a gratitude jar', accent: 'pink' },
   { path: '/brave', emoji: '🦁', title: 'Be Brave', blurb: 'scared? good. now do it anyway', accent: 'sun' },
   { path: '/fam', emoji: '🏠', title: 'No Secrets Club', blurb: "talk to your parents — they've handled worse", accent: 'cyan' },
   { path: '/faith', emoji: '🙏', title: 'Real Faith', blurb: "god doesn't need your UPI. spot fake babas, pastors & peers", accent: 'orange' },

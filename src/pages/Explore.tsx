@@ -24,7 +24,6 @@ const GUIDES: Record<string, { icon: string; title: string; blurb: string }> = {
   '/listen/reels': { icon: 'play', title: 'Music reels', blurb: 'songs that play themselves — swipe for the next' },
   '/breathe': { icon: 'calm', title: 'Breathe', blurb: 'guided pranayama & meditation timer' },
   '/unperfect': { icon: 'mind', title: 'Unlearn perfect', blurb: 'quiz, rules & daily imperfection dares' },
-  '/happy': { icon: 'bored', title: 'Happy zone', blurb: 'bubble wrap, yeet box, gratitude jar' },
   '/shield': { icon: 'safety', title: 'Shield (for her)', blurb: 'self-defence, SOS tools, your rights' },
   '/bro': { icon: 'people', title: 'Bro code (for him)', blurb: 'respect, feelings, warrior shlokas' },
   '/fam': { icon: 'friends', title: 'No secrets club', blurb: 'talking to your parents' },
@@ -48,10 +47,13 @@ const HUBS: { path: string; icon: string; title: string; line: string; accent: s
   { path: '/library', icon: 'library', title: 'Books & scripture', line: 'free books, audiobooks, every faith', accent: 'sun' },
 ]
 
+/** What you'd typed or picked on Discover, for when you come back from a tool. Session only. */
+const kept: { q: string; need: Need | null } = { q: '', need: null }
+
 const QUICK = ['panic', 'focus', 'journal', 'sleep-calc', 'expenses', 'safe-walk']
 const iconFor = (id: string) => (id === 'focus' ? 'focus-timer' : id)
 const needIcon = (id: string) => (id === 'focus' ? 'need:focus' : id === 'money' ? 'need:money' : id)
-const toolsIn = (a: Area) => TOOLS.filter((t) => a.toolCats.includes(t.cat))
+const toolsIn = (a: Area) => TOOLS.filter((t) => a.toolCats.includes(t.cat) || a.tools?.includes(t.id))
 
 function Tile({ t, plus }: { t: ToolMeta; plus: boolean }) {
   return (
@@ -133,8 +135,12 @@ export default function Explore() {
   const gender = useProgress().gender
   // Your priorities first (by gender, if you told us), then the usual quick picks.
   const quick = [...new Set([...priorities(gender).tools, ...QUICK])].filter((id) => toolById(id)).slice(0, 6)
-  const [q, setQ] = useState('')
-  const [need, setNeed] = useState<Need | null>(parts[0] === 'for' && NEEDS.some((n) => n.id === parts[1]) ? (parts[1] as Need) : null)
+  const linked = parts[0] === 'for' && NEEDS.some((n) => n.id === parts[1]) ? (parts[1] as Need) : null
+  // Search and the feeling chip survive opening a tool and coming back (see `kept`).
+  const [q, setQ] = useState(linked ? '' : kept.q)
+  const [need, setNeed] = useState<Need | null>(linked ?? kept.need)
+  kept.q = q
+  kept.need = need
   const area = AREAS.find((a) => a.id === parts[0])
 
   const results = useMemo(() => {

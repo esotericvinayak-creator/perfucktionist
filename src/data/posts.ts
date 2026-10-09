@@ -182,7 +182,7 @@ export const posts: Post[] = [
     "actions": [
       "Write your opening line in the journal tool, so it exists outside your head.",
       "Pick your person and your moment: one parent or one other adult, one low-stakes time in the next 3 days. Put it in your calendar.",
-      "Save Tele-MANAS 14416 in your contacts right now, and add it to your safety plan in the app."
+      "Save Tele-MANAS 14416 in your contacts right now, and add it to your crisis plan in the app."
     ],
     "tools": [
       "journal",
@@ -434,7 +434,7 @@ export const posts: Post[] = [
     "actions": [
       "save Tele-MANAS 14416 and 112 in your phone contacts right now, so you're not googling in a panic later",
       "send your friend one line today: \"thinking of you. no need to reply. i'm around.\"",
-      "open the safety plan tool, with them or for yourself, and fill in just the first box: who to call"
+      "open the crisis plan tool, with them or for yourself, and fill in just the first box: who to call"
     ],
     "tools": [
       "safety-plan",

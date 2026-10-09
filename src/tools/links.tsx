@@ -1,13 +1,15 @@
-import { toolById } from './registry'
+import { resolveTool } from './registry'
 
 /** A small tappable tile that opens another tool — how tools hand off to each other. */
 export function ToolChip({ id, label }: { id: string; label?: string }) {
-  const t = toolById(id)
-  if (!t) return null
+  // Parts of a collection open on their own tab (`stretch` → Move, Desk stretches). Removed tools render nothing.
+  const r = resolveTool(id)
+  if (!r) return null
+  const part = r.tool.parts?.find((p) => p.id === id && p.id !== r.tool.id)
   return (
-    <a className="tool-chip" href={`#/tools/${t.id}`}>
-      <span>{t.emoji}</span>
-      {label ?? t.name}
+    <a className="tool-chip" href={`#/tools/${id}`}>
+      <span>{r.tool.emoji}</span>
+      {label ?? part?.label ?? r.tool.name}
     </a>
   )
 }

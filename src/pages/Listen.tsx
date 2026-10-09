@@ -1,5 +1,5 @@
 // Listen: quotes read aloud with music under them, auto-advancing like a playlist. Hands-free.
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { shareCard } from '../components/Overlays'
 import { MusicReels } from '../components/MusicReels'
@@ -10,6 +10,7 @@ import { traditions, wisdom, type Theme } from '../data/wisdom'
 import { searchFull } from '../lib/music'
 import { log, useProgress } from '../lib/progress'
 import { unlockAudio } from '../lib/sound'
+import { RATES, RATE_NAMES, autoVoice, canSpeakAloud, langLabel, makeUtterance, useVoicePref, useVoices, voiceName } from '../lib/voice'
 import type { Track } from '../context/Player'
 
 type Item = { badge: string; original?: string; lang?: string; rtl?: boolean; text: string; speak: string }
@@ -45,17 +46,156 @@ function buildQueue(mix: Mix, faithId?: string): Item[] {
   return [...w, ...s].sort(() => Math.random() - 0.5)
 }
 
+const LISTEN_RATE = 0.92 // Listen's own pace; the voice sheet's speed scales it
+const SAMPLE_LINE = 'Perfection is a scam. Showing up is enough.'
+
 function speak(text: string, onEnd: () => void) {
   const synth = window.speechSynthesis
   synth.cancel()
-  const u = new SpeechSynthesisUtterance(text)
-  const voices = synth.getVoices()
-  u.voice = voices.find((v) => v.lang === 'en-IN') ?? voices.find((v) => v.lang.startsWith('en')) ?? null
-  u.rate = 0.92
-  u.pitch = 1
+  // Items are read in English (shloka items speak their English meaning), so no per-item language here.
+  const u = makeUtterance(text, { lang: 'en', baseRate: LISTEN_RATE })
   u.onend = u.onerror = onEnd
   synth.speak(u)
   return u
+}
+
+type VoiceSheetProps = {
+  voices: SpeechSynthesisVoice[]
+  ready: boolean
+  chosen?: SpeechSynthesisVoice
+  rate: number
+  midQuote: boolean
+  onVoice: (uri?: string) => void
+  onRate: (r: number) => void
+  onClose: () => void
+}
+
+/** Bottom sheet (centred card on desktop) for choosing who reads aloud, and how fast. */
+function VoiceSheet({ voices, ready, chosen, rate, midQuote, onVoice, onRate, onClose }: VoiceSheetProps) {
+  const uid = useId()
+  const panel = useRef<HTMLDivElement>(null)
+  const [sampling, setSampling] = useState<string | null>(null)
+  const samplingRef = useRef<string | null>(null)
+  samplingRef.current = sampling
+  const selected = chosen?.voiceURI ?? ''
+
+  // focus in on open, back to the opener on close; a sample in progress never outlives the sheet
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null
+    ;(panel.current?.querySelector<HTMLElement>('input[type=radio]:checked') ?? panel.current)?.focus()
+    return () => {
+      if (samplingRef.current) window.speechSynthesis.cancel()
+      opener?.focus?.()
+    }
+  }, [])
+
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      e.stopPropagation()
+      onClose()
+      return
+    }
+    if (e.key !== 'Tab' || !panel.current) return
+    const f = [...panel.current.querySelectorAll<HTMLElement>('button:not(:disabled), input[type=radio]:checked')]
+    if (!f.length) return
+    const first = f[0]
+    const last = f[f.length - 1]
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === panel.current)) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
+  }
+
+  const sample = (id: string, voice?: SpeechSynthesisVoice) => {
+    const synth = window.speechSynthesis
+    if (sampling === id) {
+      synth.cancel()
+      setSampling(null)
+      return
+    }
+    synth.cancel()
+    const u = makeUtterance(SAMPLE_LINE, { lang: 'en', baseRate: LISTEN_RATE, voice: voice ?? autoVoice('en', voices) })
+    u.onend = u.onerror = () => setSampling((k) => (k === id ? null : k))
+    setSampling(id)
+    synth.speak(u)
+  }
+
+  const rows: { id: string; uri: string; name: string; sub: string; voice?: SpeechSynthesisVoice }[] = [
+    { id: 'auto', uri: '', name: 'auto (best match)', sub: 'picks the right voice for each quote' },
+    ...voices.map((v) => ({ id: v.voiceURI, uri: v.voiceURI, name: voiceName(v), sub: `${langLabel(v.lang)} · ${v.localService ? 'offline' : 'online'}`, voice: v })),
+  ]
+
+  return (
+    <div className="vx-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div ref={panel} className="vx-sheet" role="dialog" aria-modal="true" aria-labelledby={`${uid}-t`} tabIndex={-1} onKeyDown={onKey}>
+        <header className="vx-head">
+          <h2 id={`${uid}-t`}>choose a voice</h2>
+          <button type="button" className="icon-btn ghost" onClick={onClose} aria-label="Close voice picker">
+            ✕
+          </button>
+        </header>
+
+        <div className="vx-body">
+          {midQuote ? (
+            <p className="vx-note" role="status">
+              A quote is being read right now. Your pick starts from the next one, and samples wait for the music break (or pause first).
+            </p>
+          ) : (
+            <p className="vx-note">Your pick starts from the next quote and is used everywhere the app reads aloud.</p>
+          )}
+
+          {!ready && !voices.length ? (
+            <p className="vx-empty" role="status">
+              loading voices…
+            </p>
+          ) : !voices.length ? (
+            <p className="vx-empty" role="status">
+              Your phone hasn’t loaded any voices. On Android: Settings → System → Languages → Text-to-speech output.
+            </p>
+          ) : (
+            <div role="radiogroup" aria-label="Voice" className="vx-list">
+              {rows.map((r) => (
+                <div key={r.id} className={`vx-row${selected === r.uri ? ' on' : ''}`}>
+                  <label className="vx-pick">
+                    <input type="radio" name={`${uid}-voice`} checked={selected === r.uri} onChange={() => onVoice(r.uri || undefined)} />
+                    <span className="vx-meta">
+                      <b>{r.name}</b>
+                      <small>{r.sub}</small>
+                    </span>
+                  </label>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm vx-hear"
+                    onClick={() => sample(r.id, r.voice)}
+                    disabled={midQuote && sampling !== r.id}
+                    aria-label={sampling === r.id ? `Stop sample of ${r.name}` : `Hear a sample of ${r.name}`}
+                  >
+                    {sampling === r.id ? '■ stop' : '▶ hear'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <footer className="vx-foot">
+          <span className="kicker" id={`${uid}-speed`}>
+            speed
+          </span>
+          <div className="vx-speed" role="group" aria-labelledby={`${uid}-speed`}>
+            {RATES.map((r, n) => (
+              <button key={r} type="button" className={`chip${Math.abs(rate - r) < 0.05 ? ' on' : ''}`} aria-pressed={Math.abs(rate - r) < 0.05} onClick={() => onRate(r)}>
+                {RATE_NAMES[n]}
+              </button>
+            ))}
+          </div>
+        </footer>
+      </div>
+    </div>
+  )
 }
 
 export default function Listen() {
@@ -76,7 +216,12 @@ export default function Listen() {
   const [withMusic, setWithMusic] = useState(true)
   const [tracks, setTracks] = useState<Track[]>([])
   const music = useRef<HTMLAudioElement | null>(null)
-  const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window
+  const canSpeak = canSpeakAloud()
+  const { voices, ready } = useVoices()
+  const { pref, setVoice, setRate } = useVoicePref()
+  const [voiceOpen, setVoiceOpen] = useState(false)
+  // a saved voice that's no longer installed quietly counts as "auto"
+  const chosen = voices.find((v) => v.voiceURI === pref.voiceURI)
 
   const item = queue[i]
 
@@ -165,6 +310,24 @@ export default function Listen() {
     setMix(null)
   }
 
+  const voiceButton = canSpeak && (
+    <button type="button" className="btn btn-ghost btn-sm vx-btn" onClick={() => setVoiceOpen(true)} aria-haspopup="dialog">
+      <span aria-hidden="true">🗣️</span> voice: <b>{chosen ? voiceName(chosen) : 'auto'}</b>
+    </button>
+  )
+  const voiceSheet = voiceOpen && canSpeak && (
+    <VoiceSheet
+      voices={voices}
+      ready={ready}
+      chosen={chosen}
+      rate={pref.rate}
+      midQuote={!!mix && phase === 'speaking' && !paused}
+      onVoice={setVoice}
+      onRate={setRate}
+      onClose={() => setVoiceOpen(false)}
+    />
+  )
+
   if (!mix || !item)
     return (
       <div className="page listen">
@@ -191,6 +354,7 @@ export default function Listen() {
           <MusicReels />
         ) : (
           <>
+            {voiceButton && <div className="vx-bar">{voiceButton}</div>}
             <div className="mix-grid">
               {mixes.map((m) => (
                 <button key={m.id} type="button" className={`mix a-${m.accent}`} onClick={() => start(m)}>
@@ -205,6 +369,7 @@ export default function Listen() {
             {!canSpeak && <p className="muted center">Your browser can’t read aloud — quotes will show on screen with music.</p>}
           </>
         )}
+        {voiceSheet}
       </div>
     )
 
@@ -259,6 +424,7 @@ export default function Listen() {
           next →
         </button>
       </div>
+      {voiceButton && <div className="vx-bar">{voiceButton}</div>}
       {musicTrack && (
         <p className="lp-credit">
           music:{' '}
@@ -267,6 +433,7 @@ export default function Listen() {
           </WebLink>
         </p>
       )}
+      {voiceSheet}
     </div>
   )
 }

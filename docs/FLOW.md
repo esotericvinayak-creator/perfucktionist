@@ -39,7 +39,7 @@ flowchart TD
     subgraph EXPLORE [Discover tab]
       E[Search + I'm feeling… chips] --> HB[Feel better · Study · Listen · Read · Books & scripture]
       E --> Q[Quick tools, yours first]
-      E --> AR[Everything else: 10 areas] --> G[Guides] & TL[60 tools]
+      E --> AR[Everything else: 10 areas] --> G[Guides] & TL[44 tools, some are collections]
       HB --> L[Listen]
       HB --> R[Read: 10 posts]
       HB --> LB
@@ -94,7 +94,7 @@ flowchart TD
 | Music reels `#/listen/reels` | A feed of songs that plays itself; saved songs row |
 | Now Playing | Opens from the mini player on any page |
 | Read `#/read` | Blog posts; `#/read/<slug>` for one post |
-| Tools `#/tools/<id>` | Any of the 60 tools, with "up next" handoffs |
+| Tools `#/tools/<id>` | Any tool; collections open on a tab (`#/tools/one-line`); "goes well with this" footer |
 
 Every external link opens in the in-app viewer, never a new tab. Every screen outside the three tabs has a back button in the top bar.
 

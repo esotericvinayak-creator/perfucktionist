@@ -5,7 +5,7 @@ import {
   Dumbbell, Ear, House, Eye, Flag, Flame, Footprints, HandHeart, Headphones, Heart, HeartCrack, Hourglass, IdCard, Image, KeyRound, Layers, LifeBuoy, LineChart, ListChecks, Lock,
   Mail, MessageSquareQuote, MessagesSquare, Mic, Moon, Newspaper, NotebookPen, Package, PenLine, PieChart, PiggyBank, Pizza, Receipt, RefreshCw, Repeat, Rocket, Scale,
   ScanSearch, Shield, Siren, SlidersHorizontal, Smartphone, Smile, Sparkles, Sprout, StretchHorizontal, Sun, Target, Thermometer, Timer, TrendingUp, Trophy, Users,
-  UtensilsCrossed, Wallet, Waves, Wind, Zap, type LucideIcon,
+  UtensilsCrossed, Wallet, Waves, Wind, Zap, Calculator, Percent, MonitorSmartphone, type LucideIcon,
 } from 'lucide-react'
 
 export const ICONS = {
@@ -25,6 +25,7 @@ export const ICONS = {
   'safe-walk': Footprints, ice: IdCard, password: KeyRound, privacy: Lock, 'red-flags': Flag,
   boundaries: MessageSquareQuote, breakup: HeartCrack, friends: Users, kindness: HandHeart, convo: MessagesSquare,
   habits: CalendarCheck, quit: Ban, capsule: Mail, bucket: ListChecks, wallpaper: Image, dopamine: UtensilsCrossed, career: Compass, interview: Mic, decide: Scale, speak: Mic,
+  maths: Calculator, roi: Percent, 'screen-time': MonitorSmartphone, more: Layers,
   // misc
   sos: Siren, play: Zap, bath: Bath, ear: Ear, list: ClipboardList,
 } satisfies Record<string, LucideIcon>

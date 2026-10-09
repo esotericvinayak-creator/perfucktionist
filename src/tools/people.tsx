@@ -1,71 +1,8 @@
 import { useState } from 'react'
-import { CopyButton } from '../components/ui'
 import { log } from '../lib/progress'
 import { pick } from '../lib/storage'
 import { Card, Choice, Empty, QuickAdd, Stat, Stats, daysBetween, today, uid, useTool } from './kit'
 import { ToolChips } from './links'
-
-// ─── Boundary scripts ─────────────────────────────────────────
-const SCRIPTS: Record<string, Record<string, string[]>> = {
-  '👵 relatives': {
-    'marks / career questions': ['I’m working on it and I’ll share when there’s news. How have you been, aunty?', 'It’s going at my pace, and I’m okay with that. Anyway — how’s your health?'],
-    'marriage questions': ['When it happens, you’ll be the first to know. Till then, I’m focusing on me.', 'Not on my mind right now. Let’s talk about something else — how was your trip?'],
-    'comments on my body': ['I’d rather we didn’t comment on my body. I’m healthy and happy.', 'Please don’t say things like that about my weight. It really affects me.'],
-  },
-  '👨‍👩‍👧 parents': {
-    'I need more privacy': ['I love you and I’m not hiding anything bad. I just need some space that’s mine. Can we agree on knocking first?', 'I’ll always tell you the important stuff — I promise. But I need some privacy to grow up properly.'],
-    'my career choice': ['I know you want me to be secure. Can I show you my plan for this path, and we decide together?', 'Give me one year to prove this can work. If it doesn’t, we’ll talk again.'],
-    'I’m burnt out': ['I’m not being lazy — I’m exhausted. I need a proper break this weekend so I can study better after.', 'I’ve been feeling really low and tired. Can we talk without it becoming a lecture?'],
-  },
-  '👯 friends': {
-    'borrowing money again': ['I can’t lend money right now — it’s a rule I’ve made for myself. Hope you understand.', 'I’m saving for something, so I have to say no this time.'],
-    'jokes that hurt': ['Hey, that joke about me actually stung. Can we not do that one anymore?', 'I know you didn’t mean it, but it hurt. Just letting you know.'],
-    'pressure to drink / smoke': ['Nah, I’m good. Still in for the plan though!', 'Not for me — and that’s not a judgement on you.'],
-  },
-  '💑 partner': {
-    'checking my phone': ['I don’t check yours and I need the same trust from you. My phone is mine.', 'If you’re feeling insecure, let’s talk about that — but checking my phone isn’t okay with me.'],
-    'I need space': ['I need a few days to myself. It’s not about you — I’ll reach out on Sunday.', 'I care about us, and I need some alone time to recharge.'],
-    'I’m not ready': ['I’m not ready for that, and I need you to respect it without pressure.', 'No — and if that changes, I’ll be the one to bring it up.'],
-  },
-  '💼 boss / teacher': {
-    'messages after hours': ['I saw this — I’ll pick it up first thing tomorrow morning.', 'I’m logged off for the day. Is this urgent, or can it wait till tomorrow?'],
-    'too much work': ['I want to do this well. Which of my current tasks should I pause to take it on?', 'I’m at capacity this week. Can we push the deadline to Monday?'],
-    'an unfair comment': ['Can I share my side of it? I think there’s context missing.', 'I’d appreciate feedback in private next time.'],
-  },
-}
-
-export function Boundaries() {
-  const whos = Object.keys(SCRIPTS)
-  const [who, setWho] = useState(whos[0])
-  const [sit, setSit] = useState<string | null>(null)
-  const [v, setV] = useState(0)
-  const script = sit ? SCRIPTS[who][sit][v % SCRIPTS[who][sit].length] : ''
-  return (
-    <div className="stack">
-      <Choice
-        options={whos.map((w) => ({ value: w, label: w }))}
-        value={who}
-        onChange={(w) => {
-          setWho(w)
-          setSit(null)
-        }}
-      />
-      <Choice big options={Object.keys(SCRIPTS[who]).map((s) => ({ value: s, label: s }))} value={sit} onChange={(s) => (setSit(s), setV(0), log('tool', { silent: true }))} />
-      {sit && (
-        <Card className="focus-card">
-          <p className="big-q">“{script}”</p>
-          <div className="row gap-sm center">
-            <button type="button" className="btn btn-sm" onClick={() => setV(v + 1)}>
-              🔀 another way
-            </button>
-            <CopyButton text={script} className="btn btn-sm btn-primary a-lime" />
-          </div>
-          <p className="muted">Calm tone. No over-explaining. Then change the topic.</p>
-        </Card>
-      )}
-    </div>
-  )
-}
 
 // ─── Breakup recovery ─────────────────────────────────────────
 const HEAL = [
@@ -123,7 +60,7 @@ export function Breakup() {
               🔥 delete it. feel lighter.
             </button>
           </div>
-          <ToolChips ids={['urge', 'bad-day']} title="still strong?" />
+          <ToolChips ids={['bad-day', 'journal']} title="still strong?" />
         </Card>
       )}
       <button
@@ -249,4 +186,3 @@ export function Convo() {
     </div>
   )
 }
-

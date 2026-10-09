@@ -8,6 +8,7 @@ import './styles/glow.css'
 import './styles/tools.css'
 import './styles/today.css'
 import './styles/home.css'
+import './styles/moods.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

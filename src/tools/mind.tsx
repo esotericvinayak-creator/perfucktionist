@@ -4,8 +4,7 @@ import { WebLink } from '../components/WebView'
 import { log } from '../lib/progress'
 import { usePlus } from '../lib/plus'
 import { pick } from '../lib/storage'
-import { PlusBadge } from '../components/Overlays'
-import { Card, Choice, Columns, Done, Empty, Flow, List, QuickAdd, Stat, Stats, Text, addDays, lastDays, mmss, shortDate, today, uid, useCountdown, useTool, PlusOnly } from './kit'
+import { Card, Choice, Columns, Done, Empty, Flow, List, QuickAdd, Stat, Stats, Text, addDays, lastDays, shortDate, today, uid, useTool, PlusOnly } from './kit'
 import { ToolChip, ToolChips } from './links'
 
 // ─── Daily check-in ───────────────────────────────────────────
@@ -31,7 +30,7 @@ export function CheckInTool() {
       s.mood <= 1
         ? ['bad-day', 'safety-plan']
         : s.mood === 2
-          ? ['thought-flip', 'journal']
+          ? ['worry-box', 'journal']
           : s.sleep && s.sleep < 6
             ? ['wind-down', 'sleep-calc']
             : s.energy === 1
@@ -221,7 +220,7 @@ export function Panic() {
     ) : (
       <div className="stack">
         <Done emoji="🌤️" title="you rode it out. that took strength." />
-        <ToolChips ids={['thought-flip', 'journal']} />
+        <ToolChips ids={['worry-box', 'journal']} />
       </div>
     )
   return (
@@ -257,7 +256,7 @@ export function Panic() {
   )
 }
 
-// ─── Safety plan ──────────────────────────────────────────────
+// ─── Crisis plan (was "safety plan") ─────────────────────────────────────
 const PLAN = [
   { key: 'signs', emoji: '⚠️', title: 'my warning signs', hint: 'not sleeping, skipping meals, “nothing matters” thoughts…' },
   { key: 'calm', emoji: '🫧', title: 'things that calm me', hint: 'shower, music, walk, breathing…' },
@@ -337,94 +336,6 @@ export function SafetyPlan() {
   )
 }
 
-// ─── Thought flipper (CBT thought record) ─────────────────────
-const DISTORTIONS = [
-  ['⚫', 'all-or-nothing', '“not perfect = total fail”'],
-  ['🔮', 'fortune telling', '“it’ll definitely go wrong”'],
-  ['🧠', 'mind reading', '“they think I’m cringe”'],
-  ['🌋', 'catastrophizing', '“this ruins everything”'],
-  ['📏', 'should-ing', '“I should be further by now”'],
-  ['🏷️', 'labeling', '“I’m such a loser”'],
-  ['🔁', 'overgeneralizing', '“this ALWAYS happens”'],
-  ['🎯', 'personalizing', '“it’s all my fault”'],
-  ['🕳️', 'mental filter', 'ignoring every good part'],
-  ['📱', 'comparing', '“everyone’s ahead of me”'],
-] as const
-
-type Flip = { id: string; date: string; thought: string; tags: string[]; balanced: string }
-
-export function ThoughtFlip() {
-  const [history, setHistory] = useTool<Flip[]>('flips', [])
-  const [f, setF] = useState({ situation: '', thought: '', tags: [] as string[], forIt: '', against: '', balanced: '' })
-  const [done, setDone] = useState(false)
-  const set = (p: Partial<typeof f>) => setF((x) => ({ ...x, ...p }))
-  if (done)
-    return (
-      <div className="stack">
-        <Done emoji="🔄" title="flipped.">
-          <p className="flip-result">
-            <s>{f.thought}</s>
-            <br />→ <b>{f.balanced}</b>
-          </p>
-        </Done>
-        <p className="muted">{history.length} thoughts flipped so far.</p>
-        <ToolChips ids={['worry-box', 'journal']} />
-      </div>
-    )
-  return (
-    <Flow
-      doneLabel="flip it ✓"
-      onDone={() => {
-        setHistory([{ id: uid(), date: today(), thought: f.thought, tags: f.tags, balanced: f.balanced }, ...history].slice(0, 50))
-        setDone(true)
-        log('journal')
-      }}
-      steps={[
-        { title: 'what happened?', body: <Text area value={f.situation} onChange={(situation) => set({ situation })} placeholder="got 12/30 in the mock test" />, ready: !!f.situation.trim() },
-        { title: 'what’s the thought in your head?', body: <Text area value={f.thought} onChange={(thought) => set({ thought })} placeholder="I’m going to fail everything" />, ready: !!f.thought.trim() },
-        {
-          title: 'spot the brain trick',
-          body: (
-            <div className="distortions">
-              {DISTORTIONS.map(([e, name, ex]) => {
-                const on = f.tags.includes(name)
-                return (
-                  <button key={name} type="button" className={`pick sm${on ? ' on' : ''}`} onClick={() => set({ tags: on ? f.tags.filter((t) => t !== name) : [...f.tags, name] })}>
-                    <b>
-                      {e} {name}
-                    </b>
-                    <small>{ex}</small>
-                  </button>
-                )
-              })}
-            </div>
-          ),
-          ready: f.tags.length > 0,
-        },
-        {
-          title: 'court case: evidence',
-          body: (
-            <div className="two-up">
-              <Text label="👍 for the thought" area value={f.forIt} onChange={(forIt) => set({ forIt })} placeholder="the mock score" />
-              <Text label="👎 against it" area value={f.against} onChange={(against) => set({ against })} placeholder="it’s a mock. I have 3 weeks. I passed the last two" />
-            </div>
-          ),
-        },
-        {
-          title: 'now a fairer thought',
-          body: (
-            <div className="stack">
-              <Text area value={f.balanced} onChange={(balanced) => set({ balanced })} placeholder="one bad mock isn’t the exam. I know what to fix." />
-              <p className="muted">tip: what would you tell your best friend?</p>
-            </div>
-          ),
-          ready: !!f.balanced.trim(),
-        },
-      ]}
-    />
-  )
-}
-
 // ─── Worry box ────────────────────────────────────────────────
 type Worry = { id: string; text: string; status: 'open' | 'action' | 'released'; action?: string }
 
@@ -439,14 +350,36 @@ export function WorryBox() {
 
   return (
     <div className="stack">
-      <QuickAdd placeholder="what’s on your mind?" onAdd={(text) => setWorries([{ id: uid(), text, status: 'open' }, ...worries])} button="drop in 📦" />
+      <ol className="wb-how" aria-label="How the worry box works">
+        <li className={!open ? 'now' : ''}>
+          <b>1. write it</b>
+          <span>the thing looping in your head</span>
+        </li>
+        <li className={open ? 'now' : ''}>
+          <b>2. sort it</b>
+          <span>can you do anything about it?</span>
+        </li>
+        <li>
+          <b>3. done</b>
+          <span>a small step, or let it go</span>
+        </li>
+      </ol>
+
+      {!open && <QuickAdd placeholder="e.g. what if I fail the maths test" onAdd={(text) => setWorries([{ id: uid(), text, status: 'open' }, ...worries])} button="put it in 📦" />}
       {floating && <p className="float-away">{floating}</p>}
+
       {open && (
         <Card className="focus-card">
+          <p className="kicker">your worry</p>
           <p className="big-q">“{open.text}”</p>
-          <p className="kicker">can you do anything about it?</p>
+          <p>
+            <b>Is there anything you can do about it?</b> Even something tiny.
+          </p>
+          <label className="field">
+            <span>yes: the smallest next step</span>
+            <input value={actionText} onChange={(e) => setActionText(e.target.value)} placeholder="e.g. do 10 practice questions tonight" />
+          </label>
           <div className="row gap-sm wrap">
-            <input className="grow" value={actionText} onChange={(e) => setActionText(e.target.value)} placeholder="yes → the next tiny step" />
             <button
               type="button"
               className="btn btn-primary a-lime"
@@ -457,7 +390,7 @@ export function WorryBox() {
                 log('tool')
               }}
             >
-              plan it
+              save the step
             </button>
             <button
               type="button"
@@ -469,25 +402,30 @@ export function WorryBox() {
                 log('tool')
               }}
             >
-              no → let it float 🎈
+              no, it’s out of my hands → let it go 🎈
             </button>
           </div>
+          <p className="muted">Out of your hands means worrying won’t change it. Letting go isn’t pretending it doesn’t matter; it’s choosing not to carry it right now.</p>
         </Card>
       )}
+
       {actions.length > 0 && (
-        <List
-          items={actions}
-          onRemove={(w) => update(w.id, { status: 'released' })}
-          render={(w) => (
-            <>
-              <b>{w.action}</b>
-              <small className="muted"> — for “{w.text}”</small>
-            </>
-          )}
-        />
+        <>
+          <p className="kicker">your next steps · tick them off when done</p>
+          <List
+            items={actions}
+            onRemove={(w) => update(w.id, { status: 'released' })}
+            render={(w) => (
+              <>
+                <b>{w.action}</b>
+                <small className="muted"> — for “{w.text}”</small>
+              </>
+            )}
+          />
+        </>
       )}
-      {!open && !actions.length && <Empty emoji="📦">Box is empty. Drop a worry in when it’s loud.</Empty>}
-      {released > 0 && <p className="muted">🎈 {released} worries let go</p>}
+      {!open && !actions.length && <Empty emoji="📦">Nothing in the box. When a worry keeps looping, write it here and sort it: act on it, or let it go.</Empty>}
+      {released > 0 && <p className="muted">🎈 {released} {released === 1 ? 'worry' : 'worries'} let go</p>}
     </div>
   )
 }
@@ -582,18 +520,88 @@ const PACKS: { id: string; emoji: string; name: string; plus: boolean; prompts: 
   },
 ]
 
-type Entry = { id: string; date: string; prompt: string; text: string }
+/** `title` and `updatedAt` came later: older entries only have a prompt, which doubles as their title. */
+type Entry = { id: string; date: string; prompt: string; text: string; title?: string; updatedAt?: number }
+type Draft = { id?: string; title: string; prompt: string; text: string }
+type Hype = { id: string; text: string; date: string }
+
+const EMPTY_DRAFT: Draft = { title: '', prompt: '', text: '' }
+const titleOf = (e: Entry) => e.title || e.prompt || 'untitled'
+
+function Editor({ draft, setDraft, onSave, onClose }: { draft: Draft; setDraft: (d: Draft) => void; onSave: () => void; onClose: () => void }) {
+  const plus = usePlus()
+  const [pack, setPack] = useState<(typeof PACKS)[number] | null>(null)
+  return (
+    <div className="jr-editor">
+      <input className="jr-title" value={draft.title} maxLength={80} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder={draft.prompt ? 'title (optional)' : 'title'} aria-label="Title" />
+      {draft.prompt ? (
+        <p className="jr-prompt">
+          {draft.prompt}{' '}
+          <button type="button" className="linkish muted" onClick={() => setDraft({ ...draft, prompt: pack ? pick(pack.prompts, draft.prompt) : '' })}>
+            {pack ? 'another' : 'remove'}
+          </button>
+          {pack && (
+            <>
+              {' · '}
+              <button type="button" className="linkish muted" onClick={() => setDraft({ ...draft, prompt: '' })}>
+                no prompt
+              </button>
+            </>
+          )}
+        </p>
+      ) : (
+        <details className="jr-prompts">
+          <summary>need a prompt?</summary>
+          <div className="row gap-sm wrap">
+            {PACKS.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className="chip"
+                disabled={p.plus && !plus.active}
+                onClick={() => {
+                  setPack(p)
+                  setDraft({ ...draft, prompt: pick(p.prompts) })
+                }}
+              >
+                {p.emoji} {p.name} {p.plus && !plus.active && '🔒'}
+              </button>
+            ))}
+          </div>
+        </details>
+      )}
+      <textarea
+        className="jr-text"
+        value={draft.text}
+        autoFocus
+        onChange={(e) => setDraft({ ...draft, text: e.target.value })}
+        placeholder="no grammar. no audience. just you."
+        rows={10}
+        aria-label="Entry"
+      />
+      <div className="row gap-sm wrap">
+        <button type="button" className="btn btn-primary a-lime" disabled={!draft.text.trim()} onClick={onSave}>
+          {draft.id ? 'save changes' : 'save entry'}
+        </button>
+        <button type="button" className="btn btn-ghost" onClick={onClose}>
+          {draft.text.trim() ? 'close (draft kept)' : 'close'}
+        </button>
+        <span className="muted jr-count">{draft.text.trim() ? `${draft.text.trim().split(/\s+/).length} words` : ''}</span>
+      </div>
+    </div>
+  )
+}
 
 export function Journal() {
-  const plus = usePlus()
   const [entries, setEntries] = useTool<Entry[]>('journal', [])
+  const [lines] = useTool<Record<string, string>>('one-line', {})
+  const [, setHype] = useTool<Hype[]>('hype', [])
   const [pin, setPin] = useTool<string>('journal-pin', '')
+  const [welcomed, setWelcomed] = useTool<boolean>('journal-welcomed', false)
+  const [draft, setDraft] = useTool<Draft | null>('journal-draft', null)
   const [unlocked, setUnlocked] = useState(false)
   const [tryPin, setTryPin] = useState('')
-  const [pack, setPack] = useState(PACKS[0])
-  const [prompt, setPrompt] = useState(PACKS[0].prompts[0])
-  const [text, setText] = useState('')
-  const [view, setView] = useState<'write' | 'past'>('write')
+  const [hyped, setHyped] = useState<string | null>(null)
 
   if (pin && !unlocked)
     return (
@@ -615,75 +623,92 @@ export function Journal() {
       </Card>
     )
 
-  return (
-    <div className="stack">
-      <Choice
-        options={[
-          { value: 'write', label: '✍️ write' },
-          { value: 'past', label: `📚 past (${entries.length})` },
-        ]}
-        value={view}
-        onChange={setView}
-      />
-      {view === 'write' ? (
-        <>
-          <div className="row gap-sm wrap">
-            {PACKS.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                className={`chip${pack.id === p.id ? ' on' : ''}`}
-                disabled={p.plus && !plus.active}
-                onClick={() => {
-                  setPack(p)
-                  setPrompt(p.prompts[0])
-                }}
-              >
-                {p.emoji} {p.name} {p.plus && !plus.active && '🔒'}
-              </button>
-            ))}
-          </div>
-          <Card className="prompt-card">
-            <p className="big-q">{prompt}</p>
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setPrompt(pick(pack.prompts, prompt))}>
-              🔀 another prompt
-            </button>
-          </Card>
-          <textarea className="journal-area" value={text} onChange={(e) => setText(e.target.value)} placeholder="no grammar. no audience. just you." rows={7} />
+  // First visit with nothing written anywhere: point beginners at the easiest start.
+  if (!welcomed && !entries.length && !Object.keys(lines).length)
+    return (
+      <Card className="jr-welcome">
+        <p className="big-q">New to journaling?</p>
+        <p>Start with One Line a Day: one sentence about today, nothing more. It takes ten seconds and it’s how most people build the habit.</p>
+        <div className="row gap-sm wrap">
+          <a className="btn btn-primary a-lime" href="#/tools/one-line" onClick={() => setWelcomed(true)}>
+            start with one line
+          </a>
           <button
             type="button"
-            className="btn btn-primary a-lime"
-            disabled={!text.trim()}
+            className="btn btn-ghost"
             onClick={() => {
-              setEntries([{ id: uid(), date: today(), prompt, text: text.trim() }, ...entries])
-              setText('')
-              log('journal')
-              setView('past')
+              setWelcomed(true)
+              setDraft({ ...EMPTY_DRAFT })
             }}
           >
-            save entry
+            I’ll write a full entry
           </button>
-          {!plus.active && (
-            <p className="muted">
-              <PlusBadge small /> 4 more prompt packs: heartbreak, future, family, anxiety
-            </p>
-          )}
-        </>
-      ) : entries.length ? (
-        <List
-          items={entries}
-          onRemove={(e) => confirm('Delete this entry?') && setEntries(entries.filter((x) => x.id !== e.id))}
-          render={(e) => (
-            <details>
-              <summary>
-                <b>{shortDate(e.date)}</b> · {e.prompt}
-              </summary>
-              <p className="entry-text">{e.text}</p>
-            </details>
-          )}
-        />
+        </div>
+      </Card>
+    )
+
+  if (draft)
+    return (
+      <Editor
+        draft={draft}
+        setDraft={setDraft}
+        onClose={() => setDraft(draft.text.trim() ? draft : null)}
+        onSave={() => {
+          const now = Date.now()
+          const base = { title: draft.title.trim(), prompt: draft.prompt, text: draft.text.trim(), updatedAt: now }
+          if (draft.id) setEntries(entries.map((e) => (e.id === draft.id ? { ...e, ...base } : e)))
+          else {
+            setEntries([{ id: uid(), date: today(), ...base }, ...entries])
+            log('journal')
+          }
+          setDraft(null)
+        }}
+      />
+    )
+
+  const toHype = (e: Entry) => {
+    const text = e.text.length > 220 ? `${e.text.slice(0, 217)}…` : e.text
+    setHype((h) => [{ id: uid(), text: e.title ? `${e.title}: ${text}` : text, date: e.date }, ...h])
+    setHyped(e.id)
+    log('tool', { silent: true })
+  }
+
+  return (
+    <div className="stack">
+      <button type="button" className="btn btn-primary a-lime big-cta jr-new" onClick={() => setDraft({ ...EMPTY_DRAFT })}>
+        ✍️ new entry
+      </button>
+      {entries.length ? (
+        <ul className="jr-list">
+          {entries.map((e) => (
+            <li key={e.id}>
+              <button type="button" className="jr-open" onClick={() => setDraft({ id: e.id, title: e.title ?? '', prompt: e.prompt, text: e.text })}>
+                <small>{shortDate(e.date)}</small>
+                <b>{titleOf(e)}</b>
+                <span>{e.text}</span>
+              </button>
+              <div className="jr-actions">
+                {hyped === e.id ? (
+                    <span className="muted">added to your hype file ✓</span>
+                  ) : (
+                    <span className="hint">
+                      <button type="button" className="btn btn-sm btn-ghost" onClick={() => toHype(e)} aria-describedby={`hype-why-${e.id}`}>
+                        🏆 turn into hype file
+                      </button>
+                      <span className="hint-tip" role="tooltip" id={`hype-why-${e.id}`}>
+                        Your hype file is a stash of wins and kind words. On a bad day, open it and read proof that you’re doing better than you think.
+                      </span>
+                    </span>
+                  )}
+                <button type="button" className="linkish muted" onClick={() => confirm('Delete this entry?') && setEntries(entries.filter((x) => x.id !== e.id))}>
+                  delete
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
       ) : (
-        <Empty emoji="📓">No entries yet.</Empty>
+        <Empty emoji="📓">No entries yet. Tap “new entry”, add a title or a prompt, and write.</Empty>
       )}
       <details className="pin-set">
         <summary>{pin ? '🔒 PIN is on' : '🔓 add a PIN'}</summary>
@@ -713,7 +738,10 @@ export function OneLine() {
         onSubmit={(e) => {
           e.preventDefault()
           if (!v.trim()) return
-          if (!lines[today()]) log('journal')
+          if (!lines[today()]) {
+            log('journal')
+            log('gratitude', { silent: true })
+          }
           setLines({ ...lines, [today()]: v.trim() })
         }}
       >
@@ -743,7 +771,6 @@ export function OneLine() {
 }
 
 // ─── Hype file ────────────────────────────────────────────────
-type Hype = { id: string; text: string; date: string }
 
 export function HypeFile() {
   const [items, setItems] = useTool<Hype[]>('hype', [])
@@ -765,7 +792,7 @@ export function HypeFile() {
       {items.length ? (
         <List items={items} onRemove={(h) => setItems(items.filter((x) => x.id !== h.id))} render={(h) => h.text} />
       ) : (
-        <Empty emoji="🏆">Screenshot-worthy moments go here. Future you will need them.</Empty>
+        <Empty emoji="🏆">Save compliments, wins and kind messages here, or turn a journal entry into one. On a bad day, tap “read one”.</Empty>
       )}
     </div>
   )
@@ -965,95 +992,6 @@ export function Affirm() {
           </ul>
         </details>
       )}
-    </div>
-  )
-}
-
-// ─── Urge surfer ──────────────────────────────────────────────
-const URGES = ['📱 doomscroll', '💨 vape / smoke', '🍔 junk food', '🔞 porn', '💬 text my ex', '🛍️ impulse shop', '🎮 one more game']
-const SURF_PROMPTS = [
-  'Notice where you feel the urge in your body.',
-  'Breathe into that spot. Don’t fight it.',
-  'Urges peak and fall, like waves. You’re riding it.',
-  'Name it: “I’m having the urge to…”. That’s all it is.',
-  'It’s getting weaker even if it doesn’t feel like it.',
-  'You don’t have to act on a feeling.',
-  'Almost there. The wave is breaking.',
-]
-
-export function Urge() {
-  const [wins, setWins] = useTool<number>('urge-wins', 0)
-  const [urge, setUrge] = useState('')
-  const [before, setBefore] = useState(7)
-  const [after, setAfter] = useState(4)
-  const [phase, setPhase] = useState<'pick' | 'surf' | 'rate' | 'done'>('pick')
-  const t = useCountdown(() => setPhase('rate'))
-  const prompt = SURF_PROMPTS[Math.min(SURF_PROMPTS.length - 1, Math.floor((t.total - t.left) / 45))]
-
-  if (phase === 'pick')
-    return (
-      <div className="stack">
-        <Choice big options={URGES.map((u) => ({ value: u, label: u }))} value={urge} onChange={setUrge} />
-        {urge && (
-          <div className="slider-q">
-            <p className="kicker">how strong? {before}/10</p>
-            <input type="range" min={1} max={10} value={before} onChange={(e) => setBefore(Number(e.target.value))} aria-label="Urge strength" />
-          </div>
-        )}
-        <button
-          type="button"
-          className="btn btn-primary a-cyan big-cta"
-          disabled={!urge}
-          onClick={() => {
-            t.start(5 * 60)
-            setPhase('surf')
-          }}
-        >
-          🌊 surf it — 5 minutes
-        </button>
-        {wins > 0 && <p className="muted">🏄 {wins} urges surfed</p>}
-      </div>
-    )
-  if (phase === 'surf')
-    return (
-      <div className="surf">
-        <div className="waves" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-        <p className="big-num">{mmss(t.left)}</p>
-        <p className="big-q">{prompt}</p>
-        <button type="button" className="btn btn-sm btn-ghost" onClick={() => (t.stop(), setPhase('rate'))}>
-          it passed already
-        </button>
-      </div>
-    )
-  if (phase === 'rate')
-    return (
-      <div className="stack">
-        <p className="big-q">how strong is it now? {after}/10</p>
-        <input type="range" min={0} max={10} value={after} onChange={(e) => setAfter(Number(e.target.value))} aria-label="Urge strength now" />
-        <button
-          type="button"
-          className="btn btn-primary a-lime"
-          onClick={() => {
-            setWins(wins + 1)
-            log('tool')
-            setPhase('done')
-          }}
-        >
-          done ✓
-        </button>
-      </div>
-    )
-  return (
-    <div className="stack">
-      <Done emoji="🏄" title={after < before ? `${before} → ${after}. you surfed it.` : 'you didn’t act on it. that’s the win.'} />
-      <ToolChips ids={['quit', 'dopamine']} />
-      <button type="button" className="btn btn-sm" onClick={() => setPhase('pick')}>
-        surf another
-      </button>
     </div>
   )
 }
