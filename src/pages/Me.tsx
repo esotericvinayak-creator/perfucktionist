@@ -249,6 +249,15 @@ export default function Me() {
         </a>
       )}
 
+      <a className="kn-entry" href="#/kanak">
+        <span>🪙</span>
+        <span className="grow">
+          <b>Kanak · कनक</b>
+          <small>your patterns, score and gold story</small>
+        </span>
+        <span className="plan-go">→</span>
+      </a>
+
       <section className="me2-sec">
         <p className="kicker">today</p>
         <div className="me2-chips">

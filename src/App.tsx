@@ -23,6 +23,7 @@ import Fam from './pages/Fam'
 import Green from './pages/Green'
 import Explore from './pages/Explore'
 import Journeys from './pages/Journeys'
+import Kanak from './pages/Kanak'
 import Library from './pages/Library'
 import Listen from './pages/Listen'
 import Me from './pages/Me'
@@ -54,6 +55,7 @@ const pages: Record<string, ComponentType> = {
   '/green': Green,
   '/me': Me,
   '/journeys': Journeys,
+  '/kanak': Kanak,
   '/plus': Plus,
   '/get': Get,
   '/tools': Tools,

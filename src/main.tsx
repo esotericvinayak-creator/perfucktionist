@@ -9,6 +9,7 @@ import './styles/tools.css'
 import './styles/today.css'
 import './styles/home.css'
 import './styles/moods.css'
+import './styles/kanak.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

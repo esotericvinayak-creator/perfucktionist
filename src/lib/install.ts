@@ -33,11 +33,11 @@ export const inNativeApp = () => typeof window !== 'undefined' && !!(window as W
 export const alreadyInstalled = () => isStandalone() || inNativeApp()
 
 /**
- * Android visitors on the website get the landing page and the APK, not the web app: on Android
- * the app is the APK. iPhone and computers can't install it, so they keep the web app.
- * The safety pages stay open on the website for everyone (see PUBLIC in App.tsx).
+ * Used to send Android visitors on the website to the APK instead of the web app. Now the whole app
+ * works on the web for everyone (Android included), and the APK stays an optional download (#/get).
+ * Kept as a switch: return `!inNativeApp() && detectPlatform() === 'android'` to bring the old rule back.
  */
-export const appOnly = () => !inNativeApp() && detectPlatform() === 'android'
+export const appOnly = () => false
 
 /** Chrome and Edge fire this before showing their own install prompt; we save it and use our own button. */
 type InstallPrompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }> }

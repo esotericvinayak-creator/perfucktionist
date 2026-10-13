@@ -1,0 +1,116 @@
+/* ═════════════════════════ Kanak (कनक, gold) ═════════════════════════
+   Its own look: deep warm black, real-gold gradients, a slow shimmer. Works in both app themes. */
+.kanak {
+  --gold-1: #fff3c4;
+  --gold-2: #f5c84c;
+  --gold-3: #c98b1b;
+  --gold-4: #7a4d06;
+  --kn-bg: #120d05;
+  --kn-surface: #1c150a;
+  --kn-ink: #fff7e0;
+  --kn-dim: #d9c79a;
+  --gold: linear-gradient(120deg, var(--gold-3), var(--gold-2) 30%, var(--gold-1) 50%, var(--gold-2) 70%, var(--gold-3));
+  max-width: 680px;
+  display: grid;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 20px clamp(14px, 4vw, 26px) 26px;
+  border-radius: 30px;
+  background: radial-gradient(120% 60% at 80% -10%, rgba(245, 200, 76, 0.22), transparent 60%), radial-gradient(80% 50% at 0% 100%, rgba(201, 139, 27, 0.18), transparent 60%), var(--kn-bg);
+  border: 1.5px solid rgba(245, 200, 76, 0.35);
+  color: var(--kn-ink);
+  --ink: var(--kn-ink);
+  --ink-dim: var(--kn-dim);
+  --ink-faint: #a8956a;
+  --surface: var(--kn-surface);
+  --line: rgba(245, 200, 76, 0.45);
+}
+.kn-hero { display: grid; gap: 8px; }
+.kn-badge { justify-self: start; padding: 5px 12px; border-radius: 999px; background: var(--gold); background-size: 200% 100%; color: #2a1b02; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; animation: kn-shine 6s linear infinite; }
+.kn-hero h1 { font-size: clamp(2.2rem, 9vw, 3.4rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+.kn-hero h1 .serif { background: var(--gold); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: kn-shine 6s linear infinite; }
+.kn-hero p { color: var(--kn-dim); }
+@keyframes kn-shine { to { background-position: 200% 0; } }
+
+.kn-btn { background: var(--gold) !important; background-size: 200% 100% !important; color: #2a1b02 !important; border-color: var(--gold-4) !important; box-shadow: 0 4px 0 var(--gold-4) !important; font-weight: 800; animation: kn-shine 6s linear infinite; }
+.kanak .big-cta { width: 100%; }
+
+.kn-card { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 20px; background: var(--kn-surface); border: 1.5px solid rgba(245, 200, 76, 0.28); }
+.kn-card b { display: block; font-size: 1.05rem; }
+.kn-card p, .kn-card small { color: var(--kn-dim); }
+.kn-card small { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.kn-emoji { font-size: 1.8rem; line-height: 1; }
+.kn-list { display: grid; gap: 8px; }
+
+.kn-locked { display: grid; gap: 14px; }
+.kn-tease { position: relative; display: grid; gap: 8px; }
+.kn-tease .kn-card { display: grid; }
+.kn-card.blur > * { filter: blur(5px); user-select: none; }
+.kn-lock { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.6rem; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6)); }
+.kn-perks { list-style: none; display: grid; gap: 8px; }
+.kn-perks li { color: var(--kn-dim); }
+.kn-perks b { color: var(--kn-ink); }
+.kn-code { display: grid; gap: 6px; padding: 14px; border-radius: 18px; border: 1.5px dashed rgba(245, 200, 76, 0.45); }
+.kn-code label { font-weight: 700; }
+.kn-code input { flex: 1; min-width: 0; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; background: var(--kn-bg); color: var(--kn-ink); border-color: rgba(245, 200, 76, 0.5); }
+.kn-bad { color: #ff8a7a; font-size: 0.9rem; }
+
+.kn-via { font-size: 0.85rem; color: var(--kn-dim); }
+.kn-sample { justify-self: start; padding: 3px 10px; border-radius: 999px; background: rgba(245, 200, 76, 0.18); color: var(--gold-1); font-size: 0.78rem; }
+.kn-gaps { display: grid; gap: 8px; }
+.kn-gaps .chip { background: var(--kn-bg); }
+
+.kn-top { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
+.kn-ring { position: relative; width: 132px; height: 132px; display: grid; place-items: center; }
+.kn-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.kn-ring circle { fill: none; stroke-width: 10; }
+.kn-ring-bg { stroke: rgba(245, 200, 76, 0.15); }
+.kn-ring-fg { stroke: var(--gold-2); stroke-linecap: round; filter: drop-shadow(0 0 6px rgba(245, 200, 76, 0.6)); }
+.kn-ring b { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-top: -10px; font-variant-numeric: tabular-nums; }
+.kn-ring small { position: absolute; bottom: 34px; font-size: 0.6rem; font-family: var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--kn-dim); }
+.kn-parts { display: grid; gap: 8px; }
+.kn-parts div { display: grid; grid-template-columns: 1fr 2fr auto; gap: 8px; align-items: center; font-size: 0.82rem; color: var(--kn-dim); }
+.kn-parts i { height: 6px; border-radius: 3px; background: rgba(245, 200, 76, 0.15); overflow: hidden; }
+.kn-parts em { display: block; height: 100%; background: var(--gold-2); border-radius: 3px; }
+.kn-parts b { color: var(--kn-ink); font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
+@media (max-width: 380px) { .kn-top { grid-template-columns: 1fr; justify-items: center; } .kn-parts { width: 100%; } }
+
+.kn-sec { display: grid; gap: 10px; }
+.kanak .kicker { color: var(--gold-2); }
+.kn-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 560px) { .kn-stats { grid-template-columns: repeat(4, 1fr); } }
+.kn-stats div { display: grid; gap: 2px; padding: 12px; border-radius: 16px; background: var(--kn-surface); border: 1.5px solid rgba(245, 200, 76, 0.2); }
+.kn-stats b { font-size: 1.25rem; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.kn-stats span { font-size: 0.74rem; color: var(--kn-dim); }
+.kn-plan { display: grid; gap: 8px; padding-left: 1.3em; }
+.kn-plan li { padding-left: 4px; }
+.kn-plan li::marker { color: var(--gold-2); font-weight: 800; }
+.kn-lockagain { justify-self: center; font-size: 0.85rem; }
+
+/* the story */
+.kn-story { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 24px; background: radial-gradient(90% 60% at 50% 0%, rgba(245, 200, 76, 0.35), transparent 60%), radial-gradient(70% 50% at 50% 110%, rgba(201, 139, 27, 0.4), transparent 60%), #0d0903; color: #fff7e0; }
+.kn-bars { position: absolute; top: max(14px, env(safe-area-inset-top)); left: 14px; right: 56px; display: flex; gap: 4px; }
+.kn-bars span { flex: 1; height: 3px; border-radius: 2px; background: rgba(255, 247, 224, 0.25); overflow: hidden; position: relative; }
+.kn-bars span.past { background: #f5c84c; }
+.kn-bars span.now::after { content: ''; position: absolute; inset: 0; background: #f5c84c; transform-origin: left; animation: kn-bar 4.5s linear forwards; }
+.kn-bars span.now.paused::after { animation-play-state: paused; }
+@keyframes kn-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.kn-x { position: absolute; top: max(6px, env(safe-area-inset-top)); right: 10px; z-index: 3; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255, 247, 224, 0.12); color: inherit; font-size: 1.1rem; }
+.kn-tap { position: absolute; top: 40px; bottom: 120px; width: 50%; border: 0; background: transparent; z-index: 1; }
+.kn-tap.left { left: 0; }
+.kn-tap.right { right: 0; }
+.kn-slide { position: relative; z-index: 0; display: grid; gap: 14px; justify-items: center; text-align: center; max-width: 460px; animation: kn-in 0.6s cubic-bezier(0.2, 1, 0.3, 1); }
+.kn-slide small { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #d9c79a; }
+.kn-slide b { font-size: clamp(3.2rem, 18vw, 6rem); font-weight: 800; letter-spacing: -0.05em; line-height: 0.95; background: linear-gradient(120deg, #c98b1b, #f5c84c 35%, #fff3c4 50%, #f5c84c 65%, #c98b1b); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: kn-shine 5s linear infinite; word-break: break-word; }
+.kn-slide p { font-size: 1.1rem; line-height: 1.5; color: #fff7e0; }
+.kn-slide em { font-style: normal; font-size: 0.75rem; padding: 2px 10px; border-radius: 999px; background: rgba(245, 200, 76, 0.2); }
+@keyframes kn-in { from { opacity: 0; transform: translateY(24px) scale(0.96); } to { opacity: 1; transform: none; } }
+.kn-story-foot { position: absolute; bottom: max(28px, env(safe-area-inset-bottom)); left: 20px; right: 20px; z-index: 2; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+@media (prefers-reduced-motion: reduce) { .kanak *, .kn-story * { animation: none !important; } }
+
+/* the gold entry points elsewhere in the app */
+.kn-entry { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 20px; text-decoration: none; color: #fff7e0; background: radial-gradient(120% 120% at 100% 0%, rgba(245, 200, 76, 0.35), transparent 60%), #1a1207; border: 1.5px solid rgba(245, 200, 76, 0.5); }
+.kn-entry .grow { display: grid; gap: 1px; min-width: 0; }
+.kn-entry b { font-size: 1.1rem; background: linear-gradient(120deg, #f5c84c, #fff3c4, #f5c84c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.kn-entry small { color: #d9c79a; }
+.kn-entry > span:first-child { font-size: 1.7rem; }

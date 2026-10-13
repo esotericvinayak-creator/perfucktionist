@@ -201,6 +201,14 @@ export default function Explore() {
         </section>
       ) : (
         <>
+          <a className="kn-entry" href="#/kanak">
+            <span>🪙</span>
+            <span className="grow">
+              <b>Kanak · कनक</b>
+              <small>your life, in gold: what really lifts your mood, your score, your story</small>
+            </span>
+            <span className="plan-go">→</span>
+          </a>
           <div className="disc-cards">
             {spot && (
               <a className="disc-card first" style={{ ['--a' as string]: 'var(--pink)' }} href={`#${spot.path}`}>
