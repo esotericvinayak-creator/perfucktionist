@@ -20,7 +20,8 @@
     "db:push": "node scripts/with-secrets.mjs prd node scripts/db-push.mjs",
     "secrets:android": "node scripts/doppler-android.mjs",
     "db:check": "node scripts/with-secrets.mjs prd node scripts/db-check.mjs",
-    "pay": "node scripts/with-secrets.mjs prd node scripts/pay.mjs"
+    "pay": "node scripts/with-secrets.mjs prd node scripts/pay.mjs",
+    "auth:no-confirm": "node scripts/with-secrets.mjs prd node scripts/auth-no-confirm.mjs"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",

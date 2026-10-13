@@ -242,7 +242,11 @@ export async function signUp(name: string, email: string, password: string): Pro
     const { data, error } = await c.auth.signUp({ email, password, options: { data: { name }, emailRedirectTo: redirectTo('signup') } })
     if (error) return { ok: false, error: friendly(error.message) }
     update(() => ({ name }))
-    return { ok: true, confirmEmail: !data.session }
+    if (data.session) return { ok: true }
+    // No email step: sign straight in. This only fails if "Confirm email" is still switched on in the
+    // Supabase project (npm run auth:no-confirm turns it off); then we fall back to "check your inbox".
+    const login = await c.auth.signInWithPassword({ email, password })
+    return { ok: true, confirmEmail: !!login.error }
   }
   const accounts = readAccounts()
   if (accounts[email]) return { ok: false, error: 'That email already has an account on this device — log in instead.' }
