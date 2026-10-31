@@ -1,7 +1,7 @@
 import { Icon } from './Icon'
 import { TABS, tabFor } from './Nav'
 
-/** App-style bottom bar on phones — the same 3 places as the top nav on desktop. */
+/** App-style bottom bar on phones — the same places as the top nav on desktop. */
 export function TabBar({ route }: { route: string }) {
   const tab = tabFor(route)
   return (

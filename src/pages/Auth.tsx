@@ -1,12 +1,17 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { Download, Eye, EyeOff, LogIn, Mail } from 'lucide-react'
-import { HeroPreview, LandingMore } from '../components/Landing'
+import { Eye, EyeOff, LogIn, Mail } from 'lucide-react'
 import { Logo } from '../components/Nav'
-import { APP_SCHEME, appHandOver, clearNotice, cloud, googleAvailable, logIn, logInWithGoogle, resendConfirmation, sendReset, setNewPassword, signUp, useAuth } from '../lib/auth'
-import { alreadyInstalled, appOnly, detectPlatform, inNativeApp } from '../lib/install'
+import { APP_SCHEME, appHandOver, clearNotice, googleAvailable, logIn, logInWithGoogle, resendConfirmation, sendReset, setNewPassword, signUp, useAuth } from '../lib/auth'
+import { detectPlatform, inNativeApp } from '../lib/install'
 
-type Screen = 'welcome' | 'signup' | 'login' | 'forgot' | 'sent' | 'confirm'
+type Screen = 'signup' | 'login' | 'forgot' | 'sent' | 'confirm'
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+/** Where to go after logging in: #/login?next=/plus comes back to the pass. */
+function leave() {
+  const next = new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('next')
+  window.location.hash = next?.startsWith('/') ? next : '/'
+}
 
 function strength(p: string) {
   let s = 0
@@ -85,7 +90,7 @@ function Shell({ children, onBack, step, steps }: { children: ReactNode; onBack?
       </div>
       <div className="auth-body">{children}</div>
       <p className="auth-sos">
-        need help right now? <a href="tel:112">112</a> · <a href="#/tools/panic">panic SOS</a> · <a href="tel:14416">14416</a>
+        need help right now? <a href="tel:112">112</a> · <a href="#/shield">safety tools</a> · <a href="tel:14416">14416</a>
       </p>
     </div>
   )
@@ -116,7 +121,7 @@ function Signup({ onBack, onLogin, onConfirm }: { onBack: () => void; onLogin: (
       return
     }
     if (r.confirmEmail) onConfirm(email.trim())
-    else window.location.hash = '/'
+    else leave()
   }
 
   return (
@@ -146,12 +151,12 @@ function Signup({ onBack, onLogin, onConfirm }: { onBack: () => void; onLogin: (
               <span className="box">{ok ? '✓' : ''}</span>
               <span>I’m 18 or older, or my parent or guardian knows I’m using perfectish and is okay with it.</span>
             </label>
-            <p className="muted">your journal, check-ins and progress stay private to you.</p>
+            <p className="muted">your account is only for the pass. what you check stays on your phone.</p>
           </>
         )}
         {error && <p className="error-text">{error}</p>}
         <button type="submit" className="btn btn-primary a-lime big-cta" disabled={!valid || busy}>
-          {busy ? 'creating…' : step < 1 ? 'next →' : 'create my account 🌱'}
+          {busy ? 'creating…' : step < 1 ? 'next →' : 'create my account'}
         </button>
         {step === 0 && (
           <button type="button" className="linkish muted" onClick={onLogin}>
@@ -182,7 +187,7 @@ function Login({ onBack, onSignup, onForgot }: { onBack: () => void; onSignup: (
           const r = await logIn(email, pw)
           setBusy(false)
           if (!r.ok) setError(r.error)
-          else (clearNotice(), (window.location.hash = '/'))
+          else (clearNotice(), leave())
         }}
       >
         <NoticeBar />
@@ -272,87 +277,13 @@ export function NewPassword() {
   )
 }
 
-/** Android visitors on the website: the app is the APK, so the landing page leads there. */
-function DownloadActions() {
-  return (
-    <div className="aw-actions">
-      <a className="btn btn-primary a-lime big-cta" href="#/get">
-        <Download size={18} /> download the app — free
-      </a>
-      <p className="aw-note">Android app · about 8 MB · no Play Store needed</p>
-    </div>
-  )
-}
-
-function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => void; onLogin: () => void; appOnly?: boolean }) {
-  const auth = useAuth()
-  return (
-    <div className="auth-welcome">
-      <header className="aw-top">
-        <Logo />
-        <a className="sos-chip" href="tel:112">
-          <span className="sos-dot" aria-hidden="true" />
-          SOS 112
-        </a>
-      </header>
-      <section className="home-hero page aw-hero">
-        <div className="aw-copy">
-        <p className="kicker">perfection is a scam</p>
-        <h1 className="aw-promise">
-          Do the{' '}
-          <span className="aw-under">
-            scary
-            <svg className="scribble" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M4 26 C 60 8, 110 34, 170 18 S 280 6, 330 22 S 380 30, 396 14" />
-            </svg>
-          </span>{' '}
-          thing <span className="serif">before you feel ready.</span>
-        </h1>
-        <p className="lede">Get ready for your exam or interview, practise out loud, and see what actually works for you. For students and freshers who keep waiting to feel ready.</p>
-        <NoticeBar />
-        {download && auth.status === 'in' && (
-          <p className="aw-signed">
-            ✓ you’re signed in as <b>{auth.user?.email}</b>. Open the perfectish app and log in there to carry on.
-          </p>
-        )}
-        {download ? (
-          <DownloadActions />
-        ) : (
-          <div className="aw-actions">
-            <button type="button" className="btn btn-primary a-lime big-cta" onClick={onSignup}>
-              start free →
-            </button>
-            <button type="button" className="linkish aw-login" onClick={onLogin}>
-              I already have an account
-            </button>
-          </div>
-        )}
-        <p className="auth-sos">
-          need help right now? <a href="tel:112">112</a> · <a href="#/tools/panic">panic SOS</a> · <a href="tel:14416">14416 (mental health)</a>
-          {!alreadyInstalled() && !download && (
-            <>
-              {' · '}
-              <a href="#/get">get the app</a>
-            </>
-          )}
-        </p>
-        </div>
-        <HeroPreview />
-      </section>
-      {/* Android visitors came to get the app: the hero and the download button are the whole page. */}
-      {!download && <LandingMore onSignup={onSignup} onLogin={onLogin} />}
-      {!cloud && !download && <p className="auth-preview">preview mode: accounts are saved on this device until cloud accounts are connected.</p>}
-    </div>
-  )
-}
-
 export default function Auth() {
   const auth = useAuth()
-  const [screen, setScreen] = useState<Screen>('welcome')
+  const [screen, setScreen] = useState<Screen>('signup')
   // Back from an email link: go straight to logging in (or asking for a new reset link).
   const notice = auth.notice?.text
   useEffect(() => {
-    if (notice && !appOnly()) setScreen(/reset link/i.test(notice) ? 'forgot' : 'login')
+    if (notice) setScreen(/reset link/i.test(notice) ? 'forgot' : 'login')
   }, [notice])
   const [email, setEmail] = useState('')
   useEffect(() => {
@@ -364,11 +295,8 @@ export default function Auth() {
   }, [screen])
 
   if (auth.recovering) return <NewPassword />
-  // Android on the website: landing page and download only. A password reset link from the app
-  // still lands here and works (above), since email links open in the browser.
-  if (appOnly()) return <Welcome onSignup={() => undefined} onLogin={() => undefined} appOnly />
-  if (screen === 'signup') return <Signup onBack={() => setScreen('welcome')} onLogin={() => setScreen('login')} onConfirm={(e) => (setEmail(e), setScreen('confirm'))} />
-  if (screen === 'login') return <Login onBack={() => setScreen('welcome')} onSignup={() => setScreen('signup')} onForgot={() => setScreen('forgot')} />
+  if (screen === 'signup') return <Signup onBack={leave} onLogin={() => setScreen('login')} onConfirm={(e) => (setEmail(e), setScreen('confirm'))} />
+  if (screen === 'login') return <Login onBack={() => setScreen('signup')} onSignup={() => setScreen('signup')} onForgot={() => setScreen('forgot')} />
   if (screen === 'forgot') return <Forgot onBack={() => setScreen('login')} onSent={(e) => (setEmail(e), setScreen('sent'))} />
   if (screen === 'sent' || screen === 'confirm')
     return (
@@ -386,7 +314,7 @@ export default function Auth() {
         </div>
       </Shell>
     )
-  return <Welcome onSignup={() => setScreen('signup')} onLogin={() => setScreen('login')} />
+  return null
 }
 
 /**

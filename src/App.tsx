@@ -1,92 +1,69 @@
 import { useEffect, type ComponentType } from 'react'
 import { Footer } from './components/Footer'
-import { MiniPlayer } from './components/MiniPlayer'
 import { Nav } from './components/Nav'
-import { ShareHost, Toaster } from './components/Overlays'
+import { Toaster } from './components/Overlays'
 import { TabBar } from './components/TabBar'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { WebView } from './components/WebView'
-import { PlayerProvider } from './context/Player'
 import { zoneByPath } from './data/zones'
 import { appHandOver, useAuth } from './lib/auth'
-import { appOnly } from './lib/install'
-import { applyStreakFreeze } from './lib/progress'
 import { useRoute } from './lib/router'
 import { useSync } from './lib/sync'
 import Auth, { EmailHandOver } from './pages/Auth'
-import Brave from './pages/Brave'
-import Breathe from './pages/Breathe'
-import Bro from './pages/Bro'
-import Faith from './pages/Faith'
 import Get from './pages/Get'
-import Fam from './pages/Fam'
-import Green from './pages/Green'
-import Explore from './pages/Explore'
-import Journeys from './pages/Journeys'
-import Kanak from './pages/Kanak'
-import Library from './pages/Library'
-import Listen from './pages/Listen'
+import GetItBack from './pages/GetItBack'
+import Home from './pages/Home'
+import LeakCheck from './pages/LeakCheck'
 import Me from './pages/Me'
-import Music from './pages/Music'
 import NotFound from './pages/NotFound'
 import Plus from './pages/Plus'
-import Read from './pages/Read'
+import ScamCheck from './pages/ScamCheck'
 import Shield from './pages/Shield'
-import Today from './pages/Today'
-import Tools from './pages/Tools'
-import Unperfect from './pages/Unperfect'
 
+// Everything is open to everyone. An account is only needed to buy the pass.
 const pages: Record<string, ComponentType> = {
-  '/': Today,
-  '/about': Today,
-  '/listen': Listen,
-  '/read': Read,
-  '/explore': Explore,
-  '/unperfect': Unperfect,
-  '/shield': Shield,
-  '/bro': Bro,
-  '/library': Library,
-  '/shlokas': Library,
-  '/breathe': Breathe,
-  '/music': Music,
-  '/brave': Brave,
-  '/fam': Fam,
-  '/faith': Faith,
-  '/green': Green,
-  '/me': Me,
-  '/journeys': Journeys,
-  '/kanak': Kanak,
+  '/': Home,
+  '/scam': ScamCheck,
+  '/back': GetItBack,
+  '/leak': LeakCheck,
   '/plus': Plus,
+  '/me': Me,
+  '/shield': Shield,
   '/get': Get,
-  '/tools': Tools,
 }
 
-// Safety comes before sign-up: these stay open even when logged out.
-const PUBLIC = ['/shield', '/tools/panic', '/tools/safe-walk', '/get']
+const TITLES: Record<string, string> = {
+  '/scam': 'Scam Check',
+  '/back': 'Get It Back',
+  '/leak': 'Leak Check',
+  '/plus': 'The pass',
+}
+
+// Old safety links and home-screen shortcuts still land somewhere that helps.
+const OLD_SAFETY = ['/tools/panic', '/tools/safe-walk']
 
 export default function App() {
   const route = useRoute()
   const auth = useAuth()
   const sync = useSync()
-  // Only the first segment picks the page; the rest is for the page itself (e.g. #/library/gita/2).
-  const base = `/${route.split('/')[1] ?? ''}`
+  // Only the first segment picks the page; the rest is for the page itself (e.g. #/back/scam).
+  const base = `/${route.split(/[/?]/)[1] ?? ''}`
   const Page = pages[base] ?? NotFound
 
   useEffect(() => {
     const zone = zoneByPath(base)
-    document.title = zone ? `${zone.title} — perfectish` : 'perfectish — do the scary thing before you feel ready'
+    const name = TITLES[base] ?? zone?.title
+    document.title = name ? `${name} — perfectish` : 'perfectish — stop losing money, get it back'
   }, [base])
 
   useEffect(() => {
-    applyStreakFreeze()
-  }, [])
+    if (OLD_SAFETY.includes(route)) window.location.hash = '/shield'
+  }, [route])
 
   // An email link the app asked for, opened in the browser: hand it back to the app.
   if (appHandOver) return <EmailHandOver />
-  // Android visitors on the website get the landing page and the APK; the app itself is the APK.
-  const download = appOnly()
-  // First login on a phone: wait (a few seconds at most) for your progress to arrive from your account.
-  if (auth.status === 'loading' || (auth.status === 'in' && !sync.ready && !download))
+  // First login on a phone: wait (a few seconds at most) for your account to arrive.
+  if (auth.status === 'loading' || (auth.status === 'in' && !sync.ready))
     return (
       <div className="splash" aria-busy="true">
         <span className="logo-text">
@@ -94,10 +71,7 @@ export default function App() {
         </span>
       </div>
     )
-  const safe = PUBLIC.includes(route)
-  // A visitor on a safety or download page isn't in the app yet: no tabs, no streak, just the page, back and SOS.
-  const bare = safe && (auth.status === 'out' || download)
-  if (((auth.status === 'out' || download) && !safe) || auth.recovering)
+  if (base === '/login' || auth.recovering || (auth.notice && auth.status === 'out'))
     return (
       <>
         <UpdatePrompt safe={false} />
@@ -106,21 +80,19 @@ export default function App() {
     )
 
   return (
-    <PlayerProvider>
+    <>
       <a className="skip-link" href="#main" onClick={(e) => (e.preventDefault(), document.getElementById('main')?.focus())}>
         Skip to content
       </a>
-      <Nav route={route} bare={bare} />
-      <UpdatePrompt safe={safe} />
+      <Nav route={route} />
+      <UpdatePrompt safe={base === '/shield'} />
       <main id="main" tabIndex={-1}>
         <Page key={route} />
       </main>
       <Footer />
-      <MiniPlayer />
-      {!bare && <TabBar route={route} />}
+      <TabBar route={route} />
       <Toaster />
-      <ShareHost />
       <WebView />
-    </PlayerProvider>
+    </>
   )
 }

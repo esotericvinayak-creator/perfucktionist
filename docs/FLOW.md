@@ -1,114 +1,44 @@
 # App flow
 
-Three tabs once you're in: **Today · Discover · Me**. The Library and Listen/Read live under Discover. Everything else is one or two taps from one of them.
+Four tabs: **Home · Scam Check · Get It Back · Leak Check**. Everything is open without an account. The person icon opens your account and settings. Every screen outside the tabs has a back button.
 
 ```mermaid
 flowchart TD
-    A([Open the app or website]) --> S{Logged in?}
-    S -- no --> W[Landing<br/>promise · three paid features · try-it demo · how it works<br/>hatch an egg · what it costs · promises · FAQ]
-    W --> SU[Sign up: name + email → password + consent]
-    W --> LI[Log in / forgot password]
-    W -. no account needed .-> PUB[Panic SOS · safe-walk · Shield]
-    SU --> O1
-    LI --> H
-    S -- yes --> NEW{Onboarded?}
-    NEW -- no --> O0[What's your next scary thing?] --> O1[Name and date it<br/>or pick up to 3 goals] --> O2[Pick + name your pet 🥚] --> F1
-    NEW -- yes --> H[Today]
+    A([Open the app or website]) --> H[Home<br/>the three features · what you've saved · open claims]
 
-    subgraph HOME [Today tab]
-      H --> NX[Next scary thing<br/>days left + what to do today<br/>date passed: did you do it?]
-      H --> F1[▶ Your 5 minutes]
-      F1 --> F2[Mood: 1 tap] --> F3[One small thing<br/>from mood + goals] --> F4[Today's line<br/>from your faith] --> F5[Done 🔥 pet fed, XP up<br/>optional: how are you now?]
-      F5 --> H
-      H --> PET[Your pet · XP to hatch / grow]
-      H --> P[Your plan, once started]
-      H --> TL1[Today's line, if you set a faith]
-      H --> MY[After day 1, one optional question at a time:<br/>name · faith · gender]
-      H --> SOS[Need help now?]
-    end
+    H --> S[Scam Check]
+    S --> S1[Paste a message, offer or link] --> S2{Verdict}
+    S2 -- looks like a scam --> S3[Each warning sign explained<br/>what to do · warn someone on WhatsApp]
+    S2 -- be careful --> S3
+    S2 -- no known signs --> S4[Says this doesn't prove it's safe]
+    S3 -- already paid --> B
 
-    subgraph LISTEN [Listen]
-      L --> LQ[Quotes + music<br/>your tradition's mix first]
-      L --> VR[Music reels<br/>autoplays · swipe right save · left skip]
-    end
+    H --> B[Get It Back]
+    B --> B1[Pick what happened<br/>scam · failed UPI · wrong person · charged wrongly<br/>refund · coaching fees · deposit]
+    B1 --> B2[A few questions]
+    B2 --> B3[Your rights with sources · dated steps<br/>money owed for delays · letter to send]
+    B3 --> B4[Save my dates] --> B5[Got it back?<br/>counts towards what you've saved]
 
-    MP[Mini player<br/>on every page] --> NP[Now Playing<br/>swipe art · seek · up next · credits · lyrics]
-    VR --> NP
+    H --> L[Leak Check]
+    L --> L1[Open a PDF statement, paste text,<br/>or see an example] --> L2[Read on the phone]
+    L2 --> L3[Total leak · top 3 · where the money went]
+    L3 -- the pass --> L4[Every leak · how to stop it<br/>double payments · one easy change]
+    L4 -- double payment --> B1
 
-    subgraph EXPLORE [Discover tab]
-      E[Search + I'm feeling… chips] --> HB[Kanak · Study · Practise · Feel better · Library]
-      E --> Q[Quick tools, yours first]
-      E --> AR[Everything else: 11 areas] --> G[Guides] & TL[44 tools, some are collections]
-      AR --> L[Listen]
-      AR --> R[Read: 10 posts]
-      HB --> LB
-    end
-
-    subgraph LIB [Library, under Discover]
-      LB[Library hub: 6 shelves] --> SC[School<br/>NCERT class 1–12]
-      LB --> CO[College<br/>open textbooks + free courses]
-      LB --> EX[Exams<br/>28 exams + practice]
-      LB --> FA[Scripture<br/>your faith opens first] --> RD[Reader: original + EN/हिं + audio]
-      LB --> FB[Free books<br/>search, read in-app]
-      LB --> AB[Audiobooks<br/>chapters, speed control] --> NP
-      LB --> SH[Your shelf<br/>saved books]
-      EX --> PR[Practice: 10 questions<br/>answer + reason]
-    end
-
-    subgraph ME [Me tab]
-      MB[Pet: type, name, outfits] --> BD[Streak · badges · insights · Wrapped]
-      MB --> ST[Settings: account + sync status, app version + check for updates, theme, gender, faith, goals]
-      ST --> DEL[Delete my account<br/>login + synced data gone]
-      MB --> PL[Plus: price first]
-    end
-
-    subgraph PLUS [Plus: free trial or UPI]
-      PL --> TR[Free trial: 7 days, once per device, no payment]
-      PL --> PAY[Founding pass: pay ₹399 on UPI<br/>QR code, UPI ID, or open-my-UPI-app link]
-      PAY --> REF[Paste the 12-digit reference from the receipt]
-      REF --> DB[(payments: pending)]
-      DB --> VER[You match it in PhonePe history<br/>npm run pay -- verify ref]
-      VER --> MEM[(memberships: until date)]
-      MEM --> ON[App unlocks Plus on next open]
-    end
-
-    H -. tab bar .-> E
-    H -. tab bar .-> MB
+    L3 --> P[The pass: ₹49 a month or ₹399 a year]
+    P --> LI[Log in or sign up] --> PAY[Pay by UPI · send the 12-digit reference]
+    PAY --> DB[(payments: pending)] --> VER[You match it in PhonePe history<br/>npm run pay -- verify ref]
+    VER --> MEM[(memberships: until date)] --> ON[Pass unlocks on next open]
 ```
 
 | Where | What lives there |
-|---|---|
-| Landing (logged out) | The promise, three paid features, no-account demo, how it works, pet egg, what it costs, promises, FAQ, sign up / log in |
-| **Today** `#/` | Your next scary thing, your pet, the 5-minute daily flow, today's line if you set a faith, your plan once started, SOS |
-| **Discover** `#/explore` | Search, need chips, Kanak, four cards (Study, Practise, Feel better, Library), quick tools, 11 areas → guides + tools |
-| Library `#/library` (under Discover) | Hub of six shelves: school, college, exams, scripture, free books, audiobooks |
-| School `#/library/school` | 1,141 NCERT textbooks, class 1–12, 23 languages, with chapter lists |
-| College `#/library/college` | 8 streams: OpenStax, LibreTexts, MIT OCW, NPTEL, SWAYAM |
-| Exams `#/library/exams` | 28 exams + 360 practice questions across 12 subjects |
-| Scripture `#/library/faith` | Gita, Ramayana, Guru Granth Sahib, Quran, Bible, Dhammapada — your faith's book first |
-| Free books `#/library/read` | Open Library + Project Gutenberg, read inside the app |
-| Audiobooks `#/library/listen` | LibriVox, with chapters and 0.75×–2× speed |
-| **Me** `#/me` | Pet, streak, badges, insights, settings (with sync status), Plus, delete my account |
-| Listen `#/listen` | Hands-free mixes: quote → music → next quote |
-| Music reels `#/listen/reels` | A feed of songs that plays itself; saved songs row |
-| Now Playing | Opens from the mini player on any page |
-| Read `#/read` | Blog posts; `#/read/<slug>` for one post |
-| Tools `#/tools/<id>` | Any tool; collections open on a tab (`#/tools/one-line`); "goes well with this" footer |
-
-Every external link opens in the in-app viewer, never a new tab. Every screen outside the three tabs has a back button in the top bar.
-
-## What gender and faith change
-
-Only the **order** and **defaults**. Nothing is ever hidden.
-
-| You picked | What comes first |
-|---|---|
-| Woman / girl | Shield spotlight; safe-walk, cycle tracker, emergency card, relationship check |
-| Trans woman | Shield spotlight; safe-walk, emergency card, relationship check, boundary scripts |
-| Man / boy | Bro code spotlight; workout, boundary scripts, friend check-ins, urge surfer |
-| Trans man | Bro code spotlight; workout, cycle tracker, safe-walk, boundary scripts |
-| Non-binary, transgender / third gender, genderfluid / queer, self-described | "Safety, your way" spotlight; safe-walk, emergency card, journal, boundary scripts |
-| Prefer not to say / skipped | Your goals decide |
-| A faith | Its quotes on Home and in a Listen mix, its scripture opens first in the Library |
-| Atheist / agnostic | Philosophy (Stoic, Taoist, Confucian) instead of scripture on Home |
-| Every faith / spiritual / something else / prefer not to say | Every tradition, mixed |
+| --- | --- |
+| Home `#/` | The three features, what you've saved, open claims, questions |
+| Scam Check `#/scam` | Paste box, examples, verdict, what to do, warn someone |
+| Get It Back `#/back` | Seven situations. `#/back/<id>` is one situation, `?claim=<id>` reopens a saved one |
+| Leak Check `#/leak` | Statement reader and report |
+| The pass `#/plus` | Pay by UPI, your payments |
+| You `#/me` | Log in or out, theme, app version, delete account |
+| Log in `#/login` | Sign up and log in. `?next=/plus` comes back to the pass |
+| Shield `#/shield` | Safety: helplines, fake call, siren, send location, self-defence. Linked from the footer |
+| Get the app `#/get` | APK and install help |

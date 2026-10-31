@@ -9,7 +9,7 @@ import { checkNow, later, refresh, useUpdate } from '../lib/update'
 function AppSteps() {
   return (
     <p className="upd-steps">
-      Your browser is downloading it. Open the file when it’s done and tap <b>Update</b>. Your streak, notes and saved stuff stay put.
+      Your browser is downloading it. Open the file when it’s done and tap <b>Update</b>. Your claims and saved stuff stay put.
     </p>
   )
 }
@@ -26,7 +26,7 @@ export function UpdatePrompt({ safe }: { safe: boolean }) {
           <Download size={28} />
         </span>
         <h1 id="upd-force-title">time to update ✦</h1>
-        <p className="muted">This version of the app is too old to keep working properly. Version {u.app.version} fixes that. Your streak, notes and saved stuff stay put.</p>
+        <p className="muted">This version of the app is too old to keep working properly. Version {u.app.version} fixes that. Your claims and saved stuff stay put.</p>
         {u.app.notes && <p className="upd-notes">{u.app.notes}</p>}
         <a className="btn btn-primary a-lime big-cta" href={u.app.url} onClick={() => setStarted(true)}>
           <Download size={18} /> update now · {prettySize(u.app.size)}

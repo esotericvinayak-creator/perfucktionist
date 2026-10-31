@@ -84,7 +84,7 @@ export default function Get() {
           <p className="muted">You opened this from your home screen. Nothing left to install. You’re on version {versionLabel()}.</p>
           <CheckForUpdates />
           <a className="btn btn-primary a-lime big-cta" href="#/">
-            back to my 5 minutes
+            back to home
           </a>
         </div>
       </div>

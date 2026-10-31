@@ -1,124 +1,37 @@
 # perfectish ✶
 
-> Perfection is a scam.
+> Perfection is a scam. So are these.
+
+Stop losing money, and get it back. For India, ages 14 to 30.
 
 **About the name.** This app was called perfucktionist. The public name is now perfectish, because the old word got in the way of search, ads and network filters. A few technical names keep the old word on purpose: the Android app ID and deep link (`in.perfucktionist.app`, changing it would make a separate app and installed copies would stop updating), the Doppler project, the Supabase `project_id`, the Vercel host, and a redirect from the old APK address for apps that already have it built in.
 
-A Gen Z toolkit for living, not polishing.
+## The product
 
-## How the app flows
+Three things, one loop: spot the scam, get your money back, find the leaks. Full flowchart: [docs/FLOW.md](docs/FLOW.md).
 
-Three tabs, nothing else: **Today · Discover · Me**. Full flowchart: [docs/FLOW.md](docs/FLOW.md). The idea: *do the scary thing before you feel ready.* You tell the app what's coming up (an exam, an interview, a hard conversation) and it points everything at that date, with 5 minutes a day to keep you steady.
+No sign-up for anything free, no bank login, no SMS access, and nothing a person pastes or opens leaves the phone. An account is only needed to buy the pass.
 
-**Where the app runs:** everywhere. The full app works on the website for everyone, Android included, and the Android APK is an optional download (`#/get`). The old "Android visitors get only the landing page" rule is switched off in `appOnly()` (`src/lib/install.ts`), with a note on how to bring it back. Email links work the same in the browser and the app.
+| | What it does | Price | Code |
+| --- | --- | --- | --- |
+| **Scam Check** `#/scam` | Paste a message, offer or link. It looks for the patterns scams use and explains each one. Works in English, Hinglish and some Hindi. | Free, always | `src/lib/scam.ts` |
+| **Get It Back** `#/back` | Pick what happened. Get the rule in plain words with its source, dated steps, money owed for delays, and a letter ready to send. Saves your dates on the phone. | Free, always | `src/data/claims.ts` |
+| **Leak Check** `#/leak` | Open a PDF statement from PhonePe, Google Pay, Paytm or a bank. It finds subscriptions, monthly repeats, bank fees and double payments. | Total and top 3 free. Everything else with the pass | `src/lib/leak.ts`, `src/lib/pdfText.ts` |
 
-1. **Landing** → the promise and one button, the three paid features (each drawn as an example, and anything not built yet says when it arrives), a no-account demo (pick a mood → box breathing, a line of wisdom or a tiny dare), how it works in 3 steps, tap-to-hatch pet egg, what it costs, promises, FAQ. Panic SOS, safe-walk and Shield work without an account.
-2. **Sign up / log in** → two screens (name + email, password + consent), then a 3-step onboarding: your next scary thing → name and date it (or pick up to 3 goals if nothing's coming up) → pick and name a pet → straight into day 1.
-3. **Today** (`#/`) → one screen: your next scary thing (days left and what to do today; once the date passes it asks "did you do the scary thing?"; `NextCard` in `src/pages/Today.tsx`, stored as `nextUp` in progress), your pet and streak, one big "▶ start my 5 minutes" button (mood → one small thing → one line of wisdom → done 🔥, with an optional "and now, how are you?"), today's line if you've set a faith, your plan (only once you've started one) and "need help right now?" (panic, safe walk, SOS, 14416). After your first finished day, one optional question at a time asks your name, faith and gender (`MakeItYours` in `src/pages/Today.tsx`), each skippable.
-4. **Discover** (`#/explore`) → search, "I'm feeling…" chips Kanak, and four cards: **Study**, **Practise**, **Feel better**, **Library** (plus Shield or Bro code first, if you set a gender). Four quick tools below, and "everything else" opens the 11 areas (Listen and Read live there) and all 44 tools. The Library lives under here.
-5. **Library** (`#/library`, reached from Discover) → six shelves: **School** (every NCERT textbook, class 1–12), **College** (open textbooks + free university courses), **Exams** (28 competitive exams + 360 practice questions), **Scripture** (your faith's book opens first), **Free books** (millions, free to read) and **Audiobooks** (free, read aloud). Save anything to **your shelf**.
-6. **Me** (`#/me`) → one compact screen: pet, level, streak, XP, a Plus row, today's four rituals, the 16-week map. Pet, monthly Wrapped, badges and settings (account, theme, goals, faith, gender) are closed rows that open in place.
-   **Plus** (`#/plus`) → the founding pass: ₹399 for a year, ₹999 after launch (`FOUNDING` in `src/lib/plus.ts`). It lists Kanak (live), Sprint and Mock Room (due by the date in `FOUNDING`, or we refund), the pay button, "try free for 7 days", and closed lists of extras and what's always free. New buyers only see the yearly plan; `monthly` stays in the database for anyone who already has it.
-7. **Kanak · कनक** (`#/kanak`, gold; from Discover and Me) → a premium section that turns everything you log into patterns about you, worked out on the device: **gold insights** (mood on days with vs without 7h+ sleep, under-3h screen time, a focus round, moving, doing your 5 minutes; a pattern only shows when both sides have 3+ days), a **Kanak score** (showing up, sleep, focus, checking in, every part shown), your **golden day** of the week, a **golden plan** of three things to try this week, and a full-screen **gold story** of your month to share. Locked unless you have Plus or redeem the access code **KANU** (`src/lib/kanak.ts`). With little data it offers a clearly labelled sample preview. The code is checked in the browser, so it's a promo code, not a secret.
-8. **Listen** (`#/listen`) → *quotes + music* (a mix from your own tradition when you've set one) and **music reels** (`#/listen/reels`): a feed that plays itself — swipe right to save, left to skip, tap to pause. Tapping the mini player anywhere opens **Now Playing**: big art (swipe to change), a seek bar, up next, credits, and lyrics.
+**The pass:** ₹49 for 31 days or ₹399 for a year, paid once by UPI (`#/plus`). There's one paywall, on purpose: nobody should hit one while trying to recover their own money.
 
-**Gender and faith only change order and defaults — nothing is hidden from anyone.** Gender picks the spotlight and the first quick tools (`priorities()` in `src/data/profile.ts`); faith picks which quotes, Listen mix and scripture come first (`linesFor()`, `FAITHS`). Atheist and agnostic get philosophy (Stoic, Taoist, Confucian) instead of scripture on Home. Both stay on the device even with cloud accounts: sync strips them before upload. If you ever do sync them, treat them as sensitive (religion is special-category data under GDPR): keep them optional and ask for explicit consent.
+**Rules for changing these features:**
 
-### The library
+- **Scam Check can never say something is safe.** The calmest verdict is "no known scam signs", with a warning that this doesn't prove anything.
+- **Every rule in `src/data/claims.ts` needs a source, and people act on those dates.** Check them before each release (`CHECKED` in that file). Don't copy from blogs: when this was built, several still gave the Ombudsman's old one-year limit, but the 2026 scheme says 90 days. RBI rules were read on RBI's own pages. The e-commerce and coaching rules came from summaries, because the official PDFs couldn't be opened, so re-check those against the originals.
+- **No statement or message is stored.** A Leak Check report lives in memory only, and it's gone when the app closes.
+- **Leak Check's parser reads patterns, not one fixed layout.** It was tested on generated statements shaped like the real ones. Test it on real statements before relying on it.
 
-| Shelf | What's in it | Where it comes from |
-| --- | --- | --- |
-| School `#/library/school` | All **1,141** NCERT textbooks, class 1–12, in every language NCERT publishes (English, Hindi, Urdu, Sanskrit and 19 more). Tap a book for its chapter list | generated from NCERT's own textbook page — `src/data/school.ts` |
-| College `#/library/college` | 8 streams of openly licensed textbooks + free courses | OpenStax, LibreTexts, Open Textbook Library, MIT OpenCourseWare, NPTEL, SWAYAM — `src/data/college.ts` |
-| Exams `#/library/exams` | 28 exams across 12 groups, each with its official site and free official prep, plus practice in the subjects it tests | `src/data/exams.ts` |
-| Scripture `#/library/faith` | 1,22,156 verses from 6 scriptures, quotes by theme and tradition, shlokas | `src/lib/scripture.ts`, `src/data/wisdom.ts` |
-| Free books `#/library/read` | search millions of free-to-read books; read scans inside the app | Open Library (Internet Archive) + Project Gutenberg |
-| Audiobooks `#/library/listen` | free public-domain audiobooks with chapters and 0.75×–2× speed | LibriVox, hosted by the Internet Archive |
-
-**Practice** (`src/data/questions/`) is 360 original multiple-choice questions across 12 subjects — quant, reasoning, English, computer, physics, chemistry, biology, general science, polity, history, geography and economy. Every answer was worked out twice, independently; the general-studies set sticks to settled facts and names no current office-holder, figure or scheme. Ten per round, with the reasoning shown after every answer. Scores stay on the device.
-
-### Links open inside the app
-
-Nothing opens in a surprise new tab. Every external link goes through `src/components/WebView.tsx`, a full-screen in-app viewer: the site loads in an iframe, the phone's back gesture closes it, and the hash route never changes.
-
-Some sites refuse to be embedded — they send `X-Frame-Options` or a `frame-ancestors` policy, which is their security setting and not something to work around. `NO_FRAME` in that file lists the ones checked (with a GET carrying iframe fetch headers, 2026-10-03): NCERT, UPSC, SWAYAM, the NTA exam portals, the banks, the defence boards, College Board, ETS, IELTS, DIKSHA, LibreTexts, NDLI and the music stores. For those the viewer shows a card that says plainly why, and leaving is the user's own tap.
-
-**NCERT in particular** can't be framed, so the School shelf keeps the browsing in the app: pick class → language → book → chapter list, all local, and only the chapter PDF itself opens in the phone's PDF reader. The chapter URLs are derived from NCERT's own codes (`jemh1=0-14` → `jemh101.pdf` … `jemh114.pdf`), verified against their server.
-
-**Back button:** every screen that isn't one of the three tabs shows one in the top bar (`BackButton` in `src/components/Nav.tsx`). It uses real history when there is any, else walks one level up the hash route.
-
-**On exam facts:** `src/data/exams.ts` deliberately carries no question counts, marks, dates or eligibility rules. Those change with every notification and a stale number could cost a student a year — so each exam links to its official site, and the UI says so plainly. Only the stable things (what the exam is for, the rounds, roughly when) are stored here. Every URL in the library data files returned HTTP 200 when they were written.
-
-**Your pet** starts as an egg, hatches at 60 XP (a day or two of showing up) and grows through 10 levels. It's happy when you've shown up today and just sleepy when you haven't — it never dies or runs away. 12 animals; outfits (bow and cap free, 5 more with Plus).
-
-**Lyrics:** song lyrics are licensed separately from audio, and we don't have a lyrics licence. Instrumental tracks show a visualizer; songs with words link to Apple Music, Spotify and YouTube, which show licensed synced lyrics. Real in-app lyrics need a licensed provider (for example Musixmatch's commercial API or LyricFind), not a scraped database.
-
-Icons come from [Lucide](https://lucide.dev) (ISC licence) via `src/components/Icon.tsx`; the pet and casual copy keep emojis.
-
-Original intro: Eleven zones, a 1.2-lakh-verse library of every major faith, and a glow-up layer people can pay for.
-
-| Zone | What's in it |
-| --- | --- |
-| 🫠 **Unlearn Perfect** `#/unperfect` | Perfection-o-meter quiz, 8 rules, inner-critic flip cards, imperfection dares |
-| 🛡️ **Shield** `#/shield` | India helplines (tap to call), **fake call**, **panic siren**, **send-my-location**, 7 self-defence moves, street & online safety, legal rights after an assault |
-| 🔱 **Bro Code** `#/bro` | Consent, mental health, respect, a daily checklist that resets at midnight, warrior shlokas |
-| 📚 **Library** `#/library` | **1,22,156 verses** from 6 complete scriptures (table below) in the original script + English (+ Hindi for Gita, Quran, Gurbani), Gita audio recitations, "surprise me" across all faiths, the Golden Rule in 11 traditions, 60+ hand-picked cross-faith quotes, and the Sanskrit shloka stack. Deep links: `#/library/gita/2`, `#/library/bible/JHN/3` |
-| 🫁 **Breathe** `#/breathe` | Animated breathing orb (box, physiological sigh, 4-7-8, Anulom Vilom, Bhramari, power hold), meditation timer with bells |
-| 🎧 **Music search** `#/music` | Search any song on earth (Apple's catalogue, 30s previews; full songs for Lofi from Audius), 16 genre/mood chips, 18 Spotify playlists, Lofi Girl 24/7 radio. Music reels live in Listen (`#/listen/reels`). A mini player follows you across the site and opens Now Playing |
-| 🦁 **Be Brave** `#/brave` | 5-second launch countdown, brave dares, goal smasher, the 5 D's of bystander intervention, desi legends |
-| 🏠 **No Secrets Club** `#/fam` | What to always tell your parents, copy-paste conversation starters, a tab for parents, help if home isn't safe |
-| 🙏 **Real Faith** `#/faith` | Yes/No polls on 25 curated statements about faith and exploitation (never named people). Results are what people in the app say, shown only after you answer and once 20+ have answered; a collapsed "how to spot exploitation" guide and helplines. Votes in `public.faith_votes`, totals via `faith_tally()` |
-| 🌳 **Save Trees** `#/green` | Grow a virtual forest, why trees matter, Bishnoi & Chipko history, a 10-habit green pledge |
-
-Every zone also has an **"every faith agrees"** row — the same idea (courage, parents, respecting women, protecting the earth, no religious middlemen…) from Hindu, Sikh, Muslim, Christian, Jewish, Buddhist, Jain, Taoist, Confucian, Stoic, Zoroastrian and Baháʼí sources.
-
-## Toolkit (`#/tools`)
-
-44 tools, some of them **collections**: related experiences on one page as tabs, instead of separate tools. Every tool has a one-line "what it does" (on its tile, so you know before opening) and a "what it's for" note on its page, plus real usage numbers once there are any (`public.tool_usage`: "N people have used this" appears from 10 people; you also see how often you've opened it). The footer suggests tools that go well with it (`related` in the registry), never its own tabs. Deep links: `#/tools/focus`, `#/tools/one-line` (opens the Journal on that tab), `#/tools/for/anxious`. Links to removed tools redirect (`REMOVED` in `src/tools/registry.ts`).
-
-| | Tools |
-| --- | --- |
-| 🧠 Mind | **Mood check-in** (check in · patterns ✦) · panic SOS · crisis plan · worry box · **Journal** (write with titles and prompts · one line a day · hype file) · bad-day kit · affirmations · sound mixer |
-| 🎯 Focus | **Focus timer** (timer · stats ✦) · brain dump · done list · 5-minute starter · countdowns · flashcards · study timetable ✦ · 20-20-20 eyes · phone-down mode · screen time |
-| 💪 Body | **Move** (7-minute workout · desk stretches) · water · **Sleep** (bedtime · wind-down · caffeine cut-off, with a nightly sleep promise) · cycle tracker |
-| 💸 Money | **Spending** (expenses · subscriptions · savings goal) · 50/30/20 · split the bill · SIP calculator · CTC → in-hand · is it worth it? · ROI & growth · quick maths |
-| 🛡️ Safety | safe-walk timer · emergency card · privacy checkup |
-| 💗 People | breakup recovery · friend check-ins · kindness dares · conversation starters |
-| 🌱 Grow | habit tracker · quit tracker · time capsule · bucket list (goals with sub-lists) · wallpaper maker · interview prep · speaking coach |
-
-**More** (an area in Discover) gathers utilities: sound mixer (also under Calm), quick maths, countdowns, wallpaper, time capsule, 20-20-20.
-
-**Removed on purpose** (Oct 2026): thought flipper, boundary scripts, decision maker and career compass (useful only with an LLM that understands the person's situation), scam detector (same), urge surfer (addiction needs more care than a generic tool), relationship check, password check, dopamine menu, EMI & card truth (too narrow; ROI & growth replaces it), and the Happy Zone page.
-
-**Sleep promise.** Wind-down and caffeine cut-off don't just record: you set a bedtime and one if-then plan, answer "last night, did you?" each morning, kept nights earn XP and a sleep streak shown on Me, and three misses in a week reset the streak and suggest a smaller step (`src/lib/sleep.ts`).
-
-**Screen time is self-reported.** A web app can't read other apps' usage. Reading real per-app numbers needs a native Android plugin (UsageStatsManager with the special usage-access permission), not built yet.
-
-**Moods.** Each tool page has a mood (`Mood` in the registry, default per category) that switches typeface, palette, corners and tone for that page only, via CSS variables in `src/styles/moods.css` (the typography and colour rules are written at the top of that file): calm (pastel, Nunito + Lora), journal (paper, Lora), precise (Inter, tabular numbers), plain (Inter), playful (the brand's Bricolage).
-
-✦ = Plus. Free limits elsewhere: 3 habits, 1 flashcard deck, 2 layered sounds, 2 journal packs. Code lives in `src/tools/` (one file per category, each lazy-loaded); metadata in `src/tools/registry.ts`. A new tool also needs its id seeded in `tool_usage` with a new migration.
-
-Notes: CTC → in-hand uses FY 2025-26 new-regime slabs — update `newRegimeTax()` when budgets change. Quick maths uses the 5/18/40% GST slabs (Sept 2025). Timers/alarms (safe-walk, 20-20-20) only run while the page is open. **Listen** has a voice picker (any voice installed on the device, plus speed), stored on the device only (`src/lib/voice.ts`).
-
-## Glow-up mode & Plus
-
-| | Free | Plus (founding pass: ₹399/yr) |
-| --- | --- | --- |
-| `#/me` daily ritual (breathe · read · dare · gratitude — any one keeps the streak), XP, 10 levels, 13 badges, 16-week heatmap, a pet that hatches and grows | ✓ | ✓ |
-| `#/tools` toolkit | all but 3 extras | everything |
-| `#/journeys` 5 guided programs (21 days unperfect, 7 days calm, 14 days brave, 18 days of the Gita, every faith in 12 days), one step unlocks per day | first 3 days each | all days |
-| Streak freezes | — | 2 a month, automatic |
-| Story cards (1080×1920 PNG for IG/WhatsApp/Snap) from any verse, streak or month | 2 styles + watermark | 5 styles, no watermark |
-| Monthly Wrapped | — | ✓ |
-| Pet outfits | bow, cap | + shades, crown, top hat, flower, headphones |
-
-Safety tools and scripture are **never** paywalled — the Plus page says so.
-
-**Payments are manual UPI for now.** People pay the UPI ID, send the 12-digit reference, and you check it and run `npm run pay -- verify <reference>` (`src/lib/payments.ts`). The free trial still lives on the device (`startTrial()` in `src/lib/plus.ts`). Move to a real checkout and server-side access checks before the public launch.
+**Still in the repo but out of the app:** the old Library, scripture reader, music, Listen, Read, journeys, pet and the zones (Unperfect, Brave, Bro, Fam, Faith, Green, Breathe). Nothing links to them, and they aren't in the bundle. The 44 tools, Today, Discover and Kanak were deleted; they're in git history at `c158d20`. Shield stays, because people in danger need it, along with the helplines in the footer and the 112 button. Old panic and safe-walk links land on Shield.
 
 ## Accounts, sync & secrets
 
-Everyone signs up or logs in before reaching Home. Panic SOS, the safe-walk timer and the Shield page stay open without an account.
+Everything is open without an account. You only need one to buy the pass (`#/login`).
 
 - **Preview mode (no keys):** accounts live on the device; passwords are stored as PBKDF2 hashes. Nothing syncs, and password reset isn't available. This is what you get without Doppler.
 - **Cloud mode (Supabase):** real accounts (email + password, Google on the website, password reset) and sync between phones.
@@ -307,8 +220,8 @@ npm run db:push   # apply supabase/migrations to the hosted project (Doppler prd
 
 ## How it's built
 
-- **React 19 + TypeScript + Vite**, no UI library, no backend. Plain CSS with design tokens (`src/styles/base.css`), dark + light themes.
-- **Hash routing** (`#/music`) so `dist/` can be dropped on any static host — Netlify, Vercel, GitHub Pages, S3 — with no rewrite rules. `base: './'` makes it work from a sub-path too.
+- **React 19 + TypeScript + Vite**, no UI library, no backend beyond Supabase for accounts and payments. Plain CSS with design tokens (`src/styles/base.css`), dark + light themes.
+- **Hash routing** (`#/scam`) so `dist/` can be dropped on any static host — Netlify, Vercel, GitHub Pages, S3 — with no rewrite rules. `base: './'` makes it work from a sub-path too.
 - **All sounds are synthesised** with WebAudio (`src/lib/sound.ts`) — siren, ringtone, bells, bubble pops. No audio files.
 - **Scripture library**: Gita and Ramayana are self-hosted — `scripts/build-library.mjs` downloads them (pinned to a commit) and splits them into one small JSON file per chapter in `public/library/` (git-ignored, rebuilt on `predev`/`prebuild`). The other four are read live from free, CORS-enabled APIs. See `src/lib/scripture.ts`.
 - **Progress** (streaks, XP, badges, journeys) is a tiny store in `src/lib/progress.ts`; features call `log('breath' | 'verse' | 'dare' | …)`.
@@ -317,13 +230,12 @@ npm run db:push   # apply supabase/migrations to the hosted project (Doppler prd
 
 ```
 src/
-  App.tsx              routes + global player
-  context/Player.tsx   audio queue shared across pages
-  components/          Nav, Footer, MiniPlayer, ScriptureReader, Voices, Overlays (toasts, share cards, Plus walls), …
-  data/                zones, shlokas, wisdom (cross-faith), journeys, helplines   ← edit content here
-  lib/                 router, storage, sound, confetti, music, scripture, progress, plus, shareCard
-  pages/               one file per zone
-  styles/              base (tokens), components, pages
+  App.tsx              routes
+  components/          Nav, Footer, TabBar, WebView, Overlays (toasts), …
+  data/claims.ts       the rules, steps and letters for Get It Back   ← people act on this, keep it right
+  lib/                 scam, leak, pdfText, saved, plus, payments, auth, sync, router, storage
+  pages/               Home, ScamCheck, GetItBack, LeakCheck, Plus, Me, Auth, Shield, Get
+  styles/              base (tokens), components, core (the product)
 ```
 
 ## Scripture sources & licences

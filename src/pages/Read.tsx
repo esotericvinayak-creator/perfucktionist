@@ -3,7 +3,6 @@ import { Icon } from '../components/Icon'
 import { shareCard } from '../components/Overlays'
 import { postBySlug, posts, type Post } from '../data/posts'
 import { log } from '../lib/progress'
-import { toolById } from '../tools/registry'
 
 export function PostCard({ p, big = false }: { p: Post; big?: boolean }) {
   return (
@@ -58,18 +57,6 @@ function Article({ p }: { p: Post }) {
             <li key={a}>{a}</li>
           ))}
         </ul>
-        {p.tools.length > 0 && (
-          <div className="row gap-sm wrap">
-            {p.tools.map((id) => {
-              const t = toolById(id)
-              return t ? (
-                <a key={id} className="tool-chip" href={`#/tools/${id}`}>
-                  <Icon name={id === 'focus' ? 'focus-timer' : id} size={18} /> {t.name}
-                </a>
-              ) : null
-            })}
-          </div>
-        )}
       </section>
       <p className="art-help">{p.helplineNote}</p>
       <div className="row gap-sm wrap">

@@ -1,7 +1,7 @@
 {
-  "name": "perfectish — perfection is a scam",
+  "name": "perfectish — stop losing money",
   "short_name": "perfectish",
-  "description": "5 minutes a day to breathe, focus, stay safe and grow. Free books, every scripture, exam prep and music.",
+  "description": "Check messages for scams, claim your money back, and find what is draining your account.",
   "id": "/",
   "start_url": "./",
   "scope": "./",
@@ -17,8 +17,8 @@
     { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "My 5 minutes", "url": "./#/", "description": "Start today's flow" },
-    { "name": "Panic SOS", "url": "./#/tools/panic", "description": "Help right now" },
-    { "name": "Library", "url": "./#/library", "description": "Books, scripture and exam prep" }
+    { "name": "Scam Check", "url": "./#/scam", "description": "Check a message or link" },
+    { "name": "Get It Back", "url": "./#/back", "description": "Claim your money back" },
+    { "name": "Leak Check", "url": "./#/leak", "description": "Find what is draining your account" }
   ]
 }

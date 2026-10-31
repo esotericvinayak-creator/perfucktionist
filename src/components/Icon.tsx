@@ -4,12 +4,13 @@ import {
   Activity, Ban, BarChart3, Bath, BedDouble, BookOpen, Brain, Briefcase, CalendarCheck, CalendarDays, CheckCircle2, ClipboardList, Coffee, Compass, CreditCard, Droplets,
   Dumbbell, Ear, House, Eye, Flag, Flame, Footprints, HandHeart, Headphones, Heart, HeartCrack, Hourglass, IdCard, Image, KeyRound, Layers, LifeBuoy, LineChart, ListChecks, Lock,
   Mail, MessageSquareQuote, MessagesSquare, Mic, Moon, Newspaper, NotebookPen, Package, PenLine, PieChart, PiggyBank, Pizza, Receipt, RefreshCw, Repeat, Rocket, Scale,
-  ScanSearch, Shield, Siren, SlidersHorizontal, Smartphone, Smile, Sparkles, Sprout, StretchHorizontal, Sun, Target, Thermometer, Timer, TrendingUp, Trophy, Users,
+  ScanSearch, Shield, ShieldAlert, Siren, SlidersHorizontal, Smartphone, Smile, Sparkles, Sprout, StretchHorizontal, Sun, Target, Thermometer, Timer, TrendingUp, Trophy, Undo2, UserRound, Users,
   UtensilsCrossed, Wallet, Waves, Wind, Zap, Calculator, Percent, MonitorSmartphone, type LucideIcon,
 } from 'lucide-react'
 
 export const ICONS = {
   // tabs
+  scam: ShieldAlert, back: Undo2, leak: Droplets, user: UserRound,
   today: Sun, home: House, explore: Compass, discover: Compass, library: BookOpen, me: Flame,
   // areas / categories
   calm: Wind, focus: Target, body: Dumbbell, money: Wallet, safety: Shield, people: Heart, grow: Sprout, faith: HandHeart, read: Newspaper, listen: Headphones, mind: Brain,

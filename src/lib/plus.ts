@@ -8,9 +8,6 @@ export const TRIAL_DAYS = 7
 export const PRICES = { monthly: 49, yearly: 399 } as const
 export type Plan = keyof typeof PRICES
 
-/** The founding offer: the yearly price, before the price rises. Sprint and Mock Room arrive by `by`, or we refund you. */
-export const FOUNDING = { price: PRICES.yearly, after: 999, by: '15 January' } as const
-
 type PlusState = { plan?: Plan; startedAt?: number; paidUntil?: number }
 
 const KEY = 'pf:plus'
