@@ -9,7 +9,7 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string
   /** Older projects: the legacy "anon" key works the same way. */
   readonly VITE_SUPABASE_ANON_KEY?: string
-  /** The public website, e.g. https://perfucktionist.in — where email links from the Android app land. */
+  /** The public website, e.g. https://perfectish.in — where email links from the Android app land. */
   readonly VITE_SITE_URL?: string
 }
 

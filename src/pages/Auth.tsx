@@ -100,19 +100,19 @@ function Signup({ onBack, onLogin, onConfirm }: { onBack: () => void; onLogin: (
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const s = strength(pw)
-  const valid = [name.trim().length >= 1, EMAIL.test(email.trim()), pw.length >= 8, ok][step]
+  const valid = [name.trim().length >= 1 && EMAIL.test(email.trim()), pw.length >= 8 && ok][step]
 
   const next = async (e: FormEvent) => {
     e.preventDefault()
     if (!valid || busy) return
     setError('')
-    if (step < 3) return setStep(step + 1)
+    if (step < 1) return setStep(step + 1)
     setBusy(true)
     const r = await signUp(name.trim(), email, pw)
     setBusy(false)
     if (!r.ok) {
       setError(r.error)
-      if (/already/.test(r.error)) setStep(1)
+      if (/already/.test(r.error)) setStep(0)
       return
     }
     if (r.confirmEmail) onConfirm(email.trim())
@@ -120,23 +120,18 @@ function Signup({ onBack, onLogin, onConfirm }: { onBack: () => void; onLogin: (
   }
 
   return (
-    <Shell onBack={step ? () => setStep(step - 1) : onBack} step={step} steps={4}>
+    <Shell onBack={step ? () => setStep(step - 1) : onBack} step={step} steps={2}>
       <form className="auth-form" onSubmit={next} key={step}>
         {step === 0 && (
           <>
             <GoogleButton onError={setError} />
-            <p className="act-q">what should we call you?</p>
-            <input className="act-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="your name or nickname" maxLength={24} autoComplete="given-name" autoFocus />
+            <p className="act-q">let’s get you in</p>
+            <input className="act-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="your name or nickname" maxLength={24} autoComplete="given-name" aria-label="Your name" autoFocus />
+            <input className="act-input" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" autoComplete="email" aria-label="Your email" />
+            <p className="muted">your email is only for logging in. no spam, ever.</p>
           </>
         )}
         {step === 1 && (
-          <>
-            <p className="act-q">hey {name.trim()} 👋 your email?</p>
-            <input className="act-input" type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" autoComplete="email" autoFocus />
-            <p className="muted">only for logging in. no spam, ever.</p>
-          </>
-        )}
-        {step === 2 && (
           <>
             <p className="act-q">make a password</p>
             <PasswordInput value={pw} onChange={setPw} placeholder="at least 8 characters" autoComplete="new-password" />
@@ -146,22 +141,17 @@ function Signup({ onBack, onLogin, onConfirm }: { onBack: () => void; onLogin: (
               ))}
             </div>
             <p className="muted">{pw.length < 8 ? `${8 - pw.length} more character${8 - pw.length === 1 ? '' : 's'}` : s >= 3 ? 'strong 💪' : 'okay — a number or symbol makes it stronger'}</p>
-          </>
-        )}
-        {step === 3 && (
-          <>
-            <p className="act-q">one last thing</p>
             <label className={`consent${ok ? ' on' : ''}`}>
               <input type="checkbox" checked={ok} onChange={(e) => setOk(e.target.checked)} />
               <span className="box">{ok ? '✓' : ''}</span>
-              <span>I’m 18 or older, or my parent or guardian knows I’m using perfucktionist and is okay with it.</span>
+              <span>I’m 18 or older, or my parent or guardian knows I’m using perfectish and is okay with it.</span>
             </label>
             <p className="muted">your journal, check-ins and progress stay private to you.</p>
           </>
         )}
         {error && <p className="error-text">{error}</p>}
         <button type="submit" className="btn btn-primary a-lime big-cta" disabled={!valid || busy}>
-          {busy ? 'creating…' : step < 3 ? 'next →' : 'create my account 🌱'}
+          {busy ? 'creating…' : step < 1 ? 'next →' : 'create my account 🌱'}
         </button>
         {step === 0 && (
           <button type="button" className="linkish muted" onClick={onLogin}>
@@ -307,22 +297,22 @@ function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => voi
       </header>
       <section className="home-hero page aw-hero">
         <div className="aw-copy">
-        <p className="kicker">for gen z & gen alpha</p>
-        <h1 className="mega">
-          <span className="strike">
-            Perfection
+        <p className="kicker">perfection is a scam</p>
+        <h1 className="aw-promise">
+          Do the{' '}
+          <span className="aw-under">
+            scary
             <svg className="scribble" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
               <path d="M4 26 C 60 8, 110 34, 170 18 S 280 6, 330 22 S 380 30, 396 14" />
             </svg>
-          </span>
-          <br />
-          is a <span className="serif">scam.</span>
+          </span>{' '}
+          thing <span className="serif">before you feel ready.</span>
         </h1>
-        <p className="lede">5 minutes a day to feel okay and keep showing up. a mood, one small thing, one line of wisdom, and a pet that grows with you. no pressure. no perfect.</p>
+        <p className="lede">Get ready for your exam or interview, practise out loud, and see what actually works for you. For students and freshers who keep waiting to feel ready.</p>
         <NoticeBar />
         {download && auth.status === 'in' && (
           <p className="aw-signed">
-            ✓ you’re signed in as <b>{auth.user?.email}</b>. Open the perfucktionist app and log in there to carry on.
+            ✓ you’re signed in as <b>{auth.user?.email}</b>. Open the perfectish app and log in there to carry on.
           </p>
         )}
         {download ? (
@@ -330,10 +320,10 @@ function Welcome({ onSignup, onLogin, appOnly: download }: { onSignup: () => voi
         ) : (
           <div className="aw-actions">
             <button type="button" className="btn btn-primary a-lime big-cta" onClick={onSignup}>
-              create my free account →
+              start free →
             </button>
-            <button type="button" className="btn big-cta" onClick={onLogin}>
-              I already have one
+            <button type="button" className="linkish aw-login" onClick={onLogin}>
+              I already have an account
             </button>
           </div>
         )}
@@ -434,7 +424,7 @@ export function EmailHandOver() {
         ) : (
           <>
             <p className="act-q">email confirmed ✦</p>
-            <p className="muted">{android ? 'Tap below to jump back into the app — you’ll be logged in.' : 'Now open perfucktionist on your phone and log in.'}</p>
+            <p className="muted">{android ? 'Tap below to jump back into the app — you’ll be logged in.' : 'Now open perfectish on your phone and log in.'}</p>
           </>
         )}
         {android && !link.error && link.code && (

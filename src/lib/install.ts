@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 export type Platform = 'android' | 'ios' | 'mac' | 'windows' | 'linux' | 'other'
 
 /** Where the signed Android build lives. Served from our own site, no store needed. */
-export const APK_URL = 'app/perfucktionist.apk'
+export const APK_URL = 'app/perfectish.apk'
 export const APK_META_URL = 'app/apk.json'
 
 export function detectPlatform(): Platform {

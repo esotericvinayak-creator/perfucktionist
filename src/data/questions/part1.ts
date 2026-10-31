@@ -1,4 +1,4 @@
-// Practice questions — original, written for perfucktionist, each answer double-checked.
+// Practice questions — original, written for perfectish, each answer double-checked.
 import type { Q } from './types'
 
 export const maths: Q[] = [

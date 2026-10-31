@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import type { NextUp } from '../data/app'
 import { journeys } from '../data/journeys'
 import { petById } from '../data/profile'
 import { isPlus } from './plus'
@@ -62,6 +63,8 @@ export type Progress = {
   freezes: string[]
   journeys: Record<string, { startedAt: string; done: Record<number, string> }>
   goals: string[]
+  /** The dated thing you're getting ready for. */
+  nextUp?: NextUp
   onboarded: boolean
   /** Optional profile — only changes what we suggest first. */
   gender?: string

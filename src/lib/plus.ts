@@ -1,12 +1,15 @@
 import { useSyncExternalStore } from 'react'
 
-// perfucktionist+ membership. Two ways in:
+// perfectish+ membership. Two ways in:
 //  - a free trial: one per device, TRIAL_DAYS long, no payment (stored here);
 //  - a paid period: you pay by UPI, the payment is verified in the database, and `memberships`
 //    says until when (src/lib/payments.ts copies that into `paidUntil`).
 export const TRIAL_DAYS = 7
 export const PRICES = { monthly: 49, yearly: 399 } as const
 export type Plan = keyof typeof PRICES
+
+/** The founding offer: the yearly price, before the price rises. Sprint and Mock Room arrive by `by`, or we refund you. */
+export const FOUNDING = { price: PRICES.yearly, after: 999, by: '15 January' } as const
 
 type PlusState = { plan?: Plan; startedAt?: number; paidUntil?: number }
 

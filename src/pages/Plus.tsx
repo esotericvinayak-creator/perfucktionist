@@ -5,18 +5,19 @@ import { confetti } from '../lib/confetti'
 import { cloud } from '../lib/auth'
 import { detectPlatform } from '../lib/install'
 import { submitPayment, upiLink, usePayments, UPI, type Payment } from '../lib/payments'
-import { endTrial, PRICES, startTrial, TRIAL_DAYS, usePlus, type Plan } from '../lib/plus'
+import { endTrial, FOUNDING, PRICES, startTrial, TRIAL_DAYS, usePlus, type Plan } from '../lib/plus'
 import { toast } from '../lib/toast'
 
-// Four reasons, one line each. Everything else stays free.
-const PERKS = [
-  { emoji: '🧊', title: 'streak freezes', body: 'miss a day and Plus covers it, twice a month.' },
-  { emoji: '🧭', title: 'full programs', body: 'every day of calm-7, brave-14, unperfect-21 and the Gita in 18.' },
-  { emoji: '📈', title: 'see yourself change', body: 'mood and focus patterns, monthly Wrapped, timetable, speaking coach.' },
-  { emoji: '✨', title: 'make it yours', body: 'pet outfits, story cards with no watermark, unlimited habits, decks and sounds.' },
+// The three reasons to pay. The founding pass buys all three; the extras are a bonus, not the pitch.
+const PAID = [
+  { emoji: '🪙', title: 'Kanak', body: 'see what actually lifts your mood and your output, from your own logs.', live: true },
+  { emoji: '🗓️', title: 'Sprint', body: 'a plan for every day until your exam or interview. miss a day and it fixes itself.', live: false },
+  { emoji: '🎙️', title: 'Mock Room', body: 'answer out loud, get one clear fix, try again.', live: false },
 ]
 
-const FREE = ['the daily 5 minutes, streaks and your pet', 'every scripture', 'all safety and SOS tools', 'almost every tool', 'music, breathing, everything else']
+const EXTRAS = ['every day of every program', 'streak freezes', 'pet outfits', 'story cards with no watermark', 'unlimited habits, decks and sounds']
+
+const FREE = ['the daily 5 minutes, streaks and your pet', 'focus timer, flashcards and the speaking coach', 'NCERT books and practice questions', 'every scripture', 'all safety and SOS tools', 'music, breathing, everything else']
 
 const dateOf = (t: number) => new Date(t).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 
@@ -93,11 +94,10 @@ function PayPanel({ plan, onDone }: { plan: Plan; onDone: () => void }) {
 export default function Plus() {
   const plus = usePlus()
   const { payments, reload } = usePayments()
-  const [plan, setPlan] = useState<Plan>('yearly')
+  const plan: Plan = 'yearly'
   const [paying, setPaying] = useState(false)
-  const perMonth = Math.round(PRICES.yearly / 12)
-  const save = Math.round((1 - PRICES.yearly / (PRICES.monthly * 12)) * 100)
   const waiting = payments.filter((p) => p.status === 'pending')
+  const canTry = plus.source === null && !plus.trialUsed
 
   const trial = (e: MouseEvent<HTMLButtonElement>) => {
     startTrial(plan)
@@ -106,36 +106,17 @@ export default function Plus() {
     toast({ icon: '✦', title: 'Welcome to Plus', sub: `${TRIAL_DAYS} days unlocked`, tone: 'badge' })
   }
 
-  const plans = (
-    <div className="pl-plans" role="radiogroup" aria-label="Billing">
-      <button type="button" role="radio" aria-checked={plan === 'yearly'} className={`pl-plan${plan === 'yearly' ? ' on' : ''}`} onClick={() => setPlan('yearly')}>
-        <span className="pl-tag">best · save {save}%</span>
-        <b>
-          ₹{perMonth}
-          <small>/month</small>
-        </b>
-        <span>₹{PRICES.yearly} for a year</span>
-      </button>
-      <button type="button" role="radio" aria-checked={plan === 'monthly'} className={`pl-plan${plan === 'monthly' ? ' on' : ''}`} onClick={() => setPlan('monthly')}>
-        <b>
-          ₹{PRICES.monthly}
-          <small>/month</small>
-        </b>
-        <span>pay each month</span>
-      </button>
-    </div>
-  )
-
   return (
     <div className="page plus-page pl">
       <header className="pl-top">
         <PlusBadge />
+        <p className="kicker">founding pass</p>
         <h1 className="pl-h">
-          less perfect. <span className="serif">more you.</span>
+          ₹{FOUNDING.price} for a year. <span className="serif">₹{FOUNDING.after} after launch.</span>
         </h1>
       </header>
 
-      <section className="pl-card" aria-label="Plus plans">
+      <section className="pl-card" aria-label="The founding pass">
         {plus.source === 'paid' && (
           <div className="pl-on">
             <b>✦ you’re on Plus</b>
@@ -158,22 +139,37 @@ export default function Plus() {
           </div>
         )}
 
+        {!paying && (
+          <ul className="pl-paid">
+            {PAID.map((r) => (
+              <li key={r.title}>
+                <span className="pl-ic" aria-hidden="true">
+                  {r.emoji}
+                </span>
+                <span>
+                  <b>
+                    {r.title} <em className={r.live ? 'live' : ''}>{r.live ? 'live now' : `by ${FOUNDING.by}`}</em>
+                  </b>
+                  <small>{r.body}</small>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+
         {plus.source !== 'paid' && (
           <>
-            {plans}
             {!paying && (
               <>
-                {plus.source === null && !plus.trialUsed && (
-                  <button type="button" className="btn btn-primary a-lime big-cta" onClick={trial}>
-                    try free for {TRIAL_DAYS} days ✦
+                <button type="button" className="btn btn-primary a-lime big-cta" onClick={() => setPaying(true)}>
+                  {plus.source === 'trial' ? 'keep Plus' : 'get the founding pass'} · ₹{PRICES[plan]} by UPI
+                </button>
+                {canTry && (
+                  <button type="button" className="btn btn-ghost big-cta" onClick={trial}>
+                    try free for {TRIAL_DAYS} days
                   </button>
                 )}
-                <button type="button" className={`btn big-cta${plus.source === null && !plus.trialUsed ? ' btn-ghost' : ' btn-primary a-lime'}`} onClick={() => setPaying(true)}>
-                  {plus.source === 'trial' ? 'keep Plus' : plus.trialUsed ? 'get Plus' : 'or get Plus now'} · ₹{PRICES[plan]} by UPI
-                </button>
-                <p className="pl-fine">
-                  {plus.source === null && !plus.trialUsed ? `the trial needs no payment. after ${TRIAL_DAYS} days you simply go back to free.` : 'pay with any UPI app. no card, no auto-renew.'}
-                </p>
+                <p className="pl-fine">pay once with any UPI app. no card, no auto-renew. if Sprint and Mock Room aren’t live by {FOUNDING.by}, we refund you.</p>
               </>
             )}
             {paying && (
@@ -209,19 +205,17 @@ export default function Plus() {
         </section>
       )}
 
-      <ul className="pl-perks">
-        {PERKS.map((r) => (
-          <li key={r.title}>
-            <span className="pl-ic" aria-hidden="true">
-              {r.emoji}
-            </span>
-            <span>
-              <b>{r.title}</b>
-              <small>{r.body}</small>
-            </span>
-          </li>
-        ))}
-      </ul>
+      <details className="fold">
+        <summary>
+          <span>also included</span>
+          <small>programs, freezes, outfits</small>
+        </summary>
+        <ul className="fold-body pl-free">
+          {EXTRAS.map((f) => (
+            <li key={f}>✓ {f}</li>
+          ))}
+        </ul>
+      </details>
 
       <details className="fold">
         <summary>

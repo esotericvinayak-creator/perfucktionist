@@ -1,8 +1,8 @@
 {
-  "name": "perfucktionist",
+  "name": "perfectish",
   "private": true,
   "version": "0.1.0",
-  "description": "Perfection is a scam. A Gen Z toolkit to be brave, stay safe, breathe, vibe and give zero f*cks about being perfect.",
+  "description": "Perfection is a scam. Do the scary thing before you feel ready.",
   "type": "module",
   "scripts": {
     "library": "node scripts/build-library.mjs --force",

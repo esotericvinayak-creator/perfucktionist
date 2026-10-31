@@ -138,7 +138,7 @@ export const TOOLS: ToolMeta[] = [
   { id: 'maths', emoji: '🧮', name: 'Quick maths', hook: 'Percentages, discounts, GST, tips, splits and averages.', why: 'The everyday sums you keep doing in your head, done right and explained in a line.', cat: 'money', needs: ['money'], mood: 'precise', related: ['split', 'roi'] },
 
   // 🛡️ safety
-  { id: 'safe-walk', emoji: '🚶‍♀️', name: 'Safe-walk timer', hook: 'Set a timer for your trip; if you don’t check in, it alerts someone.', why: 'Walking home late or taking a new cab? Share your trip and your contact knows if you don’t arrive.', cat: 'safety', needs: ['unsafe'], related: ['ice', 'privacy'] },
+  { id: 'safe-walk', emoji: '🚶‍♀️', name: 'Safe-walk timer', hook: 'Set a timer for your trip. Miss your check-in and an alarm sounds, then one tap sends your location.', why: 'Walking home late or taking a new cab? Tell someone your plan first. If you don’t check in, a loud alarm goes off and one tap sends them your location. Keep this page open: nothing is sent by itself.', cat: 'safety', needs: ['unsafe'], related: ['ice', 'privacy'] },
   { id: 'ice', emoji: '🪪', name: 'Emergency card', hook: 'A card with your emergency contacts and medical info, for your lock screen.', why: 'If something happens, people helping you need your details fast. Make the card once and set it as your wallpaper.', cat: 'safety', needs: ['unsafe'], related: ['safe-walk', 'safety-plan'] },
   { id: 'privacy', emoji: '🔏', name: 'Privacy checkup', hook: 'A checklist to lock down your social accounts.', why: 'Most privacy leaks come from settings you never changed. Go through them in ten minutes.', cat: 'safety', needs: ['unsafe'], related: ['safe-walk'] },
 
@@ -155,7 +155,7 @@ export const TOOLS: ToolMeta[] = [
   { id: 'bucket', emoji: '🪣', name: 'Bucket list', hook: 'Big goals, each with its own list of smaller steps.', why: 'A dream is easier to chase when it’s broken into steps you can tick off.', cat: 'grow', needs: ['bored'], related: ['savings', 'capsule'] },
   { id: 'wallpaper', emoji: '🖼️', name: 'Wallpaper maker', hook: 'Turn a line you need to remember into a lock screen.', why: 'Put your reminder where you’ll see it fifty times a day, in a design you actually like.', cat: 'grow', needs: ['bored'], related: ['affirm'] },
   { id: 'interview', emoji: '🎤', name: 'Interview prep', hook: 'Practise common interview questions out loud.', why: 'Answering aloud is a different skill from knowing the answer. Practise until it flows.', cat: 'grow', needs: ['stuck'], related: ['speak'] },
-  { id: 'speak', emoji: '🎙️', name: 'Speaking coach', hook: 'Record yourself and count filler words like “umm”.', why: 'Hearing yourself shows habits you can’t notice while talking. Fix one at a time.', cat: 'grow', needs: ['stuck'], plus: true, related: ['interview'] },
+  { id: 'speak', emoji: '🎙️', name: 'Speaking coach', hook: 'Record yourself and count filler words like “umm”.', why: 'Hearing yourself shows habits you can’t notice while talking. Fix one at a time.', cat: 'grow', needs: ['stuck'], related: ['interview'] },
 ]
 
 export const toolById = (id: string) => TOOLS.find((t) => t.id === id)

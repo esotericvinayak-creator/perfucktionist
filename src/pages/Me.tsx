@@ -2,7 +2,7 @@ import { useMemo, type ReactNode } from 'react'
 import { PlusBadge, shareCard } from '../components/Overlays'
 import { BADGES, RITUAL, dayKey, levelOf, monthStats, ritualToday, showedUp, streakOf, update, useProgress, type Progress } from '../lib/progress'
 import { alreadyInstalled } from '../lib/install'
-import { usePlus } from '../lib/plus'
+import { FOUNDING, usePlus } from '../lib/plus'
 import { pick, todayKey, useLocalState } from '../lib/storage'
 import { useTheme } from '../lib/theme'
 import { cloud, deleteAccount, logOut, useAuth } from '../lib/auth'
@@ -69,7 +69,7 @@ function Settings() {
             <SyncStatus />
           </small>
         </span>
-        <button type="button" className="btn btn-sm" onClick={() => confirm('Log out of perfucktionist?') && void logOut()}>
+        <button type="button" className="btn btn-sm" onClick={() => confirm('Log out of perfectish?') && void logOut()}>
           log out
         </button>
       </div>
@@ -236,14 +236,14 @@ export default function Me() {
 
       {plus.active ? (
         <a className="me2-plus on" href="#/plus">
-          <PlusBadge /> <span>{plus.daysLeft} {plus.daysLeft === 1 ? 'day' : 'days'} left in your free trial</span>
+          <PlusBadge /> <span>{plus.daysLeft} {plus.daysLeft === 1 ? 'day' : 'days'} {plus.source === 'paid' ? 'of Plus left' : 'left in your free trial'}</span>
         </a>
       ) : (
         <a className="me2-plus" href="#/plus">
-          <span className="me2-plus-ic">🧊</span>
+          <span className="me2-plus-ic">✦</span>
           <span className="grow">
-            <b>{streak >= 3 ? `protect your ${streak}-day streak` : 'try Plus free for 7 days'}</b>
-            <small>streak freezes, full journeys, pet outfits</small>
+            <b>founding pass · ₹{FOUNDING.price} for a year</b>
+            <small>Kanak now, Sprint and Mock Room by {FOUNDING.by}</small>
           </span>
           <span className="plan-go">→</span>
         </a>

@@ -163,7 +163,7 @@ export default function Get() {
             </>
           ) : (
             <p className="muted">
-              In Chrome or Edge, open the menu and choose <b>Install perfucktionist</b> (or the install icon in the address bar). In Safari on Mac, use <b>File → Add to Dock</b>. Firefox doesn’t install web apps — the
+              In Chrome or Edge, open the menu and choose <b>Install perfectish</b> (or the install icon in the address bar). In Safari on Mac, use <b>File → Add to Dock</b>. Firefox doesn’t install web apps — the
               site works the same in a tab.
             </p>
           )}

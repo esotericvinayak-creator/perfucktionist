@@ -44,7 +44,7 @@ export function BackButton({ route, className = '' }: { route: string; className
 export function Logo() {
   return (
     <span className="logo-text">
-      per<span className="logo-hl">fuck</span>tionist
+      perfect<span className="logo-hl">ish</span>
     </span>
   )
 }
@@ -55,7 +55,7 @@ export function Nav({ route, bare = false }: { route: string; bare?: boolean }) 
   return (
     <header className="nav">
       <BackButton route={route} className="nav-back" />
-      <a href="#/" className="logo" aria-label="perfucktionist — home">
+      <a href="#/" className="logo" aria-label="perfectish — home">
         <Logo />
       </a>
       {!bare && (
@@ -68,8 +68,8 @@ export function Nav({ route, bare = false }: { route: string; bare?: boolean }) 
         </nav>
       )}
       <div className="nav-actions">
-        {!bare && (
-          <a className={`streak-chip${streak ? ' lit' : ''}`} href="#/me" title="Your streak">
+        {!bare && streak > 0 && (
+          <a className="streak-chip lit" href="#/me" title="Your streak">
             🔥 <span>{streak}</span>
           </a>
         )}

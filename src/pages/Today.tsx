@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
+import { ArrowRight } from 'lucide-react'
 import { Icon } from '../components/Icon'
 import { PetView } from '../components/Pet'
 import { shareCard } from '../components/Overlays'
-import { DARES, GOALS, KIND_DARES, goalById, type ActionKind } from '../data/app'
+import { DARES, GOALS, KIND_DARES, NEXT_KINDS, goalById, nextKind, type ActionKind, type NextKind, type NextUp } from '../data/app'
 import { journeys } from '../data/journeys'
 import { FAITHS, GENDERS, PETS, faithById, linesFor, type Line } from '../data/profile'
 import { confetti } from '../lib/confetti'
+import { FOUNDING, usePlus } from '../lib/plus'
 import { levelOf, log, streakOf, update, useProgress, type Progress } from '../lib/progress'
 import { dayOfYear, todayKey, useLocalState } from '../lib/storage'
 
@@ -343,8 +345,157 @@ export function DailyFlow({ onClose }: { onClose: () => void }) {
   )
 }
 
+// ─── your next scary thing ────────────────────────────────────
+/** Whole days from today to `date`: 0 is today, negative means it has passed. */
+const daysTo = (date: string) => Math.round((Date.parse(`${date}T00:00:00`) - Date.parse(`${todayKey()}T00:00:00`)) / 86_400_000)
+
+/** Name it and date it. Used in onboarding and on Today. The date is optional: "not sure yet" is a fine answer. */
+function NextForm({ kind, initial, cta, onSave }: { kind: NextKind; initial?: NextUp; cta: string; onSave: (next: NextUp) => void }) {
+  const k = nextKind(kind)
+  const [name, setName] = useState(initial?.name ?? '')
+  // A date that has passed can't be saved again, so "it moved" starts blank.
+  const [date, setDate] = useState(initial?.date && daysTo(initial.date) >= 0 ? initial.date : '')
+  return (
+    <form
+      className="nx-form"
+      onSubmit={(e) => {
+        e.preventDefault()
+        if (name.trim()) onSave({ kind, name: name.trim(), date })
+      }}
+    >
+      <p className="act-q">{k.ask}</p>
+      <div className="nx-picks">
+        {k.picks.map((p) => (
+          <button key={p} type="button" className={`chip${name === p ? ' on' : ''}`} onClick={() => setName(p)} aria-pressed={name === p}>
+            {p}
+          </button>
+        ))}
+      </div>
+      <input className="act-input" value={name} onChange={(e) => setName(e.target.value)} placeholder={k.placeholder} maxLength={40} aria-label={k.ask} />
+      <label className="nx-date">
+        <span>when is it?</span>
+        <input className="act-input" type="date" min={todayKey()} value={date} onChange={(e) => setDate(e.target.value)} />
+      </label>
+      <p className="muted">{kind === 'exam' ? 'use the date on the official notice. not sure yet? leave it blank.' : 'not sure yet? leave it blank.'}</p>
+      <button type="submit" className="btn btn-primary a-lime big-cta" disabled={!name.trim()}>
+        {cta}
+      </button>
+    </form>
+  )
+}
+
+/** The top of Today: the dated thing you're getting ready for, and what to do about it today. */
+function NextCard() {
+  const p = useProgress()
+  const plus = usePlus()
+  const [editing, setEditing] = useState<NextKind | null>(null)
+  const [choosing, setChoosing] = useState(false)
+  const [skipped, setSkipped] = useLocalState('home:next-skip', false)
+  const next = p.nextUp
+  const close = () => {
+    setEditing(null)
+    setChoosing(false)
+  }
+  const save = (n: NextUp) => {
+    update(() => ({ nextUp: n }))
+    close()
+  }
+
+  if (editing)
+    return (
+      <section className="h2-card nx-edit" aria-label="Your next scary thing">
+        <NextForm kind={editing} initial={next?.kind === editing ? next : undefined} cta="save" onSave={save} />
+        <button type="button" className="linkish muted" onClick={close}>
+          cancel
+        </button>
+      </section>
+    )
+
+  if (!next || choosing) {
+    if (!choosing && skipped) return null
+    return (
+      <section className="nx-empty" aria-label="Your next scary thing">
+        <p className="kicker">what’s your next scary thing?</p>
+        <div className="nx-kinds">
+          {NEXT_KINDS.map((k) => (
+            <button key={k.id} type="button" className="chip" onClick={() => setEditing(k.id)}>
+              <Icon name={k.icon} size={16} /> {k.label}
+            </button>
+          ))}
+        </div>
+        <button type="button" className="linkish muted" onClick={() => (choosing ? setChoosing(false) : setSkipped(true))}>
+          {choosing ? 'cancel' : 'not now'}
+        </button>
+      </section>
+    )
+  }
+
+  const days = next.date ? daysTo(next.date) : null
+
+  if (days !== null && days < 0)
+    return (
+      <section className="h2-card nx-after" aria-label={`Did you do ${next.name}?`}>
+        <p className="kicker">{next.name}</p>
+        <p className="h2-q">did you do the scary thing?</p>
+        <div className="row gap-sm wrap">
+          <button
+            type="button"
+            className="btn btn-primary a-lime"
+            onClick={() => {
+              log('tool')
+              confetti()
+              update(() => ({ nextUp: undefined }))
+            }}
+          >
+            I did it 🎉
+          </button>
+          <button type="button" className="btn" onClick={() => setEditing(next.kind)}>
+            it moved
+          </button>
+        </div>
+      </section>
+    )
+
+  const steps = days === 0 ? [{ label: 'breathe for a minute first', path: '/breathe' }] : nextKind(next.kind).steps
+  return (
+    <section className="nx-card" aria-label={`Next: ${next.name}`}>
+      {days === null ? (
+        <button type="button" className="nx-count none" onClick={() => setEditing(next.kind)}>
+          <small>add a date</small>
+        </button>
+      ) : (
+        <div className="nx-count">
+          <b>{days === 0 ? '✦' : days}</b>
+          <small>{days === 0 ? 'today' : days === 1 ? 'day left' : 'days left'}</small>
+        </div>
+      )}
+      <div className="nx-main">
+        <div className="nx-head">
+          <p className="kicker">next scary thing</p>
+          <button type="button" className="linkish muted" onClick={() => setChoosing(true)}>
+            change
+          </button>
+        </div>
+        <h2>{next.name}</h2>
+        <div className="nx-steps">
+          {steps.map((s) => (
+            <a key={s.label} className="nx-step" href={`#${s.path}`}>
+              {s.label} <ArrowRight size={16} aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+        {!plus.active && (
+          <a className="nx-soon" href="#/plus">
+            full plan arrives by {FOUNDING.by}
+          </a>
+        )}
+      </div>
+    </section>
+  )
+}
+
 // ─── first run ────────────────────────────────────────────────
-// Two steps: 0 what you want help with · 1 pick and name your pet. Then straight into day 1.
+// Three steps: 0 what's coming up · 1 name and date it (or pick goals) · 2 your pet. Then straight into day 1.
 // Name, faith and gender are asked later (see MakeItYours) — they only reorder things, so they can wait.
 function Onboarding({ onFinish }: { onFinish: () => void }) {
   const p = useProgress()
@@ -354,16 +505,22 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
     return () => document.body.classList.remove('onboarding')
   }, [])
   const [step, setStep] = useState(0)
+  const [choice, setChoice] = useState<NextKind | 'life' | null>(p.nextUp?.kind ?? null)
+  const [next, setNext] = useState<NextUp | undefined>(p.nextUp)
   const [goals, setGoals] = useState<string[]>(p.goals)
   const [petType, setPetType] = useState(p.petType || 'cat')
   const [pet, setPet] = useState(p.pet || '')
   const toggle = (id: string) => setGoals(goals.includes(id) ? goals.filter((g) => g !== id) : goals.length < 3 ? [...goals, id] : goals)
   const chosen = PETS.find((x) => x.id === petType) ?? PETS[0]
+  const pick = (c: NextKind | 'life') => {
+    setChoice(c)
+    setStep(1)
+  }
 
   return (
     <div className="onboard">
       <div className="fs-dots">
-        {[0, 1].map((d) => (
+        {[0, 1, 2].map((d) => (
           <span key={d} className={d < step ? 'past' : d === step ? 'now' : ''} />
         ))}
       </div>
@@ -371,6 +528,36 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
         {step === 0 && (
           <>
             {p.name && <p className="kicker">welcome, {p.name} 🌱</p>}
+            <p className="act-q">what’s your next scary thing?</p>
+            <p className="muted">pick one. you can change it any time.</p>
+            <div className="ob-choices">
+              {NEXT_KINDS.map((k) => (
+                <button key={k.id} type="button" className="ob-choice" onClick={() => pick(k.id)}>
+                  <span className="ibub">
+                    <Icon name={k.icon} />
+                  </span>
+                  <span className="grow">
+                    <b>{k.label}</b>
+                    <small>{k.line}</small>
+                  </span>
+                  <ArrowRight size={18} aria-hidden="true" />
+                </button>
+              ))}
+              <button type="button" className="ob-choice quiet" onClick={() => pick('life')}>
+                <span className="ibub">
+                  <Icon name="calm" />
+                </span>
+                <span className="grow">
+                  <b>nothing specific</b>
+                  <small>I just want to feel better</small>
+                </span>
+                <ArrowRight size={18} aria-hidden="true" />
+              </button>
+            </div>
+          </>
+        )}
+        {step === 1 && choice === 'life' && (
+          <>
             <p className="act-q">what do you want help with?</p>
             <p className="muted">pick up to 3. this decides what your 5 minutes look like.</p>
             <div className="goal-grid">
@@ -383,12 +570,32 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
                 </button>
               ))}
             </div>
-            <button type="button" className="btn btn-primary a-lime big-cta" disabled={!goals.length} onClick={() => setStep(1)}>
+            <button
+              type="button"
+              className="btn btn-primary a-lime big-cta"
+              disabled={!goals.length}
+              onClick={() => {
+                setNext(undefined)
+                setStep(2)
+              }}
+            >
               next →
             </button>
           </>
         )}
-        {step === 1 && (
+        {step === 1 && choice && choice !== 'life' && (
+          <NextForm
+            kind={choice}
+            initial={next?.kind === choice ? next : undefined}
+            cta="next →"
+            onSave={(n) => {
+              setNext(n)
+              setGoals(nextKind(choice).goals)
+              setStep(2)
+            }}
+          />
+        )}
+        {step === 2 && (
           <>
             <p className="act-q">pick a pet to show up for</p>
             <p className="muted">it hatches in a day or two, then grows with you. skip a day? it just gets sleepy. no guilt.</p>
@@ -404,7 +611,7 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
               type="button"
               className="btn btn-primary a-lime big-cta"
               onClick={() => {
-                update(() => ({ goals, petType, pet: pet.trim() || chosen.name, onboarded: true }))
+                update(() => ({ goals, nextUp: next, petType, pet: pet.trim() || chosen.name, onboarded: true }))
                 onFinish()
               }}
             >
@@ -414,7 +621,7 @@ function Onboarding({ onFinish }: { onFinish: () => void }) {
         )}
       </div>
       {step > 0 && (
-        <button type="button" className="linkish muted ob-back" onClick={() => setStep(0)}>
+        <button type="button" className="linkish muted ob-back" onClick={() => setStep(step - 1)}>
           ← back
         </button>
       )}
@@ -510,6 +717,8 @@ function Home({ onStart }: { onStart: () => void }) {
         <h1 className="h2-greet">hey {p.name || 'you'} 👋</h1>
       </header>
 
+      <NextCard />
+
       <section className={`h2-card h2-main${done ? ' done' : ''}`}>
         <a className="h2-pet" href="#/me" aria-label={`${p.pet || 'Your pet'} — open Me`}>
           <PetView p={p} size={64} />
@@ -568,25 +777,27 @@ function Home({ onStart }: { onStart: () => void }) {
         </a>
       )}
 
-      <article className="h2-card h2-line">
-        <p className="kicker">{faith?.secular ? 'today’s philosophy' : faith && faith.traditions !== 'all' ? `today’s line · ${faith.label}` : 'today’s line'}</p>
-        <span className="trad-chip">{line.badge}</span>
-        <p className="wisdom-text">“{line.text}”</p>
-        {line.extra && <p className="wis-extra">💬 {line.extra}</p>}
-        <div className="h2-line-foot">
-          {line.original && (
-            <details className="h2-orig">
-              <summary>original</summary>
-              <p className={`orig lang-${line.lang}`} lang={line.lang} dir={line.rtl ? 'rtl' : undefined}>
-                {line.original}
-              </p>
-            </details>
-          )}
-          <a className="linkish" href="#/library/faith">
-            more →
-          </a>
-        </div>
-      </article>
+      {p.faith && (
+        <article className="h2-card h2-line">
+          <p className="kicker">{faith?.secular ? 'today’s philosophy' : faith && faith.traditions !== 'all' ? `today’s line · ${faith.label}` : 'today’s line'}</p>
+          <span className="trad-chip">{line.badge}</span>
+          <p className="wisdom-text">“{line.text}”</p>
+          {line.extra && <p className="wis-extra">💬 {line.extra}</p>}
+          <div className="h2-line-foot">
+            {line.original && (
+              <details className="h2-orig">
+                <summary>original</summary>
+                <p className={`orig lang-${line.lang}`} lang={line.lang} dir={line.rtl ? 'rtl' : undefined}>
+                  {line.original}
+                </p>
+              </details>
+            )}
+            <a className="linkish" href="#/library/faith">
+              more →
+            </a>
+          </div>
+        </article>
+      )}
 
       {Object.values(flows).some(Boolean) && <MakeItYours />}
 

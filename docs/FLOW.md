@@ -4,26 +4,25 @@ Three tabs once you're in: **Today · Discover · Me**. The Library and Listen/R
 
 ```mermaid
 flowchart TD
-    A([Open the app or website]) --> AW{Android browser?}
-    AW -- yes --> DL[Landing + download the app<br/>APK via #/get · safety pages still open]
-    AW -- no: APK, iPhone, computer --> S{Logged in?}
-    S -- no --> W[Landing<br/>hero · try-it demo · how it works · hatch an egg<br/>promises · FAQ]
-    W --> SU[Sign up: name → email → password → consent]
+    A([Open the app or website]) --> S{Logged in?}
+    S -- no --> W[Landing<br/>promise · three paid features · try-it demo · how it works<br/>hatch an egg · what it costs · promises · FAQ]
+    W --> SU[Sign up: name + email → password + consent]
     W --> LI[Log in / forgot password]
     W -. no account needed .-> PUB[Panic SOS · safe-walk · Shield]
     SU --> O1
     LI --> H
     S -- yes --> NEW{Onboarded?}
-    NEW -- no --> O1[Up to 3 goals] --> O2[Pick + name your pet 🥚] --> F1
+    NEW -- no --> O0[What's your next scary thing?] --> O1[Name and date it<br/>or pick up to 3 goals] --> O2[Pick + name your pet 🥚] --> F1
     NEW -- yes --> H[Today]
 
     subgraph HOME [Today tab]
+      H --> NX[Next scary thing<br/>days left + what to do today<br/>date passed: did you do it?]
       H --> F1[▶ Your 5 minutes]
       F1 --> F2[Mood: 1 tap] --> F3[One small thing<br/>from mood + goals] --> F4[Today's line<br/>from your faith] --> F5[Done 🔥 pet fed, XP up<br/>optional: how are you now?]
       F5 --> H
       H --> PET[Your pet · XP to hatch / grow]
       H --> P[Your plan, once started]
-      H --> TL1[Today's line]
+      H --> TL1[Today's line, if you set a faith]
       H --> MY[After day 1, one optional question at a time:<br/>name · faith · gender]
       H --> SOS[Need help now?]
     end
@@ -37,11 +36,11 @@ flowchart TD
     VR --> NP
 
     subgraph EXPLORE [Discover tab]
-      E[Search + I'm feeling… chips] --> HB[Feel better · Study · Listen · Read · Books & scripture]
+      E[Search + I'm feeling… chips] --> HB[Kanak · Study · Practise · Feel better · Library]
       E --> Q[Quick tools, yours first]
-      E --> AR[Everything else: 10 areas] --> G[Guides] & TL[44 tools, some are collections]
-      HB --> L[Listen]
-      HB --> R[Read: 10 posts]
+      E --> AR[Everything else: 11 areas] --> G[Guides] & TL[44 tools, some are collections]
+      AR --> L[Listen]
+      AR --> R[Read: 10 posts]
       HB --> LB
     end
 
@@ -65,7 +64,7 @@ flowchart TD
 
     subgraph PLUS [Plus: free trial or UPI]
       PL --> TR[Free trial: 7 days, once per device, no payment]
-      PL --> PAY[Pay ₹399 / ₹49 on UPI<br/>QR code, UPI ID, or open-my-UPI-app link]
+      PL --> PAY[Founding pass: pay ₹399 on UPI<br/>QR code, UPI ID, or open-my-UPI-app link]
       PAY --> REF[Paste the 12-digit reference from the receipt]
       REF --> DB[(payments: pending)]
       DB --> VER[You match it in PhonePe history<br/>npm run pay -- verify ref]
@@ -79,9 +78,9 @@ flowchart TD
 
 | Where | What lives there |
 |---|---|
-| Landing (logged out) | Hero, no-account demo, how it works, pet egg, promises, FAQ, sign up / log in |
-| **Today** `#/` | Your pet, the 5-minute daily flow, today's line (your faith), your plan once started, SOS |
-| **Discover** `#/explore` | Search, need chips, five hub cards (Feel better, Study, Listen, Read, Books & scripture), quick tools, 10 areas → guides + tools |
+| Landing (logged out) | The promise, three paid features, no-account demo, how it works, pet egg, what it costs, promises, FAQ, sign up / log in |
+| **Today** `#/` | Your next scary thing, your pet, the 5-minute daily flow, today's line if you set a faith, your plan once started, SOS |
+| **Discover** `#/explore` | Search, need chips, Kanak, four cards (Study, Practise, Feel better, Library), quick tools, 11 areas → guides + tools |
 | Library `#/library` (under Discover) | Hub of six shelves: school, college, exams, scripture, free books, audiobooks |
 | School `#/library/school` | 1,141 NCERT textbooks, class 1–12, 23 languages, with chapter lists |
 | College `#/library/college` | 8 streams: OpenStax, LibreTexts, MIT OCW, NPTEL, SWAYAM |

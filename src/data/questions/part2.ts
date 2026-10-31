@@ -1,4 +1,4 @@
-// Practice questions — original, written for perfucktionist, each answer double-checked.
+// Practice questions — original, written for perfectish, each answer double-checked.
 // General studies: only settled, timeless facts. Nothing here depends on who currently holds an office,
 // this year's figures, or a scheme that could be renamed tomorrow.
 import type { Q } from './types'

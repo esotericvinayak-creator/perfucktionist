@@ -97,7 +97,7 @@ function ShareModal({ content, onClose }: { content: CardContent; onClose: () =>
     log('verse', { silent: true })
     if (navigator.canShare?.({ files: [file] })) {
       try {
-        await navigator.share({ files: [file], text: 'made on perfucktionist ✶' })
+        await navigator.share({ files: [file], text: 'made on perfectish ✶' })
         setStatus('shared ✓')
       } catch {
         // user cancelled
@@ -132,7 +132,7 @@ function ShareModal({ content, onClose }: { content: CardContent; onClose: () =>
           </div>
           <label className="toggle">
             <input type="checkbox" checked={mark || !plus.active} disabled={!plus.active} onChange={(e) => setMark(e.target.checked)} />
-            <span>perfucktionist watermark {!plus.active && '· remove with Plus'}</span>
+            <span>perfectish watermark {!plus.active && '· remove with Plus'}</span>
           </label>
           {!plus.active && (
             <a className="plus-nudge" href="#/plus" onClick={onClose}>

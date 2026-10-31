@@ -9,11 +9,11 @@ import { client, cloud, onAuthChange, authNow, useAuth, type Result } from './au
 import { PRICES, setPaidUntil, type Plan } from './plus'
 
 /** Where the money goes. Public on purpose: it's what the QR code shows. */
-export const UPI = { id: 'techievinayak.wallet@phonepe', name: 'perfucktionist', qr: `${import.meta.env.BASE_URL}pay/phonepe-qr.png` } as const
+export const UPI = { id: 'techievinayak.wallet@phonepe', name: 'perfectish', qr: `${import.meta.env.BASE_URL}pay/phonepe-qr.png` } as const
 
 /** `upi://pay` opens the person's UPI app with the amount filled in. Works on phones; desktops use the QR. */
 export const upiLink = (plan: Plan) =>
-  `upi://pay?pa=${encodeURIComponent(UPI.id)}&pn=${encodeURIComponent(UPI.name)}&am=${PRICES[plan]}.00&cu=INR&tn=${encodeURIComponent(`perfucktionist Plus ${plan}`)}`
+  `upi://pay?pa=${encodeURIComponent(UPI.id)}&pn=${encodeURIComponent(UPI.name)}&am=${PRICES[plan]}.00&cu=INR&tn=${encodeURIComponent(`perfectish Plus ${plan}`)}`
 
 export type Payment = { id: string; plan: Plan; amount: number; utr: string; status: 'pending' | 'verified' | 'rejected'; created_at: string }
 

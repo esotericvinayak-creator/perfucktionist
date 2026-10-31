@@ -164,21 +164,4 @@
 .ld-ill.i3 i:nth-child(3) { animation-delay: 4s; }
 @keyframes ld-grow { 0% { opacity: 0; transform: scale(0.6); } 8%, 30% { opacity: 1; transform: scale(1); } 38%, 100% { opacity: 0; transform: scale(1.1); } }
 
-.ld-show { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(200px, 1fr); gap: 14px; overflow-x: auto; padding: 4px 2px 12px; scroll-snap-type: x mandatory; scrollbar-width: none; }
-.ld-show::-webkit-scrollbar { display: none; }
-.ld-mini { margin: 0; display: grid; gap: 8px; justify-items: center; scroll-snap-align: start; }
-.ld-mini figcaption { font-weight: 800; letter-spacing: -0.02em; }
-.ld-mini-screen { width: 100%; min-height: 230px; display: grid; align-content: start; gap: 8px; padding: 18px 16px; border-radius: 26px; border: 2px solid var(--line); box-shadow: 5px 5px 0 var(--a, var(--violet)); }
-.ld-mini-screen small { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; opacity: 0.6; }
-.ld-mini-screen b { font-size: 1.25rem; line-height: 1.2; }
-.ld-mini-screen p { font-size: 0.85rem; line-height: 1.45; opacity: 0.8; }
-.ld-mini-btn { justify-self: start; margin-top: 6px; padding: 7px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
-.ld-mini.journal .ld-mini-screen { background: linear-gradient(180deg, #fcf7ec, #f5ecd8); color: #2c241b; font-family: 'Lora', Georgia, serif; --a: var(--sun); }
-.ld-mini.journal .ld-mini-btn { border: 1.5px solid #2c241b44; }
-.ld-mini.calm .ld-mini-screen { background: linear-gradient(165deg, #eaf0fc, #efe9fb 60%, #fbefe7); color: #232546; font-family: 'Nunito', sans-serif; --a: var(--violet); }
-.ld-mini.calm .ld-mini-screen b { font-family: 'Lora', Georgia, serif; }
-.ld-mini.calm .ld-mini-btn { background: #232546; color: #eef1fb; }
-.ld-mini.precise .ld-mini-screen { background: var(--surface); color: var(--ink); font-family: 'Inter', sans-serif; --a: var(--lime); }
-.ld-mini.precise .ld-mini-screen b { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
-.ld-mini.precise .ld-mini-btn { background: var(--lime); color: #0d0c12; }
 @media (prefers-reduced-motion: reduce) { .ld-ill i { animation: none !important; opacity: 1 !important; } .ld-ill.i3 i:not(:first-child) { display: none; } }

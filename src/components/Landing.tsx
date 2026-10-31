@@ -1,9 +1,10 @@
-// The rest of the landing page: try it before you sign up, hatch a pet, see what's inside.
-// Only real numbers and real promises here — no fake reviews, no made-up user counts.
+// The rest of the landing page: what you get, try it before you sign up, what it costs.
+// Only real numbers and real promises here — no fake reviews, no made-up user counts. The screens
+// drawn below are examples, and anything not built yet says when it arrives.
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { PETS, linesFor } from '../data/profile'
-import { PRICES, TRIAL_DAYS } from '../lib/plus'
+import { FOUNDING } from '../lib/plus'
 import { pop } from '../lib/sound'
 import { TOOLS } from '../tools/registry'
 
@@ -25,6 +26,17 @@ export function HeroPreview() {
         <b>hey you 👋</b>
         <span>🔥 12</span>
       </div>
+      <div className="ld-phone-next">
+        <span className="ld-phone-count">
+          <b>18</b>
+          <small>days left</small>
+        </span>
+        <div>
+          <small>NEXT SCARY THING</small>
+          <b>campus placement</b>
+          <em>answer one question →</em>
+        </div>
+      </div>
       <div className="ld-phone-card">
         <div className="ld-phone-pet">
           <span>🐣</span>
@@ -35,11 +47,6 @@ export function HeroPreview() {
         </div>
         <i />
         <div className="ld-phone-cta">▶ start my 5 minutes</div>
-        <small>how you feel → one small thing → one line of wisdom</small>
-      </div>
-      <div className="ld-phone-line">
-        <small>TODAY’S LINE</small>
-        <p>“You have the right to the work, but never to its fruits.”</p>
       </div>
       <div className="ld-phone-help">
         <span>panic</span>
@@ -163,11 +170,72 @@ function Egg() {
   )
 }
 
+/** The three things people pay for, each with an example of what it looks like. */
+const FEATURES = [
+  {
+    id: 'sprint',
+    role: 'prepare',
+    name: 'Sprint',
+    line: 'Enter your date and daily hours, and get a plan for every day. Miss one and it fixes itself. Sleep badly and today gets lighter.',
+    soon: true,
+    accent: 'lime',
+    example: (
+      <div className="fx-mini" aria-hidden="true">
+        <small>NEET · 184 DAYS LEFT</small>
+        <ul className="fx-plan">
+          <li className="done">biology, chapter 5</li>
+          <li>physics, chapter 2</li>
+          <li className="moved">
+            chemistry revision <em>moved to tomorrow</em>
+          </li>
+        </ul>
+        <span className="fx-note">slept 5 hours, so today is lighter</span>
+      </div>
+    ),
+  },
+  {
+    id: 'mock',
+    role: 'practise',
+    name: 'Mock Room',
+    line: 'Answer real interview questions out loud. See your umms and your pace, then get one clear fix for the next try.',
+    soon: true,
+    accent: 'pink',
+    example: (
+      <div className="fx-mini" aria-hidden="true">
+        <small>HR ROUND · QUESTION 2 OF 5</small>
+        <b>“Tell me about yourself.”</b>
+        <p>
+          so <mark>basically</mark> I’m a final-year student and <mark>umm</mark> I built an app for our college fest…
+        </p>
+        <span className="fx-note">one fix: start with the app, not the college</span>
+      </div>
+    ),
+  },
+  {
+    id: 'kanak',
+    role: 'see proof',
+    name: 'Kanak',
+    line: 'Your own logs, turned into proof of what lifts your mood and your output. Worked out on your phone, and it stays there.',
+    soon: false,
+    accent: 'sun',
+    example: (
+      <div className="fx-mini gold" aria-hidden="true">
+        <small>EXAMPLE PATTERN</small>
+        <b className="fx-big">+1.2</b>
+        <p>mood points on days with 7+ hours of sleep</p>
+        <span className="fx-note">your golden day: tuesday</span>
+      </div>
+    ),
+  },
+]
+
 const FAQ = [
   [
     'is it free?',
-    `yes. the daily 5 minutes, every scripture, all safety tools and most of the ${TOOLS.length} tools are free, always. Plus (₹${PRICES.monthly}/month or ₹${PRICES.yearly}/year, paid by UPI, no auto-renew) adds streak freezes, full journeys, insights and outfits for your pet. the first ${TRIAL_DAYS} days are free.`,
+    `yes. the daily 5 minutes, your pet, every scripture, all safety tools and most of the ${TOOLS.length} tools are free, always. the founding pass is ₹${FOUNDING.price} for a year, paid once by UPI, with no auto-renew.`,
   ],
+  ['what do I get with the founding pass?', `Kanak and every full program today, then Sprint and Mock Room by ${FOUNDING.by}. if they aren’t live by then, we refund you. after launch the same year costs ₹${FOUNDING.after}.`],
+  ['who is this for?', 'students and freshers with an exam, interview or hard conversation coming up. anyone who keeps waiting to feel ready is welcome.'],
   ['do I have to be religious?', 'nope. tell us your faith, pick “every faith”, or say you’re atheist or agnostic — then you get philosophy instead. or never answer at all.'],
   ['do you ask my gender or faith?', 'only later, and only if you want to answer. they just decide what shows up first (your scripture, safety tools). nothing is ever hidden from anyone.'],
   ['is my stuff private?', 'your journal, cycle tracker, money and notes are saved on your phone, not on our servers.'],
@@ -178,6 +246,25 @@ const FAQ = [
 export function LandingMore({ onSignup, onLogin, actions }: { onSignup: () => void; onLogin: () => void; actions?: ReactNode }) {
   return (
     <div className="landing page">
+      <section className="ld-section">
+        <p className="kicker">what you get</p>
+        <h2 className="ld-h">
+          three things for the days that <span className="serif">scare you.</span>
+        </h2>
+        <div className="fx-list">
+          {FEATURES.map((f) => (
+            <article key={f.id} className={`fx a-${f.accent}`}>
+              <div className="fx-copy">
+                <span className={`fx-status${f.soon ? '' : ' live'}`}>{f.soon ? `arrives by ${FOUNDING.by}` : 'live now'}</span>
+                <h3>{f.name}</h3>
+                <p>{f.line}</p>
+              </div>
+              {f.example}
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="ld-section">
         <p className="kicker">try it — no account needed</p>
         <h2 className="ld-h">
@@ -194,19 +281,19 @@ export function LandingMore({ onSignup, onLogin, actions }: { onSignup: () => vo
         <ol className="ld-steps ill">
           <li>
             <span className="ld-ill i1" aria-hidden="true">
-              <i>😌</i>
-              <i>🎯</i>
-              <i>😴</i>
+              <i>📚</i>
+              <i>🎤</i>
+              <i>🗣️</i>
             </span>
-            <b>pick what you need</b>
-            <span>3 goals and a pet. done.</span>
+            <b>tell us what’s coming</b>
+            <span>an exam, an interview, a hard talk.</span>
           </li>
           <li>
             <span className="ld-ill i2" aria-hidden="true">
               <i />
             </span>
-            <b>do your 5 minutes</b>
-            <span>feel → one small thing → one line.</span>
+            <b>do a little every day</b>
+            <span>five minutes for you, one step towards it.</span>
           </li>
           <li>
             <span className="ld-ill i3" aria-hidden="true">
@@ -214,47 +301,10 @@ export function LandingMore({ onSignup, onLogin, actions }: { onSignup: () => vo
               <i>🐣</i>
               <i>🐥</i>
             </span>
-            <b>watch it grow</b>
-            <span>your pet, your streak, you.</span>
+            <b>walk in anyway</b>
+            <span>ready enough beats perfect.</span>
           </li>
         </ol>
-      </section>
-
-
-      <section className="ld-section">
-        <p className="kicker">inside the app</p>
-        <h2 className="ld-h">
-          tools that <span className="serif">feel right.</span>
-        </h2>
-        <div className="ld-show" aria-label="Three tools from the app">
-          <figure className="ld-mini journal" aria-hidden="true">
-            <div className="ld-mini-screen">
-              <small>JOURNAL</small>
-              <b>Tuesday</b>
-              <p>finally finished the essay. felt lighter than I expected.</p>
-              <span className="ld-mini-btn">🏆 turn into hype file</span>
-            </div>
-            <figcaption>write it out</figcaption>
-          </figure>
-          <figure className="ld-mini calm" aria-hidden="true">
-            <div className="ld-mini-screen">
-              <small>WORRY BOX</small>
-              <b>“what if I fail maths”</b>
-              <p>can you do anything about it?</p>
-              <span className="ld-mini-btn">10 questions tonight ✓</span>
-            </div>
-            <figcaption>sort a worry</figcaption>
-          </figure>
-          <figure className="ld-mini precise" aria-hidden="true">
-            <div className="ld-mini-screen">
-              <small>QUICK MATHS</small>
-              <b>₹1,020</b>
-              <p>₹1,200 − 15% · you save ₹180</p>
-              <span className="ld-mini-btn">GST · tip · split</span>
-            </div>
-            <figcaption>do the maths</figcaption>
-          </figure>
-        </div>
       </section>
 
       <section className="ld-section">
@@ -266,20 +316,20 @@ export function LandingMore({ onSignup, onLogin, actions }: { onSignup: () => vo
       </section>
 
       <section className="ld-section">
-        <p className="kicker">free, and a little extra</p>
+        <p className="kicker">what it costs</p>
         <h2 className="ld-h">
-          the good stuff is <span className="serif">free.</span>
+          start free. <span className="serif">stay if it helps.</span>
         </h2>
         <div className="ld-plans">
           <div className="ld-plan">
             <b>free, always</b>
-            <small>daily 5 minutes, your pet, every scripture, all safety tools, almost every tool</small>
+            <small>daily 5 minutes, your pet, focus timer, flashcards, NCERT books, practice questions, every scripture, all safety tools</small>
           </div>
           <div className="ld-plan plus">
             <b>
-              Plus · ₹{Math.round(PRICES.yearly / 12)}/month <em>{TRIAL_DAYS} days free</em>
+              founding pass · ₹{FOUNDING.price}/year <em>₹{FOUNDING.after} after launch</em>
             </b>
-            <small>streak freezes, full programs, mood patterns, pet outfits. pay by UPI, no card, no auto-renew</small>
+            <small>Kanak and full programs now, Sprint and Mock Room by {FOUNDING.by} or your money back. pay once by UPI, no auto-renew</small>
           </div>
         </div>
       </section>
@@ -307,15 +357,15 @@ export function LandingMore({ onSignup, onLogin, actions }: { onSignup: () => vo
 
       <section className="ld-final">
         <h2 className="ld-h">
-          ready to be <span className="serif">imperfect?</span>
+          you’re ready enough. <span className="serif">start.</span>
         </h2>
         {actions ?? (
           <div className="aw-actions">
             <button type="button" className="btn btn-primary a-lime big-cta" onClick={onSignup}>
-              create my free account <ArrowRight size={18} />
+              start free <ArrowRight size={18} />
             </button>
-            <button type="button" className="btn big-cta" onClick={onLogin}>
-              I already have one
+            <button type="button" className="linkish aw-login" onClick={onLogin}>
+              I already have an account
             </button>
           </div>
         )}

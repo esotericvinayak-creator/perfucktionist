@@ -4,7 +4,7 @@ import { CopyButton } from '../components/ui'
 import { log } from '../lib/progress'
 import { usePlus } from '../lib/plus'
 import { pick } from '../lib/storage'
-import { Card, Choice, Empty, List, PlusOnly, QuickAdd, Ring, Stat, Stats, Text, addDays, compact, daysBetween, lastDays, mmss, shortDate, today, uid, useCountdown, useTool } from './kit'
+import { Card, Choice, Empty, List, QuickAdd, Ring, Stat, Stats, Text, addDays, compact, daysBetween, lastDays, mmss, shortDate, today, uid, useCountdown, useTool } from './kit'
 import { ToolChips } from './links'
 
 // ─── Habit tracker ────────────────────────────────────────────
@@ -273,7 +273,7 @@ export function Interview() {
   )
 }
 
-// ─── Speaking coach (Plus) ────────────────────────────────────
+// ─── Speaking coach ───────────────────────────────────────────
 type SR = {
   continuous: boolean
   interimResults: boolean
@@ -326,7 +326,7 @@ export function Speak() {
     setOn(true)
   }
   return (
-    <PlusOnly title="Count your “umm”s" why="Talk for a minute — it live-transcribes you, counts filler words and measures your pace. The fastest way to sound confident.">
+    <>
       {!Ctor ? (
         <Empty emoji="🎙️">Your browser doesn’t support speech recognition. Try Chrome or Edge.</Empty>
       ) : (
@@ -371,6 +371,6 @@ export function Speak() {
           )}
         </div>
       )}
-    </PlusOnly>
+    </>
   )
 }

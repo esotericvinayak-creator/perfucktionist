@@ -207,7 +207,7 @@ export async function renderCard(canvas: HTMLCanvasElement, c: CardContent, t: T
   if (watermark) {
     g.font = `800 52px ${FONT_DISPLAY}`
     g.fillStyle = t.ink
-    g.fillText('perfucktionist ✶', W / 2, H - 190)
+    g.fillText('perfectish ✶', W / 2, H - 190)
     g.font = `400 28px ${FONT_MONO}`
     g.fillStyle = t.dim
     g.fillText('perfection is a scam', W / 2, H - 120)
@@ -217,5 +217,5 @@ export async function renderCard(canvas: HTMLCanvasElement, c: CardContent, t: T
 export async function cardFile(canvas: HTMLCanvasElement) {
   const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/png'))
   if (!blob) throw new Error('Could not export image')
-  return new File([blob], 'perfucktionist.png', { type: 'image/png' })
+  return new File([blob], 'perfectish.png', { type: 'image/png' })
 }

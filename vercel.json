@@ -3,9 +3,16 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "headers": [
+  "redirects": [
     {
       "source": "/app/perfucktionist.apk",
+      "destination": "/app/perfectish.apk",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/app/perfectish.apk",
       "headers": [
         {
           "key": "Content-Type",
@@ -13,7 +20,7 @@
         },
         {
           "key": "Content-Disposition",
-          "value": "attachment; filename=\"perfucktionist.apk\""
+          "value": "attachment; filename=\"perfectish.apk\""
         },
         {
           "key": "Cache-Control",

@@ -74,7 +74,7 @@ export default function App() {
 
   useEffect(() => {
     const zone = zoneByPath(base)
-    document.title = zone ? `${zone.title} — perfucktionist` : 'perfucktionist — perfection is a scam'
+    document.title = zone ? `${zone.title} — perfectish` : 'perfectish — do the scary thing before you feel ready'
   }, [base])
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function App() {
     return (
       <div className="splash" aria-busy="true">
         <span className="logo-text">
-          per<span className="logo-hl">fuck</span>tionist
+          perfect<span className="logo-hl">ish</span>
         </span>
       </div>
     )

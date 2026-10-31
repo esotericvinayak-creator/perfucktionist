@@ -1,22 +1,24 @@
-# perfucktionist ✶
+# perfectish ✶
 
 > Perfection is a scam.
+
+**About the name.** This app was called perfucktionist. The public name is now perfectish, because the old word got in the way of search, ads and network filters. A few technical names keep the old word on purpose: the Android app ID and deep link (`in.perfucktionist.app`, changing it would make a separate app and installed copies would stop updating), the Doppler project, the Supabase `project_id`, the Vercel host, and a redirect from the old APK address for apps that already have it built in.
 
 A Gen Z toolkit for living, not polishing.
 
 ## How the app flows
 
-Three tabs, nothing else: **Today · Discover · Me**. Full flowchart: [docs/FLOW.md](docs/FLOW.md). The idea: *show up for 5 minutes, feel okay, nothing to be perfect at.*
+Three tabs, nothing else: **Today · Discover · Me**. Full flowchart: [docs/FLOW.md](docs/FLOW.md). The idea: *do the scary thing before you feel ready.* You tell the app what's coming up (an exam, an interview, a hard conversation) and it points everything at that date, with 5 minutes a day to keep you steady.
 
 **Where the app runs:** everywhere. The full app works on the website for everyone, Android included, and the Android APK is an optional download (`#/get`). The old "Android visitors get only the landing page" rule is switched off in `appOnly()` (`src/lib/install.ts`), with a note on how to bring it back. Email links work the same in the browser and the app.
 
-1. **Landing** → hero, a no-account demo (pick a mood → box breathing, a line of wisdom or a tiny dare), how it works in 3 steps, tap-to-hatch pet egg, promises, FAQ. Panic SOS, safe-walk and Shield work without an account.
-2. **Sign up / log in** → then a 2-step onboarding: what you want help with (up to 3 goals) → pick and name a pet → straight into day 1.
-3. **Today** (`#/`) → one screen: your pet and streak, one big "▶ start my 5 minutes" button (mood → one small thing → one line of wisdom → done 🔥, with an optional "and now, how are you?"), today's line from your faith, your plan (only once you've started one) and "need help right now?" (panic, safe walk, SOS, 14416). After your first finished day, one optional question at a time asks your name, faith and gender (`MakeItYours` in `src/pages/Today.tsx`), each skippable.
-4. **Discover** (`#/explore`) → search, "I'm feeling…" chips and five cards: **Feel better**, **Study**, **Listen**, **Read**, **Books & scripture** (plus Shield or Bro code first, if you set a gender). Quick tools below, and "everything else" opens the 10 areas and all 60 tools. The Library lives under here.
+1. **Landing** → the promise and one button, the three paid features (each drawn as an example, and anything not built yet says when it arrives), a no-account demo (pick a mood → box breathing, a line of wisdom or a tiny dare), how it works in 3 steps, tap-to-hatch pet egg, what it costs, promises, FAQ. Panic SOS, safe-walk and Shield work without an account.
+2. **Sign up / log in** → two screens (name + email, password + consent), then a 3-step onboarding: your next scary thing → name and date it (or pick up to 3 goals if nothing's coming up) → pick and name a pet → straight into day 1.
+3. **Today** (`#/`) → one screen: your next scary thing (days left and what to do today; once the date passes it asks "did you do the scary thing?"; `NextCard` in `src/pages/Today.tsx`, stored as `nextUp` in progress), your pet and streak, one big "▶ start my 5 minutes" button (mood → one small thing → one line of wisdom → done 🔥, with an optional "and now, how are you?"), today's line if you've set a faith, your plan (only once you've started one) and "need help right now?" (panic, safe walk, SOS, 14416). After your first finished day, one optional question at a time asks your name, faith and gender (`MakeItYours` in `src/pages/Today.tsx`), each skippable.
+4. **Discover** (`#/explore`) → search, "I'm feeling…" chips Kanak, and four cards: **Study**, **Practise**, **Feel better**, **Library** (plus Shield or Bro code first, if you set a gender). Four quick tools below, and "everything else" opens the 11 areas (Listen and Read live there) and all 44 tools. The Library lives under here.
 5. **Library** (`#/library`, reached from Discover) → six shelves: **School** (every NCERT textbook, class 1–12), **College** (open textbooks + free university courses), **Exams** (28 competitive exams + 360 practice questions), **Scripture** (your faith's book opens first), **Free books** (millions, free to read) and **Audiobooks** (free, read aloud). Save anything to **your shelf**.
 6. **Me** (`#/me`) → one compact screen: pet, level, streak, XP, a Plus row, today's four rituals, the 16-week map. Pet, monthly Wrapped, badges and settings (account, theme, goals, faith, gender) are closed rows that open in place.
-   **Plus** (`#/plus`) → price first: yearly (₹33/month) or monthly (₹49), "try free for 7 days", then four one-line perks and a closed "always free" list. Payments aren't live yet, so the trial unlocks Plus on this device only (`src/lib/plus.ts`); swap `startTrial()` for a real checkout before charging anyone.
+   **Plus** (`#/plus`) → the founding pass: ₹399 for a year, ₹999 after launch (`FOUNDING` in `src/lib/plus.ts`). It lists Kanak (live), Sprint and Mock Room (due by the date in `FOUNDING`, or we refund), the pay button, "try free for 7 days", and closed lists of extras and what's always free. New buyers only see the yearly plan; `monthly` stays in the database for anyone who already has it.
 7. **Kanak · कनक** (`#/kanak`, gold; from Discover and Me) → a premium section that turns everything you log into patterns about you, worked out on the device: **gold insights** (mood on days with vs without 7h+ sleep, under-3h screen time, a focus round, moving, doing your 5 minutes; a pattern only shows when both sides have 3+ days), a **Kanak score** (showing up, sleep, focus, checking in, every part shown), your **golden day** of the week, a **golden plan** of three things to try this week, and a full-screen **gold story** of your month to share. Locked unless you have Plus or redeem the access code **KANU** (`src/lib/kanak.ts`). With little data it offers a clearly labelled sample preview. The code is checked in the browser, so it's a promo code, not a secret.
 8. **Listen** (`#/listen`) → *quotes + music* (a mix from your own tradition when you've set one) and **music reels** (`#/listen/reels`): a feed that plays itself — swipe right to save, left to skip, tap to pause. Tapping the mini player anywhere opens **Now Playing**: big art (swipe to change), a seek bar, up next, credits, and lyrics.
 
@@ -82,7 +84,7 @@ Every zone also has an **"every faith agrees"** row — the same idea (courage, 
 | 💸 Money | **Spending** (expenses · subscriptions · savings goal) · 50/30/20 · split the bill · SIP calculator · CTC → in-hand · is it worth it? · ROI & growth · quick maths |
 | 🛡️ Safety | safe-walk timer · emergency card · privacy checkup |
 | 💗 People | breakup recovery · friend check-ins · kindness dares · conversation starters |
-| 🌱 Grow | habit tracker · quit tracker · time capsule · bucket list (goals with sub-lists) · wallpaper maker · interview prep · speaking coach ✦ |
+| 🌱 Grow | habit tracker · quit tracker · time capsule · bucket list (goals with sub-lists) · wallpaper maker · interview prep · speaking coach |
 
 **More** (an area in Discover) gathers utilities: sound mixer (also under Calm), quick maths, countdowns, wallpaper, time capsule, 20-20-20.
 
@@ -98,12 +100,12 @@ Every zone also has an **"every faith agrees"** row — the same idea (courage, 
 
 Notes: CTC → in-hand uses FY 2025-26 new-regime slabs — update `newRegimeTax()` when budgets change. Quick maths uses the 5/18/40% GST slabs (Sept 2025). Timers/alarms (safe-walk, 20-20-20) only run while the page is open. **Listen** has a voice picker (any voice installed on the device, plus speed), stored on the device only (`src/lib/voice.ts`).
 
-## Glow-up mode & perfucktionist+
+## Glow-up mode & Plus
 
-| | Free | Plus (₹49/mo · ₹399/yr) |
+| | Free | Plus (founding pass: ₹399/yr) |
 | --- | --- | --- |
 | `#/me` daily ritual (breathe · read · dare · gratitude — any one keeps the streak), XP, 10 levels, 13 badges, 16-week heatmap, a pet that hatches and grows | ✓ | ✓ |
-| `#/tools` toolkit | all but 4 extras | everything |
+| `#/tools` toolkit | all but 3 extras | everything |
 | `#/journeys` 5 guided programs (21 days unperfect, 7 days calm, 14 days brave, 18 days of the Gita, every faith in 12 days), one step unlocks per day | first 3 days each | all days |
 | Streak freezes | — | 2 a month, automatic |
 | Story cards (1080×1920 PNG for IG/WhatsApp/Snap) from any verse, streak or month | 2 styles + watermark | 5 styles, no watermark |
@@ -112,7 +114,7 @@ Notes: CTC → in-hand uses FY 2025-26 new-regime slabs — update `newRegimeTax
 
 Safety tools and scripture are **never** paywalled — the Plus page says so.
 
-**Payments are not wired up yet.** `src/lib/plus.ts` → `startTrial()` currently unlocks Plus on the device for 7 days. Replace it with a real checkout (Razorpay / Stripe) plus a server-side entitlement check before launch. The Plus page also promises *"every yearly member = one real tree planted"* — only ship that line once a planting partner is in place.
+**Payments are manual UPI for now.** People pay the UPI ID, send the 12-digit reference, and you check it and run `npm run pay -- verify <reference>` (`src/lib/payments.ts`). The free trial still lives on the device (`startTrial()` in `src/lib/plus.ts`). Move to a real checkout and server-side access checks before the public launch.
 
 ## Accounts, sync & secrets
 
@@ -256,7 +258,7 @@ npm run apk
 1. builds the site;
 2. copies it into the Capacitor Android project (`android/`);
 3. builds a **signed release APK**;
-4. publishes it at `public/app/perfucktionist.apk` with `public/app/apk.json` (version, build number, size, SHA-256, notes), which the Get page and the in-app update check read.
+4. publishes it at `public/app/perfectish.apk` with `public/app/apk.json` (version, build number, size, SHA-256, notes), which the Get page and the in-app update check read.
 
 The build needs **JDK 21** (`brew install openjdk@21`) and the **Android SDK**. The only permission the app asks for is internet access.
 
@@ -285,7 +287,7 @@ The first published APK (build 1) predates the update check. Anyone who has it n
 
 **⚠️ The signing key — back it up.** **Every future update must be signed with the same key.** If it's lost, phones that installed this APK can't update to a new one and people have to uninstall first. The key is read from Doppler first (`ANDROID_KEYSTORE_*`, see *Accounts, sync & secrets*; the script decodes it to a private temp file and deletes it after the build), then from `android/keystore.properties`. That file points at `~/.perfucktionist/release.jks`, deliberately outside the repo, and is gitignored along with every `*.jks` and `*.keystore` file. Keep an offline copy of the `.jks` even once it's in Doppler. With neither source, the script builds a debug APK instead.
 
-**Committing the APK:** `public/app/perfucktionist.apk` (~8 MB) isn't gitignored, so a static host deployed from git can serve it. Every release you commit adds about 8 MB to git history. If that becomes a problem, upload it to a GitHub Release instead and change `APK_URL` in `src/lib/install.ts`.
+**Committing the APK:** `public/app/perfectish.apk` (~8 MB) isn't gitignored, so a static host deployed from git can serve it. Every release you commit adds about 8 MB to git history. If that becomes a problem, upload it to a GitHub Release instead and change `APK_URL` in `src/lib/install.ts`.
 
 **Hosting:** `public/_headers` sets the right `Content-Type` for `.apk` downloads on Netlify and Cloudflare Pages. On other hosts, map `.apk` to `application/vnd.android.package-archive`.
 

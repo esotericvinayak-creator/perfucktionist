@@ -120,7 +120,7 @@ async function checkApp(): Promise<AppUpdate | null | 'offline'> {
     const code = meta.versionCode ?? 0
     const app: AppUpdate | null =
       code > APP_BUILD
-        ? { version: meta.version, versionCode: code, size: meta.size, notes: meta.notes ?? '', url: `${SITE}/app/perfucktionist.apk`, required: APP_BUILD < (meta.minVersionCode ?? 0) }
+        ? { version: meta.version, versionCode: code, size: meta.size, notes: meta.notes ?? '', url: `${SITE}/app/perfectish.apk`, required: APP_BUILD < (meta.minVersionCode ?? 0) }
         : null
     set({ app })
     set({ snoozedUntil: readSnooze() }) // the snooze belongs to a particular version, so read it after

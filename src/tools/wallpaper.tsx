@@ -514,7 +514,7 @@ export function drawWallpaper(canvas: HTMLCanvasElement, o: Opts, opts: { grain?
     setSpacing(g, 4)
     g.fillStyle = d.dim
     g.globalAlpha = 0.8
-    g.fillText('perfucktionist', W / 2, 1650)
+    g.fillText('perfectish', W / 2, 1650)
     g.globalAlpha = 1
     setSpacing(g, 0)
   }
@@ -576,7 +576,7 @@ export function Wallpaper() {
     await loadFonts()
     drawWallpaper(c, { ...s, mark })
     const blob = await new Promise<Blob | null>((r) => c.toBlob(r, 'image/png'))
-    return blob ? new File([blob], 'perfucktionist-wallpaper.png', { type: 'image/png' }) : null
+    return blob ? new File([blob], 'perfectish-wallpaper.png', { type: 'image/png' }) : null
   }
   function save(f: File) {
     const url = URL.createObjectURL(f)
@@ -598,7 +598,7 @@ export function Wallpaper() {
     if (!f) return setStatus('Could not make the image. Try again.')
     if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [f] })) {
       try {
-        await navigator.share({ files: [f], text: 'made on perfucktionist' })
+        await navigator.share({ files: [f], text: 'made on perfectish' })
         setStatus('shared ✓')
         log('tool')
       } catch {

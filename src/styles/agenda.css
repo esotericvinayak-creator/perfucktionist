@@ -1,0 +1,119 @@
+/* ═════════════════════════ the agenda ═════════════════════════
+   Everything that points at your next scary thing: the landing promise, the features, onboarding,
+   the countdown on Today and the founding pass. Colours and type come from base.css. */
+
+/* A disabled primary button reads as "not yet", not as a muddy version of the colour. */
+.btn-primary:disabled { background: var(--surface-2); color: var(--ink-faint); border-color: color-mix(in srgb, var(--line) 22%, transparent); box-shadow: none; opacity: 1; }
+
+/* ─── landing hero ─── */
+.aw-promise { font-size: clamp(2.8rem, 12.8vw, 5.4rem); font-weight: 800; line-height: 0.98; letter-spacing: -0.045em; text-wrap: balance; }
+.aw-promise .serif { font-size: 1.08em; letter-spacing: -0.03em; }
+.aw-under { position: relative; display: inline-block; }
+.aw-under .scribble { top: 88%; height: 0.22em; }
+.aw-copy .lede { max-width: 42ch; }
+.aw-login { justify-self: center; color: var(--ink-dim); font-weight: 700; padding: 4px 8px; }
+
+/* the phone: the countdown from Today */
+.ld-phone-next { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; padding: 10px; border-radius: 20px; border: 2px solid var(--line); background: color-mix(in srgb, var(--violet) 14%, var(--surface)); }
+.ld-phone-count { display: grid; justify-items: center; min-width: 66px; padding: 8px 6px; border-radius: 14px; background: var(--violet); color: var(--on-accent); }
+.ld-phone-count b { font-size: 1.9rem; font-weight: 800; line-height: 1; letter-spacing: -0.04em; }
+.ld-phone-count small { font-size: 0.62rem; font-weight: 700; }
+.ld-phone-next div { display: grid; gap: 1px; min-width: 0; }
+.ld-phone-next div small { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.08em; color: var(--ink-faint); }
+.ld-phone-next div b { font-size: 1rem; letter-spacing: -0.02em; }
+.ld-phone-next em { font-style: normal; font-size: 0.74rem; font-weight: 700; color: var(--ink-dim); }
+
+/* ─── the three paid features ─── */
+.fx-list { display: grid; gap: 16px; }
+.fx { display: grid; gap: 16px; padding: 18px; border-radius: 26px; border: var(--border) solid var(--line); background: var(--surface); box-shadow: 5px 5px 0 var(--a); }
+.fx-copy { display: grid; gap: 8px; justify-items: start; align-content: center; min-width: 0; }
+.fx h3 { font-size: clamp(1.8rem, 6vw, 2.2rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+.fx-copy p { color: var(--ink-dim); max-width: 44ch; }
+.fx-status { padding: 3px 10px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; border: 1.5px solid color-mix(in srgb, var(--line) 30%, transparent); color: var(--ink-dim); }
+.fx-status.live { background: var(--lime); border-color: transparent; color: var(--on-accent); font-weight: 700; }
+.fx-mini { display: grid; gap: 8px; align-content: center; min-width: 0; padding: 16px; border-radius: 18px; background: var(--bg-soft); font-size: 0.92rem; line-height: 1.4; }
+.fx-mini small { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; color: var(--ink-faint); }
+.fx-mini b { font-size: 1.1rem; letter-spacing: -0.02em; line-height: 1.2; }
+.fx-mini mark { padding: 0 4px; border-radius: 5px; background: color-mix(in srgb, var(--pink) 42%, transparent); color: inherit; }
+.fx-note { justify-self: start; padding: 4px 10px; border-radius: 10px; background: var(--a); color: var(--on-accent); font-size: 0.78rem; font-weight: 700; line-height: 1.3; }
+.fx-plan { list-style: none; display: grid; gap: 6px; }
+.fx-plan li { position: relative; padding-left: 26px; font-weight: 600; }
+.fx-plan li::before { content: ''; position: absolute; left: 0; top: 2px; width: 16px; height: 16px; border-radius: 5px; border: 2px solid color-mix(in srgb, var(--line) 45%, transparent); }
+.fx-plan li.done { color: var(--ink-faint); text-decoration: line-through; }
+.fx-plan li.done::before { background: var(--lime); border-color: var(--lime); }
+.fx-plan li.moved { color: var(--ink-faint); }
+.fx-plan em { font-style: normal; font-size: 0.78rem; font-weight: 500; }
+.fx-mini.gold { background: radial-gradient(120% 120% at 100% 0%, rgba(245, 200, 76, 0.32), transparent 62%), #1a1207; color: #fff7e0; --a: #f5c84c; }
+.fx-mini.gold small { color: #d9c79a; }
+.fx-mini.gold .fx-big { font-size: 3rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: #f5c84c; }
+@media (min-width: 720px) {
+  .fx { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 28px; padding: 24px 26px; }
+}
+
+/* ─── onboarding ─── */
+.ob-choices { display: grid; gap: 10px; width: 100%; }
+.ob-choice { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; text-align: left; border-radius: 20px; border: 2px solid color-mix(in srgb, var(--line) 30%, transparent); background: var(--surface); transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s; }
+.ob-choice:hover { border-color: var(--line); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--lime); }
+.ob-choice .grow { flex: 1; display: grid; gap: 1px; min-width: 0; }
+.ob-choice b { font-size: 1.08rem; letter-spacing: -0.02em; line-height: 1.2; }
+.ob-choice small { color: var(--ink-dim); line-height: 1.3; }
+.ob-choice.quiet { border-style: dashed; }
+.ob-choice .ibub { margin: 0; flex: none; }
+
+/* naming and dating it */
+.nx-form { display: grid; gap: 12px; width: 100%; text-align: center; }
+.nx-picks { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.nx-date { display: grid; gap: 4px; text-align: left; font-weight: 700; }
+.nx-form .big-cta { width: 100%; }
+
+/* ─── Today: the countdown ─── */
+.nx-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; padding: 12px; border-radius: 26px; border: var(--border) solid var(--line); background: var(--surface); box-shadow: 4px 4px 0 var(--violet); }
+.nx-count { display: grid; align-content: center; justify-items: center; gap: 4px; width: 92px; padding: 10px 6px; border-radius: 18px; border: 0; background: var(--violet); color: var(--on-accent); text-align: center; }
+.nx-count b { font-size: clamp(2.3rem, 11vw, 2.9rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+.nx-count small { font-size: 0.72rem; font-weight: 800; line-height: 1.15; }
+.nx-count.none { background: transparent; color: var(--ink-dim); border: 2px dashed color-mix(in srgb, var(--line) 40%, transparent); }
+.nx-main { display: grid; gap: 6px; align-content: center; min-width: 0; }
+.nx-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.nx-head .kicker { font-size: 0.66rem; }
+.nx-head .linkish { font-size: 0.8rem; }
+.nx-main h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; overflow-wrap: anywhere; }
+.nx-steps { display: grid; gap: 2px; }
+.nx-step { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 5px 0; font-size: 0.94rem; font-weight: 700; line-height: 1.25; text-decoration: none; color: var(--ink); }
+.nx-step + .nx-step { color: var(--ink-dim); font-weight: 600; }
+.nx-step:hover { text-decoration: underline; }
+.nx-step svg { flex: none; }
+.nx-soon { font-size: 0.78rem; color: var(--ink-faint); text-underline-offset: 2px; }
+.nx-empty { display: grid; gap: 8px; justify-items: start; padding: 14px 16px; border-radius: 22px; border: 2px dashed color-mix(in srgb, var(--line) 35%, transparent); }
+.nx-kinds { display: flex; flex-wrap: wrap; gap: 8px; }
+.nx-kinds .chip { display: inline-flex; align-items: center; gap: 6px; }
+.nx-empty .linkish, .nx-edit .linkish { font-size: 0.85rem; }
+.nx-edit { justify-items: center; }
+.nx-edit .act-q { font-size: 1.5rem; }
+.nx-after { justify-items: start; }
+
+/* ─── Plus: the founding pass ─── */
+.pl-h .serif { display: block; color: var(--ink-dim); }
+.pl-paid { list-style: none; display: grid; gap: 14px; padding: 2px 0 4px; }
+.pl-paid li { display: flex; gap: 12px; align-items: flex-start; }
+.pl-paid b { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; font-size: 1.1rem; letter-spacing: -0.02em; }
+.pl-paid em { font-family: var(--font-mono); font-size: 0.62rem; font-style: normal; font-weight: 400; letter-spacing: 0.05em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--line) 30%, transparent); color: var(--ink-dim); }
+.pl-paid em.live { background: var(--lime); border-color: transparent; color: var(--on-accent); font-weight: 700; }
+.pl-paid small { display: block; color: var(--ink-dim); line-height: 1.35; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-choice { transition: none; }
+}
+
+/* Long button labels wrap on narrow phones instead of pushing the page sideways. */
+.pl-card { grid-template-columns: minmax(0, 1fr); }
+.pl-card .big-cta { white-space: normal; }
+
+/* Small phones: the landing page and Me stay inside the screen. */
+.auth-welcome { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 360px) {
+  .ld-demo .mood-pick button { width: 44px; height: 44px; font-size: 1.45rem; }
+  .me2 { grid-template-columns: minmax(0, 1fr); }
+  .me2-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .me2-stats > div { min-width: 0; padding-inline: 6px; }
+  .me2-stats .btn { grid-column: 1 / -1; justify-self: center; }
+}

@@ -5,7 +5,7 @@
 //   npm run apk -- --force                         everyone on an older build must update
 //
 // 1. builds the website, 2. copies it into the Android project, 3. builds a signed
-// release APK, 4. puts it at public/app/perfucktionist.apk with a small apk.json
+// release APK, 4. puts it at public/app/perfectish.apk with a small apk.json
 // (version, build number, size, SHA-256, notes) that the "Get the app" page and the in-app
 // update check read (src/lib/update.ts).
 //
@@ -89,7 +89,7 @@ if (!existsSync(src)) throw new Error(`Expected an APK at ${built}`)
 
 const outDir = join(root, 'public/app')
 mkdirSync(outDir, { recursive: true })
-const dest = join(outDir, 'perfucktionist.apk')
+const dest = join(outDir, 'perfectish.apk')
 copyFileSync(src, dest)
 
 const bytes = readFileSync(dest)
@@ -108,9 +108,9 @@ writeFileSync(join(outDir, 'apk.json'), JSON.stringify(meta, null, 2) + '\n')
 
 // The site build ran before the APK existed, so copy both files into dist as well.
 mkdirSync(join(root, 'dist/app'), { recursive: true })
-copyFileSync(dest, join(root, 'dist/app/perfucktionist.apk'))
+copyFileSync(dest, join(root, 'dist/app/perfectish.apk'))
 copyFileSync(join(outDir, 'apk.json'), join(root, 'dist/app/apk.json'))
 
 console.log(`\n✓ ${meta.signed} APK ${meta.version} (build ${versionCode}) · ${(meta.size / 1048576).toFixed(1)} MB · sha256 ${meta.sha256.slice(0, 16)}…`)
-console.log('  → public/app/perfucktionist.apk (served at /app/perfucktionist.apk)')
+console.log('  → public/app/perfectish.apk (served at /app/perfectish.apk)')
 console.log('  Deploy the site (commit public/app and push) and installed apps will offer the update.')

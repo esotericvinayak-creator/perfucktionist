@@ -40,17 +40,16 @@ const guide = (path: string) =>
 
 // The few places most people start from. Everything else is search, a feeling chip or "everything else".
 const HUBS: { path: string; icon: string; title: string; line: string; accent: string }[] = [
+  { path: '/explore/focus', icon: 'goal:focus', title: 'Study', line: 'focus, flashcards, exam practice', accent: 'lime' },
+  { path: '/tools/interview', icon: 'interview', title: 'Practise', line: 'interviews and vivas, out loud', accent: 'pink' },
   { path: '/explore/calm', icon: 'calm', title: 'Feel better', line: 'stress, low days, overthinking', accent: 'violet' },
-  { path: '/explore/focus', icon: 'goal:focus', title: 'Study', line: 'NCERT books, exams, focus', accent: 'lime' },
-  { path: '/listen', icon: 'listen', title: 'Listen', line: 'quotes and music, hands-free', accent: 'cyan' },
-  { path: '/read', icon: 'read', title: 'Read', line: 'honest pieces on hard stuff', accent: 'orange' },
-  { path: '/library', icon: 'library', title: 'Books & scripture', line: 'free books, audiobooks, every faith', accent: 'sun' },
+  { path: '/library', icon: 'library', title: 'Library', line: 'NCERT, exams, free books, scripture', accent: 'sun' },
 ]
 
 /** What you'd typed or picked on Discover, for when you come back from a tool. Session only. */
 const kept: { q: string; need: Need | null } = { q: '', need: null }
 
-const QUICK = ['panic', 'focus', 'journal', 'sleep-calc', 'expenses', 'safe-walk']
+const QUICK = ['panic', 'focus', 'journal', 'sleep-calc']
 const iconFor = (id: string) => (id === 'focus' ? 'focus-timer' : id)
 const needIcon = (id: string) => (id === 'focus' ? 'need:focus' : id === 'money' ? 'need:money' : id)
 const toolsIn = (a: Area) => TOOLS.filter((t) => a.toolCats.includes(t.cat) || a.tools?.includes(t.id))
@@ -134,7 +133,7 @@ export default function Explore() {
   const plus = usePlus().active
   const gender = useProgress().gender
   // Your priorities first (by gender, if you told us), then the usual quick picks.
-  const quick = [...new Set([...priorities(gender).tools, ...QUICK])].filter((id) => toolById(id)).slice(0, 6)
+  const quick = [...new Set([...priorities(gender).tools, ...QUICK])].filter((id) => toolById(id)).slice(0, 4)
   const linked = parts[0] === 'for' && NEEDS.some((n) => n.id === parts[1]) ? (parts[1] as Need) : null
   // Search and the feeling chip survive opening a tool and coming back (see `kept`).
   const [q, setQ] = useState(linked ? '' : kept.q)
@@ -205,7 +204,7 @@ export default function Explore() {
             <span>🪙</span>
             <span className="grow">
               <b>Kanak · कनक</b>
-              <small>your life, in gold: what really lifts your mood, your score, your story</small>
+              <small>see what actually works for you, from your own logs</small>
             </span>
             <span className="plan-go">→</span>
           </a>

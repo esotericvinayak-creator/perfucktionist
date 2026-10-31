@@ -22,7 +22,7 @@ function ToolView({ id }: { id: string }) {
     setRecent((r) => [t.id, ...r.filter((x) => x !== t.id)].slice(0, 8))
     setOpens((o) => ({ ...o, [t.id]: (o[t.id] ?? 0) + 1 }))
     void trackTool(t.id)
-    document.title = `${t.name} — perfucktionist`
+    document.title = `${t.name} — perfectish`
   }, [t?.id])
 
   if (!t)

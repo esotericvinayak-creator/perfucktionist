@@ -55,7 +55,7 @@ type AudiusTrack = {
 const LOOKS_LIKE_RIP = /(version|remix|mashup|cover|slowed|reverb|lyrics?|official|bollywood|punjabi|hindi song|tamil|telugu|kpop|k-pop|from ["“]|ft\.|feat\.|\bx\b|full song|audio song|movie|film|ost)/i
 
 const AUDIUS = 'https://api.audius.co/v1'
-const APP = 'perfucktionist'
+const APP = 'perfectish'
 
 // Audius: a free, legal music platform where independent artists upload their own tracks.
 // Its public API streams FULL songs with no key — but the catalogue is indie, not label releases.

@@ -22,7 +22,7 @@ export function PostCard({ p, big = false }: { p: Post; big?: boolean }) {
 
 function Article({ p }: { p: Post }) {
   useEffect(() => {
-    document.title = `${p.title} — perfucktionist`
+    document.title = `${p.title} — perfectish`
     window.scrollTo(0, 0)
     const t = setTimeout(() => log('verse', { silent: true }), 60_000)
     return () => clearTimeout(t)
@@ -73,7 +73,7 @@ function Article({ p }: { p: Post }) {
       </section>
       <p className="art-help">{p.helplineNote}</p>
       <div className="row gap-sm wrap">
-        <button type="button" className="btn btn-sm" onClick={() => shareCard({ kicker: 'read on perfucktionist', text: p.title, footer: p.hook })}>
+        <button type="button" className="btn btn-sm" onClick={() => shareCard({ kicker: 'read on perfectish', text: p.title, footer: p.hook })}>
           ↗ share
         </button>
       </div>
