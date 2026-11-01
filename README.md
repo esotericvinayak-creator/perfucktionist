@@ -29,6 +29,10 @@ No sign-up for anything free, no bank login, no SMS access, and nothing a person
 
 **Still in the repo but out of the app:** the old Library, scripture reader, music, Listen, Read, journeys, pet and the zones (Unperfect, Brave, Bro, Fam, Faith, Green, Breathe). Nothing links to them, and they aren't in the bundle. The 44 tools, Today, Discover and Kanak were deleted; they're in git history at `c158d20`. Shield stays, because people in danger need it, along with the helplines in the footer and the 112 button. Old panic and safe-walk links land on Shield.
 
+## Khairiyat (a separate test)
+
+A short daily AI call to someone's parent in Hindi, and a WhatsApp note to their child. It lives at `#/khairiyat`, with its own tables, functions and `npm run calls`. Setup, the agent's script, the consent script and the rules of the test are in [docs/KHAIRIYAT.md](docs/KHAIRIYAT.md).
+
 ## Accounts, sync & secrets
 
 Everything is open without an account. You only need one to buy the pass (`#/login`).

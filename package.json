@@ -21,6 +21,9 @@
     "secrets:android": "node scripts/doppler-android.mjs",
     "db:check": "node scripts/with-secrets.mjs prd node scripts/db-check.mjs",
     "pay": "node scripts/with-secrets.mjs prd node scripts/pay.mjs",
+    "calls": "node scripts/with-secrets.mjs prd node scripts/calls.mjs",
+    "calls:deploy": "node scripts/with-secrets.mjs prd node scripts/calls-deploy.mjs",
+    "calls:test": "node --test --experimental-strip-types supabase/functions/_shared/khairiyat.test.ts scripts/lib/calls.test.mjs",
     "auth:no-confirm": "node scripts/with-secrets.mjs prd node scripts/auth-no-confirm.mjs"
   },
   "dependencies": {

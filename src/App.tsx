@@ -13,6 +13,7 @@ import Auth, { EmailHandOver } from './pages/Auth'
 import Get from './pages/Get'
 import GetItBack from './pages/GetItBack'
 import Home from './pages/Home'
+import Khairiyat from './pages/Khairiyat'
 import LeakCheck from './pages/LeakCheck'
 import Me from './pages/Me'
 import NotFound from './pages/NotFound'
@@ -53,7 +54,7 @@ export default function App() {
   useEffect(() => {
     const zone = zoneByPath(base)
     const name = TITLES[base] ?? zone?.title
-    document.title = name ? `${name} — perfectish` : 'perfectish — stop losing money, get it back'
+    document.title = base === '/khairiyat' ? 'Khairiyat — a daily call for your parents' : name ? `${name} — perfectish` : 'perfectish — stop losing money, get it back'
   }, [base])
 
   useEffect(() => {
@@ -62,6 +63,8 @@ export default function App() {
 
   // An email link the app asked for, opened in the browser: hand it back to the app.
   if (appHandOver) return <EmailHandOver />
+  // A separate product on test. It needs no account, and none of the app around it.
+  if (base === '/khairiyat') return <Khairiyat />
   // First login on a phone: wait (a few seconds at most) for your account to arrive.
   if (auth.status === 'loading' || (auth.status === 'in' && !sync.ready))
     return (
